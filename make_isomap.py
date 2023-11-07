@@ -343,7 +343,7 @@ def preprocess_long_lat(long_list, lat_list):
  
 window_size = 20
 step_size = window_size
-max_trajs = 100
+max_trajs = 1000
 name_extension = "_window_" + str(window_size) + "_step_" + str(step_size) + "_segments_" + str(max_trajs)
 
 all_subdirs = os.listdir() 
@@ -489,10 +489,11 @@ if draw_multi_isomap:
 
 multi_manifold_list = dict()
 
-for name1 in subdir_names:
-    multi_manifold_list[name1] = [] 
-    for name2 in subdir_names:
-        multi_manifold_list[name1].append(load_object(name1 + "/multi_isomap" + name_extension + "_" + name1 + "_" + name2)) 
+if use_multi_DBSCAN or draw_multi_DBSCAN:
+    for name1 in subdir_names:
+        multi_manifold_list[name1] = [] 
+        for name2 in subdir_names:
+            multi_manifold_list[name1].append(load_object(name1 + "/multi_isomap" + name_extension + "_" + name1 + "_" + name2)) 
 	
 if use_multi_DBSCAN:
     for subdir_name in subdir_names:
