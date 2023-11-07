@@ -126,6 +126,8 @@ def plot_isomap(manifold_2D, longs_matrix, lats_matrix, save_name):
             top_right_index = x
             top_right = top_right_tmp
             mid_left_tmp = np.sqrt(y_dist_mid ** 2 + x_dist_left ** 2)
+            
+        mid_left_tmp = np.sqrt(y_dist_mid ** 2 + x_dist_left ** 2)
         
         if mid_left_tmp < mid_left:
             mid_left_index = x
@@ -343,16 +345,16 @@ def preprocess_long_lat(long_list, lat_list):
  
 window_size = 20
 step_size = window_size
-max_trajs = 1000
+max_trajs = 100
 name_extension = "_window_" + str(window_size) + "_step_" + str(step_size) + "_segments_" + str(max_trajs)
 
 all_subdirs = os.listdir() 
 
-use_isomap = True 
+use_isomap = False 
 draw_isomap = True 
 
-use_DBSCAN = True 
-draw_DBSCAN = True 
+use_DBSCAN = False 
+draw_DBSCAN = False 
 
 use_multi_isomap = False
 draw_multi_isomap = False

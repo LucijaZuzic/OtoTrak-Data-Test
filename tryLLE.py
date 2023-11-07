@@ -41,9 +41,9 @@ def make_LocallyLinearEmbedding(data_matrix):
     return LLE_data_matrix
 
 def make_manifold(LLE_data_matrix, data_matrix):
-    manifold_2Da = LLE_data_matrix.transform(data_matrix)
-    manifold_2D = pd.DataFrame(manifold_2Da, columns = ['Component 1', 'Component 2'])
-    return manifold_2D
+    manifold_2D_LLEa = LLE_data_matrix.transform(data_matrix)
+    manifold_2D_LLE = pd.DataFrame(manifold_2D_LLEa, columns = ['Component 1', 'Component 2'])
+    return manifold_2D_LLE
     
 def random_colors(num_colors):
     colors_set = []
@@ -63,22 +63,22 @@ def plot_multi_LocallyLinearEmbedding(LLE_data_matrix, multi_data_matrix, save_n
     for data_matrix_index in range(len(multi_data_matrix)):
         name_multi_manifold = save_name.replace(".png", "_" + label_names[data_matrix_index])  
         if not os.path.isfile(name_multi_manifold) or use_multi_LocallyLinearEmbedding:
-            manifold_2Da = LLE_data_matrix.transform(multi_data_matrix[data_matrix_index]) 
-            manifold_2D = pd.DataFrame(manifold_2Da, columns = ['Component 1', 'Component 2'])
-            save_object(name_multi_manifold, manifold_2D)
+            manifold_2D_LLEa = LLE_data_matrix.transform(multi_data_matrix[data_matrix_index]) 
+            manifold_2D_LLE = pd.DataFrame(manifold_2D_LLEa, columns = ['Component 1', 'Component 2'])
+            save_object(name_multi_manifold, manifold_2D_LLE)
         else: 
-            manifold_2D = load_object(name_multi_manifold)
-        plt.scatter(manifold_2D['Component 1'], manifold_2D['Component 2'], marker = '.', color = random_color_list[data_matrix_index], label = label_names[data_matrix_index])
+            manifold_2D_LLE = load_object(name_multi_manifold)
+        plt.scatter(manifold_2D_LLE['Component 1'], manifold_2D_LLE['Component 2'], marker = '.', color = random_color_list[data_matrix_index], label = label_names[data_matrix_index])
          
     plt.legend()
     plt.savefig(save_name)
     plt.close()
     
-def plot_LocallyLinearEmbedding(manifold_2D, longs_matrix, lats_matrix, save_name):  
-    maxx = max(manifold_2D['Component 1'])
-    maxy = max(manifold_2D['Component 2'])
-    minx = min(manifold_2D['Component 1'])
-    miny = min(manifold_2D['Component 2'])
+def plot_LocallyLinearEmbedding(manifold_2D_LLE, longs_matrix, lats_matrix, save_name):  
+    maxx = max(manifold_2D_LLE['Component 1'])
+    maxy = max(manifold_2D_LLE['Component 2'])
+    minx = min(manifold_2D_LLE['Component 1'])
+    miny = min(manifold_2D_LLE['Component 2'])
     
     top_left = np.sqrt((maxx - minx) ** 2 + (maxy - miny) ** 2)
     top_center = np.sqrt((maxx - minx) ** 2 + (maxy - miny) ** 2)
@@ -100,13 +100,13 @@ def plot_LocallyLinearEmbedding(manifold_2D, longs_matrix, lats_matrix, save_nam
     bottom_center_index = 0
     bottom_right_index = 0
     
-    for x in range(len(manifold_2D['Component 1'])):
-        x_dist_right = maxx - manifold_2D['Component 1'][x]
-        x_dist_left = manifold_2D['Component 1'][x] - minx
-        x_dist_center = abs(manifold_2D['Component 1'][x] - (maxx + minx) / 2)
-        y_dist_top = maxy - manifold_2D['Component 2'][x]
-        y_dist_mid = abs(manifold_2D['Component 2'][x] - (maxy + miny) / 2)
-        y_dist_bottom = manifold_2D['Component 2'][x] - miny
+    for x in range(len(manifold_2D_LLE['Component 1'])):
+        x_dist_right = maxx - manifold_2D_LLE['Component 1'][x]
+        x_dist_left = manifold_2D_LLE['Component 1'][x] - minx
+        x_dist_center = abs(manifold_2D_LLE['Component 1'][x] - (maxx + minx) / 2)
+        y_dist_top = maxy - manifold_2D_LLE['Component 2'][x]
+        y_dist_mid = abs(manifold_2D_LLE['Component 2'][x] - (maxy + miny) / 2)
+        y_dist_bottom = manifold_2D_LLE['Component 2'][x] - miny
         
         top_left_tmp = np.sqrt(y_dist_top ** 2 + x_dist_left ** 2)
         
@@ -126,6 +126,8 @@ def plot_LocallyLinearEmbedding(manifold_2D, longs_matrix, lats_matrix, save_nam
             top_right_index = x
             top_right = top_right_tmp
             mid_left_tmp = np.sqrt(y_dist_mid ** 2 + x_dist_left ** 2)
+            
+        mid_left_tmp = np.sqrt(y_dist_mid ** 2 + x_dist_left ** 2)
         
         if mid_left_tmp < mid_left:
             mid_left_index = x
@@ -162,22 +164,22 @@ def plot_LocallyLinearEmbedding(manifold_2D, longs_matrix, lats_matrix, save_nam
             bottom_right = bottom_right_tmp
             
     # Left with 2 dimensions
-    print(manifold_2D.head())
+    print(manifold_2D_LLE.head())
 
     # Show 2D components plot
     plt.figure(figsize = (20, 20))
     plt.subplot(3, 4, 1)
     plt.title(save_name.split("/")[0])
-    plt.scatter(manifold_2D['Component 1'], manifold_2D['Component 2'], marker = '.', color = 'cyan')
-    plt.scatter(manifold_2D['Component 1'][top_left_index], manifold_2D['Component 2'][top_left_index], color = 'blue', marker='.', linewidth = 5) 
-    plt.scatter(manifold_2D['Component 1'][top_center_index], manifold_2D['Component 2'][top_center_index], color = 'orange', marker='.', linewidth = 5) 
-    plt.scatter(manifold_2D['Component 1'][top_right_index], manifold_2D['Component 2'][top_right_index], color = 'green', marker='.', linewidth = 5) 
-    plt.scatter(manifold_2D['Component 1'][mid_left_index], manifold_2D['Component 2'][mid_left_index], color = 'red', marker='.', linewidth = 5) 
-    plt.scatter(manifold_2D['Component 1'][mid_center_index], manifold_2D['Component 2'][mid_center_index], color = 'purple', marker='.', linewidth = 5) 
-    plt.scatter(manifold_2D['Component 1'][mid_right_index], manifold_2D['Component 2'][mid_right_index], color = 'brown', marker='.', linewidth = 5) 
-    plt.scatter(manifold_2D['Component 1'][bottom_left_index], manifold_2D['Component 2'][bottom_left_index], color = 'pink', marker='.', linewidth = 5) 
-    plt.scatter(manifold_2D['Component 1'][bottom_center_index], manifold_2D['Component 2'][bottom_center_index], color = 'gray', marker='.', linewidth = 5)  
-    plt.scatter(manifold_2D['Component 1'][bottom_right_index], manifold_2D['Component 2'][bottom_right_index], color = 'olive', marker='.', linewidth = 5)  
+    plt.scatter(manifold_2D_LLE['Component 1'], manifold_2D_LLE['Component 2'], marker = '.', color = 'cyan')
+    plt.scatter(manifold_2D_LLE['Component 1'][top_left_index], manifold_2D_LLE['Component 2'][top_left_index], color = 'blue', marker='.', linewidth = 5) 
+    plt.scatter(manifold_2D_LLE['Component 1'][top_center_index], manifold_2D_LLE['Component 2'][top_center_index], color = 'orange', marker='.', linewidth = 5) 
+    plt.scatter(manifold_2D_LLE['Component 1'][top_right_index], manifold_2D_LLE['Component 2'][top_right_index], color = 'green', marker='.', linewidth = 5) 
+    plt.scatter(manifold_2D_LLE['Component 1'][mid_left_index], manifold_2D_LLE['Component 2'][mid_left_index], color = 'red', marker='.', linewidth = 5) 
+    plt.scatter(manifold_2D_LLE['Component 1'][mid_center_index], manifold_2D_LLE['Component 2'][mid_center_index], color = 'purple', marker='.', linewidth = 5) 
+    plt.scatter(manifold_2D_LLE['Component 1'][mid_right_index], manifold_2D_LLE['Component 2'][mid_right_index], color = 'brown', marker='.', linewidth = 5) 
+    plt.scatter(manifold_2D_LLE['Component 1'][bottom_left_index], manifold_2D_LLE['Component 2'][bottom_left_index], color = 'pink', marker='.', linewidth = 5) 
+    plt.scatter(manifold_2D_LLE['Component 1'][bottom_center_index], manifold_2D_LLE['Component 2'][bottom_center_index], color = 'gray', marker='.', linewidth = 5)  
+    plt.scatter(manifold_2D_LLE['Component 1'][bottom_right_index], manifold_2D_LLE['Component 2'][bottom_right_index], color = 'olive', marker='.', linewidth = 5)  
       
     plt.subplot(3, 4, 2)
     plt.title("Top left")
@@ -230,24 +232,24 @@ def plot_LocallyLinearEmbedding(manifold_2D, longs_matrix, lats_matrix, save_nam
     plt.savefig(save_name)
     plt.close()
 
-def make_cluster(manifold_2D):
+def make_cluster(manifold_2D_LLE):
     X_clus = []
-    for x in range(len(manifold_2D['Component 1'])):
-        X_clus.append([manifold_2D['Component 1'][x], manifold_2D['Component 2'][x]])
+    for x in range(len(manifold_2D_LLE['Component 1'])):
+        X_clus.append([manifold_2D_LLE['Component 1'][x], manifold_2D_LLE['Component 2'][x]])
     X_clus = np.array(X_clus)	  
     clustering_DBSCAN_LLE = DBSCAN(eps = 1000, min_samples = 2).fit(X_clus)
     return clustering_DBSCAN_LLE
     
-def make_multi_cluster(manifold_2D_multiple):
+def make_multi_cluster(manifold_2D_LLE_multiple):
     X_clus = []
-    for manifold_2D in manifold_2D_multiple:
-        for x in range(len(manifold_2D['Component 1'])):
-            X_clus.append([manifold_2D['Component 1'][x], manifold_2D['Component 2'][x]])
+    for manifold_2D_LLE in manifold_2D_LLE_multiple:
+        for x in range(len(manifold_2D_LLE['Component 1'])):
+            X_clus.append([manifold_2D_LLE['Component 1'][x], manifold_2D_LLE['Component 2'][x]])
     X_clus = np.array(X_clus)	  
     clustering_DBSCAN_LLE = DBSCAN(eps = 1000, min_samples = 2).fit(X_clus)
     return clustering_DBSCAN_LLE
     
-def plot_cluster_LLE(manifold_2D, clustering_DBSCAN_LLE, save_name):
+def plot_cluster_LLE(manifold_2D_LLE, clustering_DBSCAN_LLE, save_name):
     x_labs = clustering_DBSCAN_LLE.labels_
     set_cluster = dict()
     for x in x_labs:
@@ -258,15 +260,15 @@ def plot_cluster_LLE(manifold_2D, clustering_DBSCAN_LLE, save_name):
     	    if x_labs[i] == x:
                 set_cluster[x].add(i) 
     counter = 0
-    plt.scatter(manifold_2D['Component 1'], manifold_2D['Component 2'], color = colors_set[counter], marker='.', label = save_name.split("/")[0], alpha = 0.2) 
+    plt.scatter(manifold_2D_LLE['Component 1'], manifold_2D_LLE['Component 2'], color = colors_set[counter], marker='.', label = save_name.split("/")[0], alpha = 0.2) 
     for x in set_cluster:
         num_in_cluster = 0
         counter += 1 
         for i in set_cluster[x]: 
             if num_in_cluster > 0:
-                plt.scatter(manifold_2D['Component 1'][i], manifold_2D['Component 2'][i], color = colors_set[counter], marker='.')  
+                plt.scatter(manifold_2D_LLE['Component 1'][i], manifold_2D_LLE['Component 2'][i], color = colors_set[counter], marker='.')  
             else:
-                plt.scatter(manifold_2D['Component 1'][i], manifold_2D['Component 2'][i], color = colors_set[counter], marker='.', label = x)  
+                plt.scatter(manifold_2D_LLE['Component 1'][i], manifold_2D_LLE['Component 2'][i], color = colors_set[counter], marker='.', label = x)  
             num_in_cluster += 1
         
     plt.legend(ncol = 5, loc = 'lower center', bbox_to_anchor=(0.5, -0.5)) 
@@ -274,22 +276,22 @@ def plot_cluster_LLE(manifold_2D, clustering_DBSCAN_LLE, save_name):
     plt.savefig(save_name, bbox_inches = 'tight')
     plt.close()
     
-def plot_multi_cluster(manifold_2D_multiple, clustering_DBSCAN_LLE, save_name, cluster_names):
+def plot_multi_cluster(manifold_2D_LLE_multiple, clustering_DBSCAN_LLE, save_name, cluster_names):
     x_labs = clustering_DBSCAN_LLE.labels_
     set_cluster = dict()
     for x in x_labs:
         set_cluster[x] = set()
-    colors_set = random_colors(len(set_cluster) + len(manifold_2D_multiple))
+    colors_set = random_colors(len(set_cluster) + len(manifold_2D_LLE_multiple))
     for x in set_cluster:
     	for i in range(len(x_labs)): 
     	    if x_labs[i] == x:
                 set_cluster[x].add(i) 
     counter = 0
     X_clus = []
-    for manifold_2D in manifold_2D_multiple: 
-        for x in range(len(manifold_2D['Component 1'])):
-            X_clus.append([manifold_2D['Component 1'][x], manifold_2D['Component 2'][x]])
-        plt.scatter(manifold_2D['Component 1'], manifold_2D['Component 2'], color = colors_set[counter], marker='.', label = cluster_names[counter], alpha = 0.2) 
+    for manifold_2D_LLE in manifold_2D_LLE_multiple: 
+        for x in range(len(manifold_2D_LLE['Component 1'])):
+            X_clus.append([manifold_2D_LLE['Component 1'][x], manifold_2D_LLE['Component 2'][x]])
+        plt.scatter(manifold_2D_LLE['Component 1'], manifold_2D_LLE['Component 2'], color = colors_set[counter], marker='.', label = cluster_names[counter], alpha = 0.2) 
         counter += 1 
     for x in set_cluster:
         num_in_cluster = 0
@@ -343,16 +345,16 @@ def preprocess_long_lat(long_list, lat_list):
  
 window_size = 20
 step_size = window_size
-max_trajs = 1000
+max_trajs = 100
 name_extension = "_window_" + str(window_size) + "_step_" + str(step_size) + "_segments_" + str(max_trajs)
 
 all_subdirs = os.listdir() 
 
-use_LocallyLinearEmbedding = True 
+use_LocallyLinearEmbedding = False 
 draw_LocallyLinearEmbedding = True 
 
-use_DBSCAN = True 
-draw_DBSCAN = True 
+use_DBSCAN = False 
+draw_DBSCAN = False 
 
 use_multi_LocallyLinearEmbedding = False
 draw_multi_LocallyLinearEmbedding = False
@@ -368,27 +370,27 @@ for subdir_name in all_subdirs:
     if not os.path.isdir(subdir_name) or "Vehicle" not in subdir_name:
         continue
     if not use_LocallyLinearEmbedding:
-        if os.path.isfile(subdir_name + "/manifold_2D" + name_extension):
+        if os.path.isfile(subdir_name + "/manifold_2D_LLE" + name_extension):
             longs_matrix = load_object(subdir_name + "/longs_matrix" + name_extension)
             lats_matrix = load_object(subdir_name + "/lats_matrix" + name_extension)
             image_matrix = load_object(subdir_name + "/image_matrix" + name_extension)  
             image_matrix_list.append(image_matrix)
             LLE_matrix = load_object(subdir_name + "/LLE_matrix" + name_extension) 
             LocallyLinearEmbedding_list.append(LLE_matrix)
-            manifold_2D = load_object(subdir_name + "/manifold_2D" + name_extension)  
+            manifold_2D_LLE = load_object(subdir_name + "/manifold_2D_LLE" + name_extension)  
             
             if draw_LocallyLinearEmbedding:
-                plot_LocallyLinearEmbedding(manifold_2D, longs_matrix, lats_matrix, subdir_name + "/plot_LocallyLinearEmbedding" + name_extension + ".png")   
+                plot_LocallyLinearEmbedding(manifold_2D_LLE, longs_matrix, lats_matrix, subdir_name + "/plot_LocallyLinearEmbedding" + name_extension + ".png")   
         
             if use_DBSCAN:
-                clustering_DBSCAN_LLE = make_cluster(manifold_2D)
+                clustering_DBSCAN_LLE = make_cluster(manifold_2D_LLE)
                 save_object(subdir_name + "/clustering_DBSCAN_LLE" + name_extension, clustering_DBSCAN_LLE)
                 
             if not use_DBSCAN and os.path.isfile(subdir_name + "/clustering_DBSCAN_LLE" + name_extension):
                 clustering_DBSCAN_LLE = load_object(subdir_name + "/clustering_DBSCAN_LLE" + name_extension)
                 
             if draw_DBSCAN:
-                plot_cluster_LLE(manifold_2D, clustering_DBSCAN_LLE, subdir_name + "/plot_cluster_LLE" + name_extension + ".png")    
+                plot_cluster_LLE(manifold_2D_LLE, clustering_DBSCAN_LLE, subdir_name + "/plot_cluster_LLE" + name_extension + ".png")    
                 
         continue
     
@@ -470,18 +472,18 @@ for subdir_name in all_subdirs:
     save_object(subdir_name + "/LLE_matrix" + name_extension, LLE_matrix)
     LocallyLinearEmbedding_list.append(LLE_matrix)
     
-    manifold_2D = make_manifold(LLE_matrix, image_matrix) 
-    save_object(subdir_name + "/manifold_2D" + name_extension, manifold_2D) 
+    manifold_2D_LLE = make_manifold(LLE_matrix, image_matrix) 
+    save_object(subdir_name + "/manifold_2D_LLE" + name_extension, manifold_2D_LLE) 
   
     if draw_LocallyLinearEmbedding:
-        plot_LocallyLinearEmbedding(manifold_2D, longs_matrix, lats_matrix, subdir_name + "/plot_LocallyLinearEmbedding" + name_extension + ".png")  
+        plot_LocallyLinearEmbedding(manifold_2D_LLE, longs_matrix, lats_matrix, subdir_name + "/plot_LocallyLinearEmbedding" + name_extension + ".png")  
      
     if use_DBSCAN:
-        clustering_DBSCAN_LLE = make_cluster(manifold_2D)
+        clustering_DBSCAN_LLE = make_cluster(manifold_2D_LLE)
         save_object(subdir_name + "/clustering_DBSCAN_LLE" + name_extension, clustering_DBSCAN_LLE) 
         
     if draw_DBSCAN:
-        plot_cluster_LLE(manifold_2D, clustering_DBSCAN_LLE, subdir_name + "/plot_cluster_LLE" + name_extension + ".png") 
+        plot_cluster_LLE(manifold_2D_LLE, clustering_DBSCAN_LLE, subdir_name + "/plot_cluster_LLE" + name_extension + ".png") 
 
 if draw_multi_LocallyLinearEmbedding:
     for index_LocallyLinearEmbedding in range(len(LocallyLinearEmbedding_list)):
