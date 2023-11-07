@@ -4,7 +4,7 @@ import pandas as pd
 from PIL import Image
 import numpy as np
 from sklearn import manifold
-from sklearn.cluster import DBSCAN
+from sklearn.cluster import DBSCAN, KMeans
 import pickle
 
 def save_plot_longitude_latitudes_for_ride(longitudes, latitudes, image_name):  
@@ -239,6 +239,14 @@ def make_cluster(manifold_2D_LLE):
     X_clus = np.array(X_clus)	  
     clustering_DBSCAN_LLE = DBSCAN(eps = 1000, min_samples = 2).fit(X_clus)
     return clustering_DBSCAN_LLE
+
+def make_cluster_KMeans(manifold_2D_LLE):
+    X_clus = []
+    for x in range(len(manifold_2D_LLE['Component 1'])):
+        X_clus.append([manifold_2D_LLE['Component 1'][x], manifold_2D_LLE['Component 2'][x]])
+    X_clus = np.array(X_clus)	  
+    clustering_KMeans_LLE = KMeans(n_clusters=2, random_state=0, n_init="auto").fit(X_clus)
+    return clustering_KMeans_LLE
     
 def make_multi_cluster(manifold_2D_LLE_multiple):
     X_clus = []
@@ -248,6 +256,15 @@ def make_multi_cluster(manifold_2D_LLE_multiple):
     X_clus = np.array(X_clus)	  
     clustering_DBSCAN_LLE = DBSCAN(eps = 1000, min_samples = 2).fit(X_clus)
     return clustering_DBSCAN_LLE
+
+def make_multi_cluster_KMeans(manifold_2D_LLE_multiple):
+    X_clus = []
+    for manifold_2D_LLE in manifold_2D_LLE_multiple:
+        for x in range(len(manifold_2D_LLE['Component 1'])):
+            X_clus.append([manifold_2D_LLE['Component 1'][x], manifold_2D_LLE['Component 2'][x]])
+    X_clus = np.array(X_clus)	  
+    clustering_KMeans_LLE = KMeans(n_clusters=2, random_state=0, n_init="auto").fit(X_clus)
+    return clustering_KMeans_LLE
     
 def plot_cluster_LLE(manifold_2D_LLE, clustering_DBSCAN_LLE, save_name):
     x_labs = clustering_DBSCAN_LLE.labels_
@@ -345,22 +362,28 @@ def preprocess_long_lat(long_list, lat_list):
  
 window_size = 20
 step_size = window_size
-max_trajs = 100
+max_trajs = 1000
 name_extension = "_window_" + str(window_size) + "_step_" + str(step_size) + "_segments_" + str(max_trajs)
 
 all_subdirs = os.listdir() 
 
 use_LocallyLinearEmbedding = False 
-draw_LocallyLinearEmbedding = True 
+draw_LocallyLinearEmbedding = False 
 
 use_DBSCAN = False 
 draw_DBSCAN = False 
+
+use_KMeans = True 
+draw_KMeans = True 
 
 use_multi_LocallyLinearEmbedding = False
 draw_multi_LocallyLinearEmbedding = False
 
 use_multi_DBSCAN = False
 draw_multi_DBSCAN = False
+
+use_multi_KMeans = False
+draw_multi_KMeans = False
  
 image_matrix_list = []  
 LocallyLinearEmbedding_list = [] 
@@ -391,6 +414,16 @@ for subdir_name in all_subdirs:
                 
             if draw_DBSCAN:
                 plot_cluster_LLE(manifold_2D_LLE, clustering_DBSCAN_LLE, subdir_name + "/plot_cluster_LLE" + name_extension + ".png")    
+                 
+            if use_KMeans:
+                clustering_KMeans_LLE = make_cluster(manifold_2D_LLE)
+                save_object(subdir_name + "/clustering_KMeans_LLE" + name_extension, clustering_KMeans_LLE)
+                
+            if not use_KMeans and os.path.isfile(subdir_name + "/clustering_KMeans_LLE" + name_extension):
+                clustering_KMeans_LLE = load_object(subdir_name + "/clustering_KMeans_LLE" + name_extension)
+                
+            if draw_KMeans:
+                plot_cluster_LLE(manifold_2D_LLE, clustering_KMeans_LLE, subdir_name + "/plot_cluster_KMeans_LLE" + name_extension + ".png")  
                 
         continue
     
@@ -485,6 +518,13 @@ for subdir_name in all_subdirs:
     if draw_DBSCAN:
         plot_cluster_LLE(manifold_2D_LLE, clustering_DBSCAN_LLE, subdir_name + "/plot_cluster_LLE" + name_extension + ".png") 
 
+    if use_KMeans:
+        clustering_KMeans_LLE = make_cluster(manifold_2D_LLE)
+        save_object(subdir_name + "/clustering_KMeans_LLE" + name_extension, clustering_KMeans_LLE) 
+        
+    if draw_KMeans:
+        plot_cluster_LLE(manifold_2D_LLE, clustering_KMeans_LLE, subdir_name + "/plot_cluster_KMeans_LLE" + name_extension + ".png") 
+
 if draw_multi_LocallyLinearEmbedding:
     for index_LocallyLinearEmbedding in range(len(LocallyLinearEmbedding_list)):
         plot_multi_LocallyLinearEmbedding(LocallyLinearEmbedding_list[index_LocallyLinearEmbedding], image_matrix_list, subdir_names[index_LocallyLinearEmbedding] + "/multi_LocallyLinearEmbedding" + name_extension + "_" + subdir_names[index_LocallyLinearEmbedding] + ".png", subdir_names[index_LocallyLinearEmbedding], subdir_names)
@@ -506,3 +546,19 @@ if draw_multi_DBSCAN:
     for subdir_name in subdir_names: 
         clustering_DBSCAN_LLE_multi = load_object(subdir_name + "/clustering_DBSCAN_LLE_multi" + name_extension)
         plot_multi_cluster(multi_manifold_list[subdir_name], clustering_DBSCAN_LLE_multi, subdir_name + "/plot_cluster_LLE_multi" + name_extension + ".png", subdir_names) 
+
+if use_multi_KMeans or draw_multi_KMeans:
+    for name1 in subdir_names:
+        multi_manifold_list[name1] = [] 
+        for name2 in subdir_names:
+            multi_manifold_list[name1].append(load_object(name1 + "/multi_LLE" + name_extension + "_" + name1 + "_" + name2)) 
+	
+if use_multi_KMeans:
+    for subdir_name in subdir_names:
+        clustering_KMeans_LLE_multi = make_multi_cluster(multi_manifold_list[subdir_name])
+        save_object(subdir_name + "/clustering_KMeans_LLE_multi" + name_extension, clustering_KMeans_LLE_multi) 
+
+if draw_multi_KMeans:
+    for subdir_name in subdir_names: 
+        clustering_KMeans_LLE_multi = load_object(subdir_name + "/clustering_KMeans_LLE_multi" + name_extension)
+        plot_multi_cluster(multi_manifold_list[subdir_name], clustering_KMeans_LLE_multi, subdir_name + "/plot_cluster_KMeans_LLE_multi" + name_extension + ".png", subdir_names)  

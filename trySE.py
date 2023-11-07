@@ -4,7 +4,7 @@ import pandas as pd
 from PIL import Image
 import numpy as np
 from sklearn import manifold
-from sklearn.cluster import DBSCAN
+from sklearn.cluster import DBSCAN, KMeans
 import pickle
 
 def save_plot_longitude_latitudes_for_ride(longitudes, latitudes, image_name):  
@@ -239,6 +239,14 @@ def make_cluster(manifold_2D_SE):
     X_clus = np.array(X_clus)	  
     clustering_DBSCAN_SE = DBSCAN(eps = 1000, min_samples = 2).fit(X_clus)
     return clustering_DBSCAN_SE
+
+def make_cluster_KMeans(manifold_2D_SE):
+    X_clus = []
+    for x in range(len(manifold_2D_SE['Component 1'])):
+        X_clus.append([manifold_2D_SE['Component 1'][x], manifold_2D_SE['Component 2'][x]])
+    X_clus = np.array(X_clus)	  
+    clustering_KMeans_SE = KMeans(n_clusters=2, random_state=0, n_init="auto").fit(X_clus)
+    return clustering_KMeans_SE
     
 def make_multi_cluster(manifold_2D_SE_multiple):
     X_clus = []
@@ -248,6 +256,15 @@ def make_multi_cluster(manifold_2D_SE_multiple):
     X_clus = np.array(X_clus)	  
     clustering_DBSCAN_SE = DBSCAN(eps = 1000, min_samples = 2).fit(X_clus)
     return clustering_DBSCAN_SE
+
+def make_multi_cluster_KMeans(manifold_2D_SE_multiple):
+    X_clus = []
+    for manifold_2D_SE in manifold_2D_SE_multiple:
+        for x in range(len(manifold_2D_SE['Component 1'])):
+            X_clus.append([manifold_2D_SE['Component 1'][x], manifold_2D_SE['Component 2'][x]])
+    X_clus = np.array(X_clus)	  
+    clustering_KMeans_SE = KMeans(n_clusters=2, random_state=0, n_init="auto").fit(X_clus)
+    return clustering_KMeans_SE
     
 def plot_cluster_SE(manifold_2D_SE, clustering_DBSCAN_SE, save_name):
     x_labs = clustering_DBSCAN_SE.labels_
@@ -345,22 +362,28 @@ def preprocess_long_lat(long_list, lat_list):
  
 window_size = 20
 step_size = window_size
-max_trajs = 100
+max_trajs = 1000
 name_extension = "_window_" + str(window_size) + "_step_" + str(step_size) + "_segments_" + str(max_trajs)
 
 all_subdirs = os.listdir() 
 
 use_SpectralEmbedding = False 
-draw_SpectralEmbedding = True 
+draw_SpectralEmbedding = False 
 
 use_DBSCAN = False 
 draw_DBSCAN = False 
+
+use_KMeans = True 
+draw_KMeans = True 
 
 use_multi_SpectralEmbedding = False
 draw_multi_SpectralEmbedding = False
 
 use_multi_DBSCAN = False
 draw_multi_DBSCAN = False
+
+use_multi_KMeans = False
+draw_multi_KMeans = False
  
 image_matrix_list = []  
 SpectralEmbedding_list = [] 
@@ -390,7 +413,17 @@ for subdir_name in all_subdirs:
                 clustering_DBSCAN_SE = load_object(subdir_name + "/clustering_DBSCAN_SE" + name_extension)
                 
             if draw_DBSCAN:
-                plot_cluster_SE(manifold_2D_SE, clustering_DBSCAN_SE, subdir_name + "/plot_cluster_SE" + name_extension + ".png")    
+                plot_cluster_SE(manifold_2D_SE, clustering_DBSCAN_SE, subdir_name + "/plot_cluster_SE" + name_extension + ".png")  
+
+            if use_KMeans:
+                clustering_KMeans_SE = make_cluster(manifold_2D_SE)
+                save_object(subdir_name + "/clustering_KMeans_SE" + name_extension, clustering_KMeans_SE)
+                
+            if not use_KMeans and os.path.isfile(subdir_name + "/clustering_KMeans_SE" + name_extension):
+                clustering_KMeans_SE = load_object(subdir_name + "/clustering_KMeans_SE" + name_extension)
+                
+            if draw_KMeans:
+                plot_cluster_SE(manifold_2D_SE, clustering_KMeans_SE, subdir_name + "/plot_cluster_KMeans_SE" + name_extension + ".png")    
                 
         continue
     
@@ -485,6 +518,13 @@ for subdir_name in all_subdirs:
     if draw_DBSCAN:
         plot_cluster_SE(manifold_2D_SE, clustering_DBSCAN_SE, subdir_name + "/plot_cluster_SE" + name_extension + ".png") 
 
+    if use_KMeans:
+        clustering_KMeans_SE = make_cluster(manifold_2D_SE)
+        save_object(subdir_name + "/clustering_KMeans_SE" + name_extension, clustering_KMeans_SE) 
+        
+    if draw_KMeans:
+        plot_cluster_SE(manifold_2D_SE, clustering_KMeans_SE, subdir_name + "/plot_cluster_KMeans_SE" + name_extension + ".png") 
+
 if draw_multi_SpectralEmbedding:
     for index_SpectralEmbedding in range(len(SpectralEmbedding_list)):
         plot_multi_SpectralEmbedding(SpectralEmbedding_list[index_SpectralEmbedding], image_matrix_list, subdir_names[index_SpectralEmbedding] + "/multi_SpectralEmbedding" + name_extension + "_" + subdir_names[index_SpectralEmbedding] + ".png", subdir_names[index_SpectralEmbedding], subdir_names)
@@ -506,3 +546,19 @@ if draw_multi_DBSCAN:
     for subdir_name in subdir_names: 
         clustering_DBSCAN_SE_multi = load_object(subdir_name + "/clustering_DBSCAN_SE_multi" + name_extension)
         plot_multi_cluster(multi_manifold_list[subdir_name], clustering_DBSCAN_SE_multi, subdir_name + "/plot_cluster_SE_multi" + name_extension + ".png", subdir_names) 
+
+if use_multi_KMeans or draw_multi_KMeans:
+    for name1 in subdir_names:
+        multi_manifold_list[name1] = [] 
+        for name2 in subdir_names:
+            multi_manifold_list[name1].append(load_object(name1 + "/multi_SE" + name_extension + "_" + name1 + "_" + name2)) 
+	
+if use_multi_KMeans:
+    for subdir_name in subdir_names:
+        clustering_KMeans_SE_multi = make_multi_cluster(multi_manifold_list[subdir_name])
+        save_object(subdir_name + "/clustering_KMeans_SE_multi" + name_extension, clustering_KMeans_SE_multi) 
+
+if draw_multi_KMeans:
+    for subdir_name in subdir_names: 
+        clustering_KMeans_SE_multi = load_object(subdir_name + "/clustering_KMeans_SE_multi" + name_extension)
+        plot_multi_cluster(multi_manifold_list[subdir_name], clustering_KMeans_SE_multi, subdir_name + "/plot_cluster_KMeans_SE_multi" + name_extension + ".png", subdir_names)  

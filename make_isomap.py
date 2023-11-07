@@ -4,7 +4,7 @@ import pandas as pd
 from PIL import Image
 import numpy as np
 from sklearn import manifold
-from sklearn.cluster import DBSCAN
+from sklearn.cluster import DBSCAN, KMeans
 import pickle
 
 def save_plot_longitude_latitudes_for_ride(longitudes, latitudes, image_name):  
@@ -231,7 +231,7 @@ def plot_isomap(manifold_2D, longs_matrix, lats_matrix, save_name):
 
     plt.savefig(save_name)
     plt.close()
-
+    
 def make_cluster(manifold_2D):
     X_clus = []
     for x in range(len(manifold_2D['Component 1'])):
@@ -239,6 +239,14 @@ def make_cluster(manifold_2D):
     X_clus = np.array(X_clus)	  
     clustering_DBSCAN = DBSCAN(eps = 1000, min_samples = 2).fit(X_clus)
     return clustering_DBSCAN
+
+def make_cluster_KMeans(manifold_2D):
+    X_clus = []
+    for x in range(len(manifold_2D['Component 1'])):
+        X_clus.append([manifold_2D['Component 1'][x], manifold_2D['Component 2'][x]])
+    X_clus = np.array(X_clus)	  
+    clustering_KMeans = KMeans(n_clusters=2, random_state=0, n_init="auto").fit(X_clus)
+    return clustering_KMeans
     
 def make_multi_cluster(manifold_2D_multiple):
     X_clus = []
@@ -248,7 +256,16 @@ def make_multi_cluster(manifold_2D_multiple):
     X_clus = np.array(X_clus)	  
     clustering_DBSCAN = DBSCAN(eps = 1000, min_samples = 2).fit(X_clus)
     return clustering_DBSCAN
-    
+
+def make_multi_cluster_KMeans(manifold_2D_multiple):
+    X_clus = []
+    for manifold_2D in manifold_2D_multiple:
+        for x in range(len(manifold_2D['Component 1'])):
+            X_clus.append([manifold_2D['Component 1'][x], manifold_2D['Component 2'][x]])
+    X_clus = np.array(X_clus)	  
+    clustering_KMeans = KMeans(n_clusters=2, random_state=0, n_init="auto").fit(X_clus)
+    return clustering_KMeans
+
 def plot_cluster(manifold_2D, clustering_DBSCAN, save_name):
     x_labs = clustering_DBSCAN.labels_
     set_cluster = dict()
@@ -345,23 +362,29 @@ def preprocess_long_lat(long_list, lat_list):
  
 window_size = 20
 step_size = window_size
-max_trajs = 100
+max_trajs = 1000
 name_extension = "_window_" + str(window_size) + "_step_" + str(step_size) + "_segments_" + str(max_trajs)
 
 all_subdirs = os.listdir() 
 
 use_isomap = False 
-draw_isomap = True 
+draw_isomap = False 
 
 use_DBSCAN = False 
 draw_DBSCAN = False 
+
+use_KMeans = True 
+draw_KMeans = True 
 
 use_multi_isomap = False
 draw_multi_isomap = False
 
 use_multi_DBSCAN = False
 draw_multi_DBSCAN = False
- 
+
+use_multi_KMeans = False
+draw_multi_KMeans = False
+
 image_matrix_list = []  
 isomap_list = [] 
 subdir_names = []
@@ -390,7 +413,17 @@ for subdir_name in all_subdirs:
                 clustering_DBSCAN = load_object(subdir_name + "/clustering_DBSCAN" + name_extension)
                 
             if draw_DBSCAN:
-                plot_cluster(manifold_2D, clustering_DBSCAN, subdir_name + "/plot_cluster" + name_extension + ".png")    
+                plot_cluster(manifold_2D, clustering_DBSCAN, subdir_name + "/plot_cluster" + name_extension + ".png")   
+
+            if use_KMeans:
+                clustering_KMeans = make_cluster(manifold_2D)
+                save_object(subdir_name + "/clustering_KMeans" + name_extension, clustering_KMeans)
+                
+            if not use_KMeans and os.path.isfile(subdir_name + "/clustering_KMeans" + name_extension):
+                clustering_KMeans = load_object(subdir_name + "/clustering_KMeans" + name_extension)
+                
+            if draw_KMeans:
+                plot_cluster(manifold_2D, clustering_KMeans, subdir_name + "/plot_cluster_KMeans" + name_extension + ".png")  
                 
         continue
     
@@ -485,6 +518,13 @@ for subdir_name in all_subdirs:
     if draw_DBSCAN:
         plot_cluster(manifold_2D, clustering_DBSCAN, subdir_name + "/plot_cluster" + name_extension + ".png") 
 
+    if use_KMeans:
+        clustering_KMeans = make_cluster(manifold_2D)
+        save_object(subdir_name + "/clustering_KMeans" + name_extension, clustering_KMeans) 
+        
+    if draw_KMeans:
+        plot_cluster(manifold_2D, clustering_KMeans, subdir_name + "/plot_cluster_KMeans" + name_extension + ".png") 
+
 if draw_multi_isomap:
     for index_isomap in range(len(isomap_list)):
         plot_multi_isomap(isomap_list[index_isomap], image_matrix_list, subdir_names[index_isomap] + "/multi_isomap" + name_extension + "_" + subdir_names[index_isomap] + ".png", subdir_names[index_isomap], subdir_names)
@@ -506,3 +546,19 @@ if draw_multi_DBSCAN:
     for subdir_name in subdir_names: 
         clustering_DBSCAN_multi = load_object(subdir_name + "/clustering_DBSCAN_multi" + name_extension)
         plot_multi_cluster(multi_manifold_list[subdir_name], clustering_DBSCAN_multi, subdir_name + "/plot_cluster_multi" + name_extension + ".png", subdir_names) 
+
+if use_multi_KMeans or draw_multi_KMeans:
+    for name1 in subdir_names:
+        multi_manifold_list[name1] = [] 
+        for name2 in subdir_names:
+            multi_manifold_list[name1].append(load_object(name1 + "/multi" + name_extension + "_" + name1 + "_" + name2)) 
+	
+if use_multi_KMeans:
+    for subdir_name in subdir_names:
+        clustering_KMeans_multi = make_multi_cluster(multi_manifold_list[subdir_name])
+        save_object(subdir_name + "/clustering_KMeans_multi" + name_extension, clustering_KMeans_multi) 
+
+if draw_multi_KMeans:
+    for subdir_name in subdir_names: 
+        clustering_KMeans_multi = load_object(subdir_name + "/clustering_KMeans_multi" + name_extension)
+        plot_multi_cluster(multi_manifold_list[subdir_name], clustering_KMeans_multi, subdir_name + "/plot_cluster_KMeans_multi" + name_extension + ".png", subdir_names)  

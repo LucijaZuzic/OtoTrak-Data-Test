@@ -4,7 +4,7 @@ import pandas as pd
 from PIL import Image
 import numpy as np
 from sklearn import manifold
-from sklearn.cluster import DBSCAN
+from sklearn.cluster import DBSCAN, KMeans
 import pickle
 
 def save_plot_longitude_latitudes_for_ride(longitudes, latitudes, image_name):  
@@ -34,7 +34,7 @@ def read_an_image(image_name):
     new_img = new_img.save(image_name, bbox_inches = 'tight') 
     return lst
 
-def make_isomap(data_matrix):
+def make_poly(data_matrix):
     df_data_matrix = pd.DataFrame(data = data_matrix)
     iso_data_matrix = manifold.Isomap(n_neighbors = 6, n_components = 2)
     iso_data_matrix.fit(df_data_matrix)
@@ -57,12 +57,12 @@ def random_colors(num_colors):
         colors_set.append(string_color)
     return colors_set
     
-def plot_multi_isomap(iso_data_matrix, multi_data_matrix, save_name, title_isomap, label_names):  
+def plot_multi_poly(iso_data_matrix, multi_data_matrix, save_name, title_poly, label_names):  
     random_color_list = random_colors(len(multi_data_matrix))
-    plt.title(title_isomap)
+    plt.title(title_poly)
     for data_matrix_index in range(len(multi_data_matrix)):
         name_multi_manifold = save_name.replace(".png", "_" + label_names[data_matrix_index])  
-        if not os.path.isfile(name_multi_manifold) or use_multi_isomap:
+        if not os.path.isfile(name_multi_manifold) or use_multi_poly:
             manifold_2D_polya = iso_data_matrix.transform(multi_data_matrix[data_matrix_index]) 
             manifold_2D_poly = pd.DataFrame(manifold_2D_polya, columns = ['Component 1', 'Component 2'])
             save_object(name_multi_manifold, manifold_2D_poly)
@@ -74,7 +74,7 @@ def plot_multi_isomap(iso_data_matrix, multi_data_matrix, save_name, title_isoma
     plt.savefig(save_name)
     plt.close()
     
-def plot_poly_isomap(manifold_2D_poly, longs_matrix, lats_matrix, save_name):  
+def plot_poly_poly(manifold_2D_poly, longs_matrix, lats_matrix, save_name):  
     maxx = max(manifold_2D_poly['Component 1'])
     maxy = max(manifold_2D_poly['Component 2'])
     minx = min(manifold_2D_poly['Component 1'])
@@ -239,6 +239,14 @@ def make_cluster(manifold_2D_poly):
     X_clus = np.array(X_clus)	  
     clustering_DBSCAN_poly = DBSCAN(eps = 1000, min_samples = 2).fit(X_clus)
     return clustering_DBSCAN_poly
+
+def make_cluster_KMeans(manifold_2D_poly):
+    X_clus = []
+    for x in range(len(manifold_2D_poly['Component 1'])):
+        X_clus.append([manifold_2D_poly['Component 1'][x], manifold_2D_poly['Component 2'][x]])
+    X_clus = np.array(X_clus)	  
+    clustering_KMeans_poly = KMeans(n_clusters=2, random_state=0, n_init="auto").fit(X_clus)
+    return clustering_KMeans_poly
     
 def make_multi_cluster(manifold_2D_poly_multiple):
     X_clus = []
@@ -248,6 +256,15 @@ def make_multi_cluster(manifold_2D_poly_multiple):
     X_clus = np.array(X_clus)	  
     clustering_DBSCAN_poly = DBSCAN(eps = 1000, min_samples = 2).fit(X_clus)
     return clustering_DBSCAN_poly
+
+def make_multi_cluster_KMeans(manifold_2D_poly_multiple):
+    X_clus = []
+    for manifold_2D_poly in manifold_2D_poly_multiple:
+        for x in range(len(manifold_2D_poly['Component 1'])):
+            X_clus.append([manifold_2D_poly['Component 1'][x], manifold_2D_poly['Component 2'][x]])
+    X_clus = np.array(X_clus)	  
+    clustering_KMeans_poly = KMeans(n_clusters=2, random_state=0, n_init="auto").fit(X_clus)
+    return clustering_KMeans_poly
     
 def plot_cluster_poly(manifold_2D_poly, clustering_DBSCAN_poly, save_name):
     x_labs = clustering_DBSCAN_poly.labels_
@@ -354,42 +371,48 @@ def polyresult(xcoord, polycoef):
     
 window_size = 20
 step_size = window_size
-max_trajs = 1000
+max_trajs = 100
 name_extension = "_window_" + str(window_size) + "_step_" + str(step_size) + "_segments_" + str(max_trajs)
 
 all_subdirs = os.listdir() 
 
-use_isomap = True 
-draw_isomap = True 
+use_poly = True 
+draw_poly = True 
 
 use_DBSCAN = True 
 draw_DBSCAN = True 
 
-use_multi_isomap = False
-draw_multi_isomap = False
+use_KMeans = True 
+draw_KMeans = True 
+
+use_multi_poly = False
+draw_multi_poly = False
 
 use_multi_DBSCAN = False
 draw_multi_DBSCAN = False
+
+use_multi_KMeans = False
+draw_multi_KMeans = False
  
 poly_matrix_list = []  
-isomap_list = [] 
+poly_list = [] 
 subdir_names = []
 
 for subdir_name in all_subdirs: 
     if not os.path.isdir(subdir_name) or "Vehicle" not in subdir_name:
         continue
-    if not use_isomap:
+    if not use_poly:
         if os.path.isfile(subdir_name + "/manifold_2D_poly" + name_extension):
             longs_matrix = load_object(subdir_name + "/longs_matrix" + name_extension)
             lats_matrix = load_object(subdir_name + "/lats_matrix" + name_extension)
             poly_matrix = load_object(subdir_name + "/poly_matrix" + name_extension)  
             poly_matrix_list.append(poly_matrix)
             iso_poly_matrix = load_object(subdir_name + "/iso_poly_matrix" + name_extension) 
-            isomap_list.append(iso_poly_matrix)
+            poly_list.append(iso_poly_matrix)
             manifold_2D_poly = load_object(subdir_name + "/manifold_2D_poly" + name_extension)  
             
-            if draw_isomap:
-                plot_poly_isomap(manifold_2D_poly, longs_matrix, lats_matrix, subdir_name + "/plot_poly_isomap" + name_extension + ".png")   
+            if draw_poly:
+                plot_poly_poly(manifold_2D_poly, longs_matrix, lats_matrix, subdir_name + "/plot_poly_poly" + name_extension + ".png")   
         
             if use_DBSCAN:
                 clustering_DBSCAN_poly = make_cluster(manifold_2D_poly)
@@ -400,6 +423,16 @@ for subdir_name in all_subdirs:
                 
             if draw_DBSCAN:
                 plot_cluster_poly(manifold_2D_poly, clustering_DBSCAN_poly, subdir_name + "/plot_cluster_poly" + name_extension + ".png")    
+
+            if use_KMeans:
+                clustering_KMeans_poly = make_cluster(manifold_2D_poly)
+                save_object(subdir_name + "/clustering_KMeans_poly" + name_extension, clustering_KMeans_poly)
+                
+            if not use_KMeans and os.path.isfile(subdir_name + "/clustering_KMeans_poly" + name_extension):
+                clustering_KMeans_poly = load_object(subdir_name + "/clustering_KMeans_poly" + name_extension)
+                
+            if draw_KMeans:
+                plot_cluster_poly(manifold_2D_poly, clustering_KMeans_poly, subdir_name + "/plot_cluster_KMeans_poly" + name_extension + ".png") 
                 
         continue
     
@@ -440,7 +473,7 @@ for subdir_name in all_subdirs:
                 set_lats.add(tmp_lat)
             total_frames_all += 1
             total_frames += 1
-            if len(set_lats) == 1 and len(set_longs) == 1: 
+            if len(set_lats) == 1 or len(set_longs) == 1: 
                 skipped_frames_all += 1
                 skipped_frames += 1
                 continue 
@@ -472,15 +505,15 @@ for subdir_name in all_subdirs:
     save_object(subdir_name + "/poly_matrix" + name_extension, poly_matrix) 
     poly_matrix_list.append(poly_matrix)
      
-    iso_poly_matrix = make_isomap(poly_matrix)
+    iso_poly_matrix = make_poly(poly_matrix)
     save_object(subdir_name + "/iso_poly_matrix" + name_extension, iso_poly_matrix)
-    isomap_list.append(iso_poly_matrix)
+    poly_list.append(iso_poly_matrix)
     
     manifold_2D_poly = make_manifold(iso_poly_matrix, poly_matrix) 
     save_object(subdir_name + "/manifold_2D_poly" + name_extension, manifold_2D_poly) 
   
-    if draw_isomap:
-        plot_poly_isomap(manifold_2D_poly, longs_matrix, lats_matrix, subdir_name + "/plot_poly_isomap" + name_extension + ".png")  
+    if draw_poly:
+        plot_poly_poly(manifold_2D_poly, longs_matrix, lats_matrix, subdir_name + "/plot_poly_poly" + name_extension + ".png")  
      
     if use_DBSCAN:
         clustering_DBSCAN_poly = make_cluster(manifold_2D_poly)
@@ -489,9 +522,16 @@ for subdir_name in all_subdirs:
     if draw_DBSCAN:
         plot_cluster_poly(manifold_2D_poly, clustering_DBSCAN_poly, subdir_name + "/plot_cluster_poly" + name_extension + ".png") 
 
-if draw_multi_isomap:
-    for index_isomap in range(len(isomap_list)):
-        plot_multi_isomap(isomap_list[index_isomap], poly_matrix_list, subdir_names[index_isomap] + "/multi_isomap" + name_extension + "_" + subdir_names[index_isomap] + ".png", subdir_names[index_isomap], subdir_names)
+    if use_KMeans:
+        clustering_KMeans_poly = make_cluster(manifold_2D_poly)
+        save_object(subdir_name + "/clustering_KMeans_poly" + name_extension, clustering_KMeans_poly) 
+        
+    if draw_KMeans:
+        plot_cluster_poly(manifold_2D_poly, clustering_KMeans_poly, subdir_name + "/plot_cluster_KMeans_poly" + name_extension + ".png") 
+
+if draw_multi_poly:
+    for index_poly in range(len(poly_list)):
+        plot_multi_poly(poly_list[index_poly], poly_matrix_list, subdir_names[index_poly] + "/multi_poly" + name_extension + "_" + subdir_names[index_poly] + ".png", subdir_names[index_poly], subdir_names)
 
 multi_manifold_list = dict()
 
@@ -499,7 +539,7 @@ if use_multi_DBSCAN or draw_multi_DBSCAN:
     for name1 in subdir_names:
         multi_manifold_list[name1] = [] 
         for name2 in subdir_names:
-            multi_manifold_list[name1].append(load_object(name1 + "/multi_isomap" + name_extension + "_" + name1 + "_" + name2)) 
+            multi_manifold_list[name1].append(load_object(name1 + "/multi_poly" + name_extension + "_" + name1 + "_" + name2)) 
 	
 if use_multi_DBSCAN:
     for subdir_name in subdir_names:
@@ -510,3 +550,19 @@ if draw_multi_DBSCAN:
     for subdir_name in subdir_names: 
         clustering_DBSCAN_poly_multi = load_object(subdir_name + "/clustering_DBSCAN_poly_multi" + name_extension)
         plot_multi_cluster(multi_manifold_list[subdir_name], clustering_DBSCAN_poly_multi, subdir_name + "/plot_cluster_poly_multi" + name_extension + ".png", subdir_names) 
+
+if use_multi_KMeans or draw_multi_KMeans:
+    for name1 in subdir_names:
+        multi_manifold_list[name1] = [] 
+        for name2 in subdir_names:
+            multi_manifold_list[name1].append(load_object(name1 + "/multi_poly" + name_extension + "_" + name1 + "_" + name2)) 
+	
+if use_multi_KMeans:
+    for subdir_name in subdir_names:
+        clustering_KMeans_poly_multi = make_multi_cluster(multi_manifold_list[subdir_name])
+        save_object(subdir_name + "/clustering_KMeans_poly_multi" + name_extension, clustering_KMeans_poly_multi) 
+
+if draw_multi_KMeans:
+    for subdir_name in subdir_names: 
+        clustering_KMeans_poly_multi = load_object(subdir_name + "/clustering_KMeans_poly_multi" + name_extension)
+        plot_multi_cluster(multi_manifold_list[subdir_name], clustering_KMeans_poly_multi, subdir_name + "/plot_cluster_KMeans_poly_multi" + name_extension + ".png", subdir_names)  
