@@ -38,7 +38,7 @@ if not os.path.isfile("num_occurences_of_direction"):
             test_rides = load_object(subdir_name + "/test_rides")
             
         for some_file in all_files:  
-            if some_file in bad_rides_filenames or some_file in test_rides: 
+            if subdir_name + "/cleaned_csv/" + some_file in bad_rides_filenames or some_file in test_rides: 
                 continue 
         
             file_with_ride = pd.read_csv(subdir_name + "/cleaned_csv/" + some_file)
@@ -159,10 +159,10 @@ for subdir_name in all_subdirs:
         bad_rides_filenames = load_object(subdir_name + "/bad_rides_filenames")
     train_rides = set()
     if os.path.isfile(subdir_name + "/train_rides"):
-        test_rides = load_object(subdir_name + "/train_rides")
+        train_rides= load_object(subdir_name + "/train_rides")
         
     for some_file in all_files:  
-        if some_file in bad_rides_filenames or some_file in train_rides: 
+        if subdir_name + "/cleaned_csv/" + some_file in bad_rides_filenames or some_file in train_rides: 
             continue 
     
         file_with_ride = pd.read_csv(subdir_name + "/cleaned_csv/" + some_file)
