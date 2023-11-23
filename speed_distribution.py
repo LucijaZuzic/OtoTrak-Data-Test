@@ -17,7 +17,14 @@ def load_object(file_name):
     
 all_subdirs = os.listdir() 
 
-if not os.path.isfile("num_occurences_of_speed"):
+if not os.path.isdir("num_occurences"):
+    os.makedirs("num_occurences")
+if not os.path.isdir("probability"):
+    os.makedirs("probability")
+if not os.path.isdir("predicted"):
+    os.makedirs("predicted")
+
+if not os.path.isfile("num_occurences/num_occurences_of_speed"):
     num_occurences_of_speed = dict()
     num_occurences_of_speed_in_next_step = dict()
     num_occurences_of_speed_in_next_next_step = dict()
@@ -68,16 +75,16 @@ if not os.path.isfile("num_occurences_of_speed"):
                     num_occurences_of_speed_in_next_next_step[speed][next_speed][next_next_speed] += 1
 
     #print(num_occurences_of_speed)
-    save_object("num_occurences_of_speed", num_occurences_of_speed)
+    save_object("num_occurences/num_occurences_of_speed", num_occurences_of_speed)
     #print(num_occurences_of_speed.keys())
 
     plt.bar(num_occurences_of_speed.keys(), num_occurences_of_speed.values())
     plt.show()
 
     #print(num_occurences_of_speed_in_next_step)
-    save_object("num_occurences_of_speed_in_next_step", num_occurences_of_speed_in_next_step)
+    save_object("num_occurences/num_occurences_of_speed_in_next_step", num_occurences_of_speed_in_next_step)
     #print(num_occurences_of_speed_in_next_next_step)
-    save_object("num_occurences_of_speed_in_next_next_step", num_occurences_of_speed_in_next_next_step)
+    save_object("num_occurences/num_occurences_of_speed_in_next_next_step", num_occurences_of_speed_in_next_next_step)
 
     probability_of_speed = dict()
     for speed in num_occurences_of_speed:
@@ -98,15 +105,15 @@ if not os.path.isfile("num_occurences_of_speed"):
                 probability_of_speed_in_next_next_step[prev_prev_speed][prev_speed][speed] = num_occurences_of_speed_in_next_next_step[prev_prev_speed][prev_speed][speed] / sum(list(num_occurences_of_speed_in_next_next_step[prev_prev_speed][prev_speed].values()))
 
     #print(probability_of_speed)
-    save_object("probability_of_speed", probability_of_speed)
+    save_object("probability/probability_of_speed", probability_of_speed)
     #print(probability_of_speed_in_next_step)
-    save_object("probability_of_speed_in_next_step", probability_of_speed_in_next_step)
+    save_object("probability/probability_of_speed_in_next_step", probability_of_speed_in_next_step)
     #print(probability_of_speed_in_next_next_step)
-    save_object("probability_of_speed_in_next_next_step", probability_of_speed_in_next_next_step)
+    save_object("probability/probability_of_speed_in_next_next_step", probability_of_speed_in_next_next_step)
 
-probability_of_speed = load_object("probability_of_speed") 
-probability_of_speed_in_next_step = load_object("probability_of_speed_in_next_step") 
-probability_of_speed_in_next_next_step = load_object("probability_of_speed_in_next_next_step")  
+probability_of_speed = load_object("probability/probability_of_speed") 
+probability_of_speed_in_next_step = load_object("probability/probability_of_speed_in_next_step") 
+probability_of_speed_in_next_next_step = load_object("probability/probability_of_speed_in_next_next_step")  
 
 x = []
 n = 10000
@@ -195,7 +202,7 @@ for subdir_name in all_subdirs:
         #plt.hist(delta_series)
         #plt.show()
         all_x.append(x)
-save_object("predicted_speed", all_x)
+save_object("predicted/predicted_speed", all_x)
 print(total_match_score / total_guesses, total_match_score / total_guesses_no_empty, min(delta_series_total), np.quantile(delta_series_total, 0.25), np.quantile(delta_series_total, 0.5), np.quantile(delta_series_total, 0.75), max(delta_series_total), np.average(delta_series_total), np.std(delta_series_total), np.var(delta_series_total))
 
 plt.hist(delta_series_total)

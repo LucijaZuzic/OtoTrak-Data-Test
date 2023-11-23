@@ -59,9 +59,16 @@ def scale_long_lat(long_list, lat_list, xmax = 0, ymax = 0, keep_aspect_ratio = 
     lat_list2 = [(y - min(lat_list)) / ymax for y in lat_list]
     return long_list2, lat_list2  
     
-all_subdirs = os.listdir() 
+all_subdirs = os.listdir()  
 
-if not os.path.isfile("num_occurences_of_distance"):
+if not os.path.isdir("num_occurences"):
+    os.makedirs("num_occurences")
+if not os.path.isdir("probability"):
+    os.makedirs("probability")
+if not os.path.isdir("predicted"):
+    os.makedirs("predicted")
+
+if not os.path.isfile("num_occurences/num_occurences_of_distance"):
     num_occurences_of_distance = dict()
     num_occurences_of_distance_in_next_step = dict()
     num_occurences_of_distance_in_next_next_step = dict()
@@ -115,16 +122,16 @@ if not os.path.isfile("num_occurences_of_distance"):
                     num_occurences_of_distance_in_next_next_step[distance][next_distance][next_next_distance] += 1
 
     #print(num_occurences_of_distance)
-    save_object("num_occurences_of_distance", num_occurences_of_distance)
+    save_object("num_occurences/num_occurences_of_distance", num_occurences_of_distance)
     #print(num_occurences_of_distance.keys())
 
     plt.bar(num_occurences_of_distance.keys(), num_occurences_of_distance.values())
     plt.show()
 
     #print(num_occurences_of_distance_in_next_step)
-    save_object("num_occurences_of_distance_in_next_step", num_occurences_of_distance_in_next_step)
+    save_object("num_occurences/num_occurences_of_distance_in_next_step", num_occurences_of_distance_in_next_step)
     #print(num_occurences_of_distance_in_next_next_step)
-    save_object("num_occurences_of_distance_in_next_next_step", num_occurences_of_distance_in_next_next_step)
+    save_object("num_occurences/num_occurences_of_distance_in_next_next_step", num_occurences_of_distance_in_next_next_step)
 
     probability_of_distance = dict()
     for distance in num_occurences_of_distance:
@@ -145,15 +152,15 @@ if not os.path.isfile("num_occurences_of_distance"):
                 probability_of_distance_in_next_next_step[prev_prev_distance][prev_distance][distance] = num_occurences_of_distance_in_next_next_step[prev_prev_distance][prev_distance][distance] / sum(list(num_occurences_of_distance_in_next_next_step[prev_prev_distance][prev_distance].values()))
 
     #print(probability_of_distance)
-    save_object("probability_of_distance", probability_of_distance)
+    save_object("probability/probability_of_distance", probability_of_distance)
     #print(probability_of_distance_in_next_step)
-    save_object("probability_of_distance_in_next_step", probability_of_distance_in_next_step)
+    save_object("probability/probability_of_distance_in_next_step", probability_of_distance_in_next_step)
     #print(probability_of_distance_in_next_next_step)
-    save_object("probability_of_distance_in_next_next_step", probability_of_distance_in_next_next_step)
+    save_object("probability/probability_of_distance_in_next_next_step", probability_of_distance_in_next_next_step)
 
-probability_of_distance = load_object("probability_of_distance") 
-probability_of_distance_in_next_step = load_object("probability_of_distance_in_next_step") 
-probability_of_distance_in_next_next_step = load_object("probability_of_distance_in_next_next_step")  
+probability_of_distance = load_object("probability/probability_of_distance") 
+probability_of_distance_in_next_step = load_object("probability/probability_of_distance_in_next_step") 
+probability_of_distance_in_next_next_step = load_object("probability/probability_of_distance_in_next_next_step")  
 
 x = []
 n = 10000
@@ -245,7 +252,7 @@ for subdir_name in all_subdirs:
         #plt.hist(delta_series)
         #plt.show()
         all_x.append(x)
-save_object("predicted_distance", all_x)
+save_object("predicted/predicted_distance", all_x)
 print(total_match_score / total_guesses, total_match_score / total_guesses_no_empty, min(delta_series_total), np.quantile(delta_series_total, 0.25), np.quantile(delta_series_total, 0.5), np.quantile(delta_series_total, 0.75), max(delta_series_total), np.average(delta_series_total), np.std(delta_series_total), np.var(delta_series_total))
 
 plt.hist(delta_series_total)

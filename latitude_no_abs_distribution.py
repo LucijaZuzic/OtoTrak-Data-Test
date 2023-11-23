@@ -61,7 +61,14 @@ def scale_long_lat(long_list, lat_list, xmax = 0, ymax = 0, keep_aspect_ratio = 
     
 all_subdirs = os.listdir() 
 
-if not os.path.isfile("num_occurences_of_latitude_no_abs"):
+if not os.path.isdir("num_occurences"):
+    os.makedirs("num_occurences")
+if not os.path.isdir("probability"):
+    os.makedirs("probability")
+if not os.path.isdir("predicted"):
+    os.makedirs("predicted")
+
+if not os.path.isfile("num_occurences/num_occurences_of_latitude_no_abs"):
     num_occurences_of_latitude_no_abs = dict()
     num_occurences_of_latitude_no_abs_in_next_step = dict()
     num_occurences_of_latitude_no_abs_in_next_next_step = dict()
@@ -115,16 +122,16 @@ if not os.path.isfile("num_occurences_of_latitude_no_abs"):
                     num_occurences_of_latitude_no_abs_in_next_next_step[latitude][next_latitude_no_abs][next_next_latitude_no_abs] += 1
 
     #print(num_occurences_of_latitude_no_abs)
-    save_object("num_occurences_of_latitude_no_abs", num_occurences_of_latitude_no_abs)
+    save_object("num_occurences/num_occurences_of_latitude_no_abs", num_occurences_of_latitude_no_abs)
     #print(num_occurences_of_latitude_no_abs.keys())
 
     plt.bar(num_occurences_of_latitude_no_abs.keys(), num_occurences_of_latitude_no_abs.values())
     plt.show()
 
     #print(num_occurences_of_latitude_no_abs_in_next_step)
-    save_object("num_occurences_of_latitude_no_abs_in_next_step", num_occurences_of_latitude_no_abs_in_next_step)
+    save_object("num_occurences/num_occurences_of_latitude_no_abs_in_next_step", num_occurences_of_latitude_no_abs_in_next_step)
     #print(num_occurences_of_latitude_no_abs_in_next_next_step)
-    save_object("num_occurences_of_latitude_no_abs_in_next_next_step", num_occurences_of_latitude_no_abs_in_next_next_step)
+    save_object("num_occurences/num_occurences_of_latitude_no_abs_in_next_next_step", num_occurences_of_latitude_no_abs_in_next_next_step)
 
     probability_of_latitude_no_abs = dict()
     for latitude in num_occurences_of_latitude_no_abs:
@@ -145,15 +152,15 @@ if not os.path.isfile("num_occurences_of_latitude_no_abs"):
                 probability_of_latitude_no_abs_in_next_next_step[prev_prev_latitude_no_abs][prev_latitude_no_abs][latitude] = num_occurences_of_latitude_no_abs_in_next_next_step[prev_prev_latitude_no_abs][prev_latitude_no_abs][latitude] / sum(list(num_occurences_of_latitude_no_abs_in_next_next_step[prev_prev_latitude_no_abs][prev_latitude_no_abs].values()))
 
     #print(probability_of_latitude_no_abs)
-    save_object("probability_of_latitude_no_abs", probability_of_latitude_no_abs)
+    save_object("probability/probability_of_latitude_no_abs", probability_of_latitude_no_abs)
     #print(probability_of_latitude_no_abs_in_next_step)
-    save_object("probability_of_latitude_no_abs_in_next_step", probability_of_latitude_no_abs_in_next_step)
+    save_object("probability/probability_of_latitude_no_abs_in_next_step", probability_of_latitude_no_abs_in_next_step)
     #print(probability_of_latitude_no_abs_in_next_next_step)
-    save_object("probability_of_latitude_no_abs_in_next_next_step", probability_of_latitude_no_abs_in_next_next_step)
+    save_object("probability/probability_of_latitude_no_abs_in_next_next_step", probability_of_latitude_no_abs_in_next_next_step)
 
-probability_of_latitude_no_abs = load_object("probability_of_latitude_no_abs") 
-probability_of_latitude_no_abs_in_next_step = load_object("probability_of_latitude_no_abs_in_next_step") 
-probability_of_latitude_no_abs_in_next_next_step = load_object("probability_of_latitude_no_abs_in_next_next_step")   
+probability_of_latitude_no_abs = load_object("probability/probability_of_latitude_no_abs") 
+probability_of_latitude_no_abs_in_next_step = load_object("probability/probability_of_latitude_no_abs_in_next_step") 
+probability_of_latitude_no_abs_in_next_next_step = load_object("probability/probability_of_latitude_no_abs_in_next_next_step")   
 
 x = []
 n = 10000
@@ -245,7 +252,7 @@ for subdir_name in all_subdirs:
         #plt.hist(delta_series)
         #plt.show()
         all_x.append(x)
-save_object("predicted_latitude_no_abs", all_x)
+save_object("predicted/predicted_latitude_no_abs", all_x)
 print(total_match_score / total_guesses, total_match_score / total_guesses_no_empty, min(delta_series_total), np.quantile(delta_series_total, 0.25), np.quantile(delta_series_total, 0.5), np.quantile(delta_series_total, 0.75), max(delta_series_total), np.average(delta_series_total), np.std(delta_series_total), np.var(delta_series_total))
 
 plt.hist(delta_series_total)

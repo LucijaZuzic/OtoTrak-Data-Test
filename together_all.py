@@ -329,101 +329,101 @@ def total_surf(long_list, lat_list):
     '''
     return value_ret
      
-predicted_time = load_object("predicted_time") 
-probability_of_time = load_object("probability_of_time") 
-probability_of_time_in_next_step = load_object("probability_of_time_in_next_step") 
-probability_of_time_in_next_next_step = load_object("probability_of_time_in_next_next_step") 
-print("probability_of_time", min(probability_of_time.keys()), max(probability_of_time.keys()))
+predicted_time = load_object("predicted/predicted_time") 
+probability_of_time = load_object("probability/probability_of_time") 
+probability_of_time_in_next_step = load_object("probability/probability_of_time_in_next_step") 
+probability_of_time_in_next_next_step = load_object("probability/probability_of_time_in_next_next_step") 
+#print("probability/probability_of_time", min(probability_of_time.keys()), max(probability_of_time.keys()))
 
-predicted_distance = load_object("predicted_distance") 
-probability_of_distance = load_object("probability_of_distance") 
-probability_of_distance_in_next_step = load_object("probability_of_distance_in_next_step") 
-probability_of_distance_in_next_next_step = load_object("probability_of_distance_in_next_next_step") 
-print("probability_of_distance", min(probability_of_distance.keys()), max(probability_of_distance.keys()))
+predicted_distance = load_object("predicted/predicted_distance") 
+probability_of_distance = load_object("probability/probability_of_distance") 
+probability_of_distance_in_next_step = load_object("probability/probability_of_distance_in_next_step") 
+probability_of_distance_in_next_next_step = load_object("probability/probability_of_distance_in_next_next_step") 
+#print("probability/probability_of_distance", min(probability_of_distance.keys()), max(probability_of_distance.keys()))
 
-predicted_longitude = load_object("predicted_longitude") 
-probability_of_longitude = load_object("probability_of_longitude") 
-probability_of_longitude_in_next_step = load_object("probability_of_longitude_in_next_step") 
-probability_of_longitude_in_next_next_step = load_object("probability_of_longitude_in_next_next_step") 
-print("probability_of_longitude", min(probability_of_longitude.keys()), max(probability_of_longitude.keys()))
+predicted_longitude = load_object("predicted/predicted_longitude") 
+probability_of_longitude = load_object("probability/probability_of_longitude") 
+probability_of_longitude_in_next_step = load_object("probability/probability_of_longitude_in_next_step") 
+probability_of_longitude_in_next_next_step = load_object("probability/probability_of_longitude_in_next_next_step") 
+#print("probability/probability_of_longitude", min(probability_of_longitude.keys()), max(probability_of_longitude.keys()))
 
-predicted_latitude = load_object("predicted_latitude") 
-probability_of_latitude = load_object("probability_of_latitude") 
-probability_of_latitude_in_next_step = load_object("probability_of_latitude_in_next_step") 
-probability_of_latitude_in_next_next_step = load_object("probability_of_latitude_in_next_next_step") 
-print("probability_of_latitude", min(probability_of_latitude.keys()), max(probability_of_latitude.keys()))
+predicted_latitude = load_object("predicted/predicted_latitude") 
+probability_of_latitude = load_object("probability/probability_of_latitude") 
+probability_of_latitude_in_next_step = load_object("probability/probability_of_latitude_in_next_step") 
+probability_of_latitude_in_next_next_step = load_object("probability/probability_of_latitude_in_next_next_step") 
+#print("probability/probability_of_latitude", min(probability_of_latitude.keys()), max(probability_of_latitude.keys()))
 
-predicted_longitude_sgn = load_object("predicted_longitude_sgn") 
-probability_of_longitude_sgn = load_object("probability_of_longitude_sgn") 
-probability_of_longitude_sgn_in_next_step = load_object("probability_of_longitude_sgn_in_next_step") 
-probability_of_longitude_sgn_in_next_next_step = load_object("probability_of_longitude_sgn_in_next_next_step") 
-print("probability_of_longitude_sgn", min(probability_of_longitude_sgn.keys()), max(probability_of_longitude_sgn.keys()))
+predicted_longitude_sgn = load_object("predicted/predicted_longitude_sgn") 
+probability_of_longitude_sgn = load_object("probability/probability_of_longitude_sgn") 
+probability_of_longitude_sgn_in_next_step = load_object("probability/probability_of_longitude_sgn_in_next_step") 
+probability_of_longitude_sgn_in_next_next_step = load_object("probability/probability_of_longitude_sgn_in_next_next_step") 
+#print("probability/probability_of_longitude_sgn", min(probability_of_longitude_sgn.keys()), max(probability_of_longitude_sgn.keys()))
 
-predicted_latitude_sgn = load_object("predicted_latitude_sgn") 
-probability_of_latitude_sgn = load_object("probability_of_latitude_sgn") 
-probability_of_latitude_sgn_in_next_step = load_object("probability_of_latitude_sgn_in_next_step") 
-probability_of_latitude_sgn_in_next_next_step = load_object("probability_of_latitude_sgn_in_next_next_step") 
-print("probability_of_latitude_sgn", min(probability_of_latitude_sgn.keys()), max(probability_of_latitude_sgn.keys()))
+predicted_latitude_sgn = load_object("predicted/predicted_latitude_sgn") 
+probability_of_latitude_sgn = load_object("probability/probability_of_latitude_sgn") 
+probability_of_latitude_sgn_in_next_step = load_object("probability/probability_of_latitude_sgn_in_next_step") 
+probability_of_latitude_sgn_in_next_next_step = load_object("probability/probability_of_latitude_sgn_in_next_next_step") 
+#print("probability/probability_of_latitude_sgn", min(probability_of_latitude_sgn.keys()), max(probability_of_latitude_sgn.keys()))
 
-predicted_longitude_no_abs = load_object("predicted_longitude_no_abs") 
-probability_of_longitude_no_abs = load_object("probability_of_longitude_no_abs") 
-probability_of_longitude_no_abs_in_next_step = load_object("probability_of_longitude_no_abs_in_next_step") 
-probability_of_longitude_no_abs_in_next_next_step = load_object("probability_of_longitude_no_abs_in_next_next_step") 
-print("probability_of_longitude_no_abs", min(probability_of_longitude_no_abs.keys()), max(probability_of_longitude_no_abs.keys()))
+predicted_longitude_no_abs = load_object("predicted/predicted_longitude_no_abs") 
+probability_of_longitude_no_abs = load_object("probability/probability_of_longitude_no_abs") 
+probability_of_longitude_no_abs_in_next_step = load_object("probability/probability_of_longitude_no_abs_in_next_step") 
+probability_of_longitude_no_abs_in_next_next_step = load_object("probability/probability_of_longitude_no_abs_in_next_next_step") 
+#print("probability/probability_of_longitude_no_abs", min(probability_of_longitude_no_abs.keys()), max(probability_of_longitude_no_abs.keys()))
 
-predicted_latitude_no_abs = load_object("predicted_latitude_no_abs") 
-probability_of_latitude_no_abs = load_object("probability_of_latitude_no_abs") 
-probability_of_latitude_no_abs_in_next_step = load_object("probability_of_latitude_no_abs_in_next_step") 
-probability_of_latitude_no_abs_in_next_next_step = load_object("probability_of_latitude_no_abs_in_next_next_step") 
-print("probability_of_latitude_no_abs", min(probability_of_latitude_no_abs.keys()), max(probability_of_latitude_no_abs.keys()))
+predicted_latitude_no_abs = load_object("predicted/predicted_latitude_no_abs") 
+probability_of_latitude_no_abs = load_object("probability/probability_of_latitude_no_abs") 
+probability_of_latitude_no_abs_in_next_step = load_object("probability/probability_of_latitude_no_abs_in_next_step") 
+probability_of_latitude_no_abs_in_next_next_step = load_object("probability/probability_of_latitude_no_abs_in_next_next_step") 
+#print("probability/probability_of_latitude_no_abs", min(probability_of_latitude_no_abs.keys()), max(probability_of_latitude_no_abs.keys()))
 
-predicted_direction = load_object("predicted_direction") 
-probability_of_direction = load_object("probability_of_direction") 
-probability_of_direction_in_next_step = load_object("probability_of_direction_in_next_step") 
-probability_of_direction_in_next_next_step = load_object("probability_of_direction_in_next_next_step") 
-print("probability_of_direction", min(probability_of_direction.keys()), max(probability_of_direction.keys()))
+predicted_direction = load_object("predicted/predicted_direction") 
+probability_of_direction = load_object("probability/probability_of_direction") 
+probability_of_direction_in_next_step = load_object("probability/probability_of_direction_in_next_step") 
+probability_of_direction_in_next_next_step = load_object("probability/probability_of_direction_in_next_next_step") 
+#print("probability/probability_of_direction", min(probability_of_direction.keys()), max(probability_of_direction.keys()))
 
-predicted_direction_alternative = load_object("predicted_direction_alternative") 
-probability_of_direction_alternative = load_object("probability_of_direction_alternative") 
-probability_of_direction_alternative_in_next_step = load_object("probability_of_direction_alternative_in_next_step") 
-probability_of_direction_alternative_in_next_next_step = load_object("probability_of_direction_alternative_in_next_next_step") 
-print("probability_of_direction_alternative", min(probability_of_direction_alternative.keys()), max(probability_of_direction_alternative.keys()))
+predicted_direction_alternative = load_object("predicted/predicted_direction_alternative") 
+probability_of_direction_alternative = load_object("probability/probability_of_direction_alternative") 
+probability_of_direction_alternative_in_next_step = load_object("probability/probability_of_direction_alternative_in_next_step") 
+probability_of_direction_alternative_in_next_next_step = load_object("probability/probability_of_direction_alternative_in_next_next_step") 
+#print("probability/probability_of_direction_alternative", min(probability_of_direction_alternative.keys()), max(probability_of_direction_alternative.keys()))
  
-predicted_speed = load_object("predicted_speed") 
-probability_of_speed = load_object("probability_of_speed") 
-probability_of_speed_in_next_step = load_object("probability_of_speed_in_next_step") 
-probability_of_speed_in_next_next_step = load_object("probability_of_speed_in_next_next_step") 
-print("probability_of_speed", min(probability_of_speed.keys()), max(probability_of_speed.keys()))
+predicted_speed = load_object("predicted/predicted_speed") 
+probability_of_speed = load_object("probability/probability_of_speed") 
+probability_of_speed_in_next_step = load_object("probability/probability_of_speed_in_next_step") 
+probability_of_speed_in_next_next_step = load_object("probability/probability_of_speed_in_next_next_step") 
+#print("probability/probability_of_speed", min(probability_of_speed.keys()), max(probability_of_speed.keys()))
 
-predicted_speed_alternative = load_object("predicted_speed_alternative") 
-probability_of_speed_alternative = load_object("probability_of_speed_alternative") 
-probability_of_speed_alternative_in_next_step = load_object("probability_of_speed_alternative_in_next_step") 
-probability_of_speed_alternative_in_next_next_step = load_object("probability_of_speed_alternative_in_next_next_step") 
-print("probability_of_speed_alternative", min(probability_of_speed_alternative.keys()), max(probability_of_speed_alternative.keys()))
+predicted_speed_alternative = load_object("predicted/predicted_speed_alternative") 
+probability_of_speed_alternative = load_object("probability/probability_of_speed_alternative") 
+probability_of_speed_alternative_in_next_step = load_object("probability/probability_of_speed_alternative_in_next_step") 
+probability_of_speed_alternative_in_next_next_step = load_object("probability/probability_of_speed_alternative_in_next_next_step") 
+#print("probability/probability_of_speed_alternative", min(probability_of_speed_alternative.keys()), max(probability_of_speed_alternative.keys()))
 
-predicted_x_speed_alternative = load_object("predicted_x_speed_alternative") 
-probability_of_x_speed_alternative = load_object("probability_of_x_speed_alternative") 
-probability_of_x_speed_alternative_in_next_step = load_object("probability_of_x_speed_alternative_in_next_step") 
-probability_of_x_speed_alternative_in_next_next_step = load_object("probability_of_x_speed_alternative_in_next_next_step") 
-print("probability_of_x_speed_alternative", min(probability_of_x_speed_alternative.keys()), max(probability_of_x_speed_alternative.keys()))
+predicted_x_speed_alternative = load_object("predicted/predicted_x_speed_alternative") 
+probability_of_x_speed_alternative = load_object("probability/probability_of_x_speed_alternative") 
+probability_of_x_speed_alternative_in_next_step = load_object("probability/probability_of_x_speed_alternative_in_next_step") 
+probability_of_x_speed_alternative_in_next_next_step = load_object("probability/probability_of_x_speed_alternative_in_next_next_step") 
+#print("probability/probability_of_x_speed_alternative", min(probability_of_x_speed_alternative.keys()), max(probability_of_x_speed_alternative.keys()))
 
-predicted_y_speed_alternative = load_object("predicted_y_speed_alternative") 
-probability_of_y_speed_alternative = load_object("probability_of_y_speed_alternative") 
-probability_of_y_speed_alternative_in_next_step = load_object("probability_of_y_speed_alternative_in_next_step") 
-probability_of_y_speed_alternative_in_next_next_step = load_object("probability_of_y_speed_alternative_in_next_next_step") 
-print("probability_of_y_speed_alternative", min(probability_of_y_speed_alternative.keys()), max(probability_of_y_speed_alternative.keys()))
+predicted_y_speed_alternative = load_object("predicted/predicted_y_speed_alternative") 
+probability_of_y_speed_alternative = load_object("probability/probability_of_y_speed_alternative") 
+probability_of_y_speed_alternative_in_next_step = load_object("probability/probability_of_y_speed_alternative_in_next_step") 
+probability_of_y_speed_alternative_in_next_next_step = load_object("probability/probability_of_y_speed_alternative_in_next_next_step") 
+#print("probability/probability_of_y_speed_alternative", min(probability_of_y_speed_alternative.keys()), max(probability_of_y_speed_alternative.keys()))
 
-predicted_x_speed_no_abs_alternative = load_object("predicted_x_speed_no_abs_alternative") 
-probability_of_x_speed_no_abs_alternative = load_object("probability_of_x_speed_no_abs_alternative") 
-probability_of_x_speed_no_abs_alternative_in_next_step = load_object("probability_of_x_speed_no_abs_alternative_in_next_step") 
-probability_of_x_speed_no_abs_alternative_in_next_next_step = load_object("probability_of_x_speed_no_abs_alternative_in_next_next_step") 
-print("probability_of_x_speed_no_abs_alternative", min(probability_of_x_speed_no_abs_alternative.keys()), max(probability_of_x_speed_no_abs_alternative.keys()))
+predicted_x_speed_no_abs_alternative = load_object("predicted/predicted_x_speed_no_abs_alternative") 
+probability_of_x_speed_no_abs_alternative = load_object("probability/probability_of_x_speed_no_abs_alternative") 
+probability_of_x_speed_no_abs_alternative_in_next_step = load_object("probability/probability_of_x_speed_no_abs_alternative_in_next_step") 
+probability_of_x_speed_no_abs_alternative_in_next_next_step = load_object("probability/probability_of_x_speed_no_abs_alternative_in_next_next_step") 
+#print("probability/probability_of_x_speed_no_abs_alternative", min(probability_of_x_speed_no_abs_alternative.keys()), max(probability_of_x_speed_no_abs_alternative.keys()))
 
-predicted_y_speed_no_abs_alternative = load_object("predicted_y_speed_no_abs_alternative") 
-probability_of_y_speed_no_abs_alternative = load_object("probability_of_y_speed_no_abs_alternative") 
-probability_of_y_speed_no_abs_alternative_in_next_step = load_object("probability_of_y_speed_no_abs_alternative_in_next_step") 
-probability_of_y_speed_no_abs_alternative_in_next_next_step = load_object("probability_of_y_speed_no_abs_alternative_in_next_next_step") 
-print("probability_of_y_speed_no_abs_alternative", min(probability_of_y_speed_no_abs_alternative.keys()), max(probability_of_y_speed_no_abs_alternative.keys()))
+predicted_y_speed_no_abs_alternative = load_object("predicted/predicted_y_speed_no_abs_alternative") 
+probability_of_y_speed_no_abs_alternative = load_object("probability/probability_of_y_speed_no_abs_alternative") 
+probability_of_y_speed_no_abs_alternative_in_next_step = load_object("probability/probability_of_y_speed_no_abs_alternative_in_next_step") 
+probability_of_y_speed_no_abs_alternative_in_next_next_step = load_object("probability/probability_of_y_speed_no_abs_alternative_in_next_next_step") 
+#print("probability/probability_of_y_speed_no_abs_alternative", min(probability_of_y_speed_no_abs_alternative.keys()), max(probability_of_y_speed_no_abs_alternative.keys()))
 
 all_subdirs = os.listdir() 
 
@@ -467,9 +467,7 @@ def compare_traj_and_sample(sample_x, sample_y, sample_time, t1, metric_used):
         return abs(simpson(t1["lat"], t1["time"]) - np.trapz(sample_y, sample_time))  
     if metric_used == "euclidean":
         return euclidean(t1["long"], t1["lat"], sample_x, sample_y)
-    
-sum_lens = 0 
-
+      
 times_cumulative = []
 
 long_cumulative = []
@@ -633,22 +631,30 @@ for subdir_name in all_subdirs:
                 new_dir = 360 - new_dir 
             new_long, new_lat = get_sides_from_angle(speed_no_gap[index_long] / 111 / 0.1 / 3600 * time_no_gap[index_long], new_dir)
             longitude_from_speed_time_heading[i].append(longitude_from_speed_time_heading[i][-1] + new_long)
-            latitude_from_speed_time_heading[i].append(latitude_from_speed_time_heading[i][-1] + new_lat) 
-        sum_lens += len(longitude_from_speed_time_heading[i])
-        i += 1
-print(sum_lens)
-all_positions = 0
+            latitude_from_speed_time_heading[i].append(latitude_from_speed_time_heading[i][-1] + new_lat)  
+        i += 1 
+        
 current_ride_index = 0
 
 def offset_ride(array_ride_x, array_ride_y):
     return [x - min(array_ride_x) for x in array_ride_x], [y - min(array_ride_y) for y in array_ride_y]
-metric_names = ["simpson", "trapz", "simpson x", "trapz x", "simpson y", "trapz y", "euclidean", "custom"]
+metric_names = ["simpson", "trapz", "simpson x", "trapz x", "simpson y", "trapz y", "euclidean", "custom", "dtw"]
+metric_names = ["simpson", "trapz", "simpson x", "trapz x", "simpson y", "trapz y", "euclidean", "custom"] 
 distance_predicted = dict()
 distance_array = dict()
  
 count_best_longit = dict()
 count_best_latit = dict()
 count_best_longit_latit = dict()
+
+count_best_longit_metric = dict()
+count_best_latit_metric = dict()
+count_best_longit_latit_metric = dict() 
+for metric_name in metric_names:
+    count_best_longit_metric[metric_name] = dict()
+    count_best_latit_metric[metric_name] = dict()
+    count_best_longit_latit_metric[metric_name] = dict()
+
 for subdir_name in all_subdirs: 
     if not os.path.isdir(subdir_name) or "Vehicle" not in subdir_name:
         continue 
@@ -675,8 +681,7 @@ for subdir_name in all_subdirs:
         latitudes = list(file_with_ride["fields_latitude"]) 
         times = transform_time(list(file_with_ride["time"]))
         longitudes, latitudes = preprocess_long_lat(longitudes, latitudes)
-        longitudes, latitudes = scale_long_lat(longitudes, latitudes, 0.1, 0.1, True)
-        all_positions += len(longitudes)
+        longitudes, latitudes = scale_long_lat(longitudes, latitudes, 0.1, 0.1, True) 
 
         longitude_cumulative, latitude_cumulative = long_cumulative[current_ride_index], lat_cumulative[current_ride_index]
         longitude_no_abs_cumulative, latitude_no_abs_cumulative= long_no_abs_cumulative[current_ride_index], lat_no_abs_cumulative[current_ride_index]
@@ -739,6 +744,14 @@ for subdir_name in all_subdirs:
                     count_best_longit[longit + "-array"] = 0
                     count_best_longit_latit[longit + "-" + latit] = 0
                     count_best_longit_latit[longit + "-" + latit + "-array"] = 0
+                for metric_name in metric_names:
+                    count_best_latit_metric[metric_name][latit] = 0
+                    count_best_latit_metric[metric_name][latit + "-array"] = 0
+                    for longit in long_dict:
+                        count_best_longit_metric[metric_name][longit] = 0
+                        count_best_longit_metric[metric_name][longit + "-array"] = 0
+                        count_best_longit_latit_metric[metric_name][longit + "-" + latit] = 0
+                        count_best_longit_latit_metric[metric_name][longit + "-" + latit + "-array"] = 0
 
         #print(subdir_name, some_file) 
         for metric_name in metric_names:  
@@ -755,12 +768,17 @@ for subdir_name in all_subdirs:
                             best_name = longit + "-" + latit + "-array"
             #print(metric_name, best_name)
             count_best_longit_latit[best_name] += 1
+            count_best_longit_latit_metric[metric_name][best_name] += 1
             if "array" in best_name: 
                 count_best_longit[best_name.split("-")[0] + "-array"] += 1
                 count_best_latit[best_name.split("-")[1] + "-array"] += 1
+                count_best_longit_metric[metric_name][best_name.split("-")[0] + "-array"] += 1
+                count_best_latit_metric[metric_name][best_name.split("-")[1] + "-array"] += 1
             else:
                 count_best_longit[best_name.split("-")[0]] += 1
                 count_best_latit[best_name.split("-")[1]] += 1
+                count_best_longit_metric[metric_name][best_name.split("-")[0]] += 1
+                count_best_latit_metric[metric_name][best_name.split("-")[1]] += 1
  
         #plt.legend()
         #plt.show()
@@ -781,4 +799,19 @@ print("count_best_longit")
 for x in dict(sorted(count_best_longit.items(), key=lambda item: item[1], reverse=True)):
     if count_best_longit[x] > 0:
         print(x, count_best_longit[x]) 
-print(all_positions)
+
+for metric_name in metric_names:
+    print(metric_name, "count_best_longit_latit")
+    for x in dict(sorted(count_best_longit_latit_metric[metric_name].items(), key=lambda item: item[1], reverse=True)):
+        if count_best_longit_latit_metric[metric_name][x] > 0:
+            print(x, count_best_longit_latit_metric[metric_name][x]) 
+    
+    print(metric_name, "count_best_latit")
+    for x in dict(sorted(count_best_latit_metric[metric_name].items(), key=lambda item: item[1], reverse=True)):
+        if count_best_latit_metric[metric_name][x] > 0:
+            print(x, count_best_latit_metric[metric_name][x]) 
+
+    print(metric_name, "count_best_longit")
+    for x in dict(sorted(count_best_longit_metric[metric_name].items(), key=lambda item: item[1], reverse=True)):
+        if count_best_longit[x] > 0:
+            print(x, count_best_longit_metric[metric_name][x])    

@@ -17,7 +17,14 @@ def load_object(file_name):
     
 all_subdirs = os.listdir() 
 
-if not os.path.isfile("num_occurences_of_direction"):
+if not os.path.isdir("num_occurences"):
+    os.makedirs("num_occurences")
+if not os.path.isdir("probability"):
+    os.makedirs("probability")
+if not os.path.isdir("predicted"):
+    os.makedirs("predicted")
+
+if not os.path.isfile("num_occurences/num_occurences_of_direction"):
     num_occurences_of_direction = dict()
     num_occurences_of_direction_diff = dict()
     num_occurences_of_direction_in_next_step = dict()
@@ -75,7 +82,7 @@ if not os.path.isfile("num_occurences_of_direction"):
                     num_occurences_of_direction_in_next_next_step[direction][next_direction][next_next_direction] += 1
 
     #print(num_occurences_of_direction)
-    save_object("num_occurences_of_direction", num_occurences_of_direction)
+    save_object("num_occurences/num_occurences_of_direction", num_occurences_of_direction)
     #print(num_occurences_of_direction.keys())
 
     #print(num_occurences_of_direction_diff)
@@ -83,9 +90,9 @@ if not os.path.isfile("num_occurences_of_direction"):
     plt.show()
 
     #print(num_occurences_of_direction_in_next_step)
-    save_object("num_occurences_of_direction_in_next_step", num_occurences_of_direction_in_next_step)
+    save_object("num_occurences/num_occurences_of_direction_in_next_step", num_occurences_of_direction_in_next_step)
     #print(num_occurences_of_direction_in_next_next_step)
-    save_object("num_occurences_of_direction_in_next_next_step", num_occurences_of_direction_in_next_next_step)
+    save_object("num_occurences/num_occurences_of_direction_in_next_next_step", num_occurences_of_direction_in_next_next_step)
 
     probability_of_direction = dict()
     for direction in num_occurences_of_direction:
@@ -106,15 +113,15 @@ if not os.path.isfile("num_occurences_of_direction"):
                 probability_of_direction_in_next_next_step[prev_prev_direction][prev_direction][direction] = num_occurences_of_direction_in_next_next_step[prev_prev_direction][prev_direction][direction] / sum(list(num_occurences_of_direction_in_next_next_step[prev_prev_direction][prev_direction].values()))
 
     #print(probability_of_direction)
-    save_object("probability_of_direction", probability_of_direction)
+    save_object("probability/probability_of_direction", probability_of_direction)
     #print(probability_of_direction_in_next_step)
-    save_object("probability_of_direction_in_next_step", probability_of_direction_in_next_step)
+    save_object("probability/probability_of_direction_in_next_step", probability_of_direction_in_next_step)
     #print(probability_of_direction_in_next_next_step)
-    save_object("probability_of_direction_in_next_next_step", probability_of_direction_in_next_next_step)
+    save_object("probability/probability_of_direction_in_next_next_step", probability_of_direction_in_next_next_step)
 
-probability_of_direction = load_object("probability_of_direction") 
-probability_of_direction_in_next_step = load_object("probability_of_direction_in_next_step") 
-probability_of_direction_in_next_next_step = load_object("probability_of_direction_in_next_next_step")  
+probability_of_direction = load_object("probability/probability_of_direction") 
+probability_of_direction_in_next_step = load_object("probability/probability_of_direction_in_next_step") 
+probability_of_direction_in_next_next_step = load_object("probability/probability_of_direction_in_next_next_step")  
 
 x = []
 n = 10000
@@ -205,7 +212,7 @@ for subdir_name in all_subdirs:
         #plt.hist(delta_series)
         #plt.show()
         all_x.append(x)
-save_object("predicted_direction", all_x)
+save_object("predicted/predicted_direction", all_x)
 print(total_match_score / total_guesses, total_match_score / total_guesses_no_empty, min(delta_series_total), np.quantile(delta_series_total, 0.25), np.quantile(delta_series_total, 0.5), np.quantile(delta_series_total, 0.75), max(delta_series_total), np.average(delta_series_total), np.std(delta_series_total), np.var(delta_series_total))
 
 plt.hist(delta_series_total)
