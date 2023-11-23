@@ -448,7 +448,11 @@ def fill_gap(list_gap):
         list_no_gap.append(last_val)  
     return list_no_gap
 
-def compare_traj_and_sample(sample_x, sample_y, sample_time, t1, metric_used): 
+def compare_traj_and_sample(sample_x, sample_y, sample_time, t1, metric_used, no_time_t1 = False, no_time_sample = False): 
+    if no_time_t1:
+        t1["time"] = range(len(t1["long"]))
+    if no_time_sample:
+        sample_time = range(len(sample_x))
     if metric_used == "custom":
         return traj_dist(t1["long"], t1["lat"], sample_x, sample_y)  
     if metric_used == "dtw":
@@ -456,15 +460,15 @@ def compare_traj_and_sample(sample_x, sample_y, sample_time, t1, metric_used):
     if metric_used == "trapz":
         return abs(np.trapz(t1["lat"], t1["long"]) - np.trapz(sample_y, sample_x)) 
     if metric_used == "simpson":
-        return abs(simpson(t1["lat"], t1["long"]) - np.trapz(sample_y, sample_x))  
-    if metric_used == "trapz x":
+        return abs(simpson(t1["lat"], t1["long"]) - np.trapz(sample_y, sample_x))   
+    if metric_used == "trapz x": 
         return abs(np.trapz(t1["long"], t1["time"]) - np.trapz(sample_x, sample_time))
     if metric_used == "simpson x":
         return abs(simpson(t1["long"], t1["time"]) - np.trapz(sample_x, sample_time)) 
     if metric_used == "trapz y":
         return abs(np.trapz(t1["lat"], t1["time"]) - np.trapz(sample_y, sample_time))
     if metric_used == "simpson y":
-        return abs(simpson(t1["lat"], t1["time"]) - np.trapz(sample_y, sample_time))  
+        return abs(simpson(t1["lat"], t1["time"]) - np.trapz(sample_y, sample_time))   
     if metric_used == "euclidean":
         return euclidean(t1["long"], t1["lat"], sample_x, sample_y)
       
@@ -635,9 +639,7 @@ for subdir_name in all_subdirs:
         i += 1 
         
 current_ride_index = 0
-
-def offset_ride(array_ride_x, array_ride_y):
-    return [x - min(array_ride_x) for x in array_ride_x], [y - min(array_ride_y) for y in array_ride_y]
+ 
 metric_names = ["simpson", "trapz", "simpson x", "trapz x", "simpson y", "trapz y", "euclidean", "custom", "dtw"]
 metric_names = ["simpson", "trapz", "simpson x", "trapz x", "simpson y", "trapz y", "euclidean", "custom"] 
 distance_predicted = dict()
@@ -654,7 +656,30 @@ for metric_name in metric_names:
     count_best_longit_metric[metric_name] = dict()
     count_best_latit_metric[metric_name] = dict()
     count_best_longit_latit_metric[metric_name] = dict()
+    if " " in metric_name:
+        count_best_longit_metric[metric_name + " no time t1"] = dict()
+        count_best_longit_metric[metric_name + " no time sample"] = dict()
+        count_best_longit_metric[metric_name + " no time t1 no time sample"] = dict()
+        count_best_latit_metric[metric_name + " no time t1"] = dict()
+        count_best_latit_metric[metric_name + " no time sample"] = dict()
+        count_best_latit_metric[metric_name + " no time t1 no time sample"] = dict()
+        count_best_longit_latit_metric[metric_name + " no time t1"] = dict()
+        count_best_longit_latit_metric[metric_name + " no time sample"] = dict()
+        count_best_longit_latit_metric[metric_name + " no time t1 no time sample"] = dict()
 
+best_match_for_metric = dict()
+worst_matc_for_metric = dict()
+for metric_name in metric_names:
+    best_match_for_metric[metric_name] = 0
+    worst_matc_for_metric[metric_name] = 100000
+    if " " in metric_name:
+        best_match_for_metric[metric_name + " no time t1"] = 0
+        best_match_for_metric[metric_name + " no time sample"] = 0
+        best_match_for_metric[metric_name + " no time t1 no time sample"] = 0
+        worst_matc_for_metric[metric_name + " no time t1"] = 100000
+        worst_matc_for_metric[metric_name + " no time sample"] = 100000
+        worst_matc_for_metric[metric_name + " no time t1 no time sample"] = 100000
+ 
 for subdir_name in all_subdirs: 
     if not os.path.isdir(subdir_name) or "Vehicle" not in subdir_name:
         continue 
@@ -723,62 +748,90 @@ for subdir_name in all_subdirs:
             "lat speed dir": lat_speed_dir, 
         }
  
-        distance_predicted[subdir_name][some_file] = dict()
-        distance_array[subdir_name][some_file] = dict()
+        distance_predicted[subdir_name][some_file] = dict() 
         for metric_name in metric_names: 
-            distance_predicted[subdir_name][some_file][metric_name] = dict()
-            distance_array[subdir_name][some_file][metric_name] = dict()
+            distance_predicted[subdir_name][some_file][metric_name] = dict() 
+            if " " in metric_name: 
+                distance_predicted[subdir_name][some_file][metric_name + " no time t1"] = dict()
+                distance_predicted[subdir_name][some_file][metric_name + " no time sample"] = dict()
+                distance_predicted[subdir_name][some_file][metric_name + " no time t1 no time sample"] = dict()
             for latit in lat_dict:
                 for longit in long_dict: 
                     #plt.plot(long_dict[longit], lat_dict[latit], label = longit + " " + latit)
                     distance_predicted[subdir_name][some_file][metric_name][longit + "-" + latit] = compare_traj_and_sample(long_dict[longit], lat_dict[latit], times_cumulative[current_ride_index], {"long": longitudes, "lat": latitudes, "time": times}, metric_name)
                     if " " in metric_name:    
-                        distance_array[subdir_name][some_file][metric_name][longit + "-" + latit] = compare_traj_and_sample(long_dict[longit], lat_dict[latit], range(len(times_cumulative[current_ride_index])), {"long": longitudes, "lat": latitudes, "time": times}, metric_name)
+                        distance_predicted[subdir_name][some_file][metric_name + " no time t1"][longit + "-" + latit] = compare_traj_and_sample(long_dict[longit], lat_dict[latit], range(len(times_cumulative[current_ride_index])), {"long": longitudes, "lat": latitudes, "time": times}, metric_name, True, False)
+                        distance_predicted[subdir_name][some_file][metric_name + " no time sample"][longit + "-" + latit] = compare_traj_and_sample(long_dict[longit], lat_dict[latit], range(len(times_cumulative[current_ride_index])), {"long": longitudes, "lat": latitudes, "time": times}, metric_name, False, True)
+                        distance_predicted[subdir_name][some_file][metric_name + " no time t1 no time sample"][longit + "-" + latit] = compare_traj_and_sample(long_dict[longit], lat_dict[latit], range(len(times_cumulative[current_ride_index])), {"long": longitudes, "lat": latitudes, "time": times}, metric_name, True, True)
 
         if "long" not in count_best_longit:
             for latit in lat_dict:
-                count_best_latit[latit] = 0
-                count_best_latit[latit + "-array"] = 0
-                for longit in long_dict:
-                    count_best_longit[longit] = 0
-                    count_best_longit[longit + "-array"] = 0
-                    count_best_longit_latit[longit + "-" + latit] = 0
-                    count_best_longit_latit[longit + "-" + latit + "-array"] = 0
+                count_best_latit[latit] = 0 
                 for metric_name in metric_names:
-                    count_best_latit_metric[metric_name][latit] = 0
-                    count_best_latit_metric[metric_name][latit + "-array"] = 0
-                    for longit in long_dict:
-                        count_best_longit_metric[metric_name][longit] = 0
-                        count_best_longit_metric[metric_name][longit + "-array"] = 0
-                        count_best_longit_latit_metric[metric_name][longit + "-" + latit] = 0
-                        count_best_longit_latit_metric[metric_name][longit + "-" + latit + "-array"] = 0
+                    count_best_latit_metric[metric_name][latit] = 0 
+                    if " " in metric_name:
+                        count_best_latit_metric[metric_name + " no time t1"][latit] = 0 
+                        count_best_latit_metric[metric_name + " no time sample"][latit] = 0 
+                        count_best_latit_metric[metric_name + " no time t1 no time sample"][latit] = 0 
+                for longit in long_dict:
+                    count_best_longit[longit] = 0 
+                    count_best_longit_latit[longit + "-" + latit] = 0 
+                    for metric_name in metric_names:  
+                        count_best_longit_metric[metric_name][longit] = 0 
+                        count_best_longit_latit_metric[metric_name][longit + "-" + latit] = 0 
+                        if " " in metric_name:
+                            count_best_longit_metric[metric_name + " no time t1"][longit] = 0 
+                            count_best_longit_metric[metric_name + " no time sample"][longit] = 0 
+                            count_best_longit_metric[metric_name + " no time t1 no time sample"][longit] = 0 
+                            count_best_longit_latit_metric[metric_name + " no time t1"][longit + "-" + latit] = 0 
+                            count_best_longit_latit_metric[metric_name + " no time sample"][longit + "-" + latit] = 0 
+                            count_best_longit_latit_metric[metric_name + " no time t1 no time sample"][longit + "-" + latit] = 0 
 
         #print(subdir_name, some_file) 
         for metric_name in metric_names:  
             min_for_metric = 100000
             best_name = ""
+            if " " in metric_name:  
+                min_for_metric_no_t1 = 100000
+                best_name_no_t1 = ""
+                min_for_metric_no_sample = 100000
+                best_name_no_sample = ""
+                min_for_metric_no_t1_no_sample = 100000
+                best_name_no_t1_no_sample = ""
             for latit in lat_dict:
                 for longit in long_dict: 
                     if distance_predicted[subdir_name][some_file][metric_name][longit + "-" + latit] < min_for_metric:
                         min_for_metric = distance_predicted[subdir_name][some_file][metric_name][longit + "-" + latit]
                         best_name = longit + "-" + latit
                     if " " in metric_name: 
-                        if distance_array[subdir_name][some_file][metric_name][longit + "-" + latit] < min_for_metric:
-                            min_for_metric = distance_array[subdir_name][some_file][metric_name][longit + "-" + latit]
-                            best_name = longit + "-" + latit + "-array"
+                        if distance_predicted[subdir_name][some_file][metric_name + " no time t1"][longit + "-" + latit] < min_for_metric_no_t1:
+                            min_for_metric_no_t1 = distance_predicted[subdir_name][some_file][metric_name + " no time t1"][longit + "-" + latit]
+                            best_name_no_t1 = longit + "-" + latit
+                        if distance_predicted[subdir_name][some_file][metric_name + " no time sample"][longit + "-" + latit] < min_for_metric_no_sample:
+                            min_for_metric_no_sample = distance_predicted[subdir_name][some_file][metric_name + " no time sample"][longit + "-" + latit]
+                            best_name_no_sample = longit + "-" + latit
+                        if distance_predicted[subdir_name][some_file][metric_name + " no time t1 no time sample"][longit + "-" + latit] < min_for_metric_no_t1_no_sample:
+                            min_for_metric_no_t1_no_sample = distance_predicted[subdir_name][some_file][metric_name + " no time t1 no time sample"][longit + "-" + latit]
+                            best_name_no_t1_no_sample = longit + "-" + latit
             #print(metric_name, best_name)
             count_best_longit_latit[best_name] += 1
+            count_best_longit[best_name.split("-")[0]] += 1
+            count_best_latit[best_name.split("-")[1]] += 1
             count_best_longit_latit_metric[metric_name][best_name] += 1
-            if "array" in best_name: 
-                count_best_longit[best_name.split("-")[0] + "-array"] += 1
-                count_best_latit[best_name.split("-")[1] + "-array"] += 1
-                count_best_longit_metric[metric_name][best_name.split("-")[0] + "-array"] += 1
-                count_best_latit_metric[metric_name][best_name.split("-")[1] + "-array"] += 1
-            else:
-                count_best_longit[best_name.split("-")[0]] += 1
-                count_best_latit[best_name.split("-")[1]] += 1
-                count_best_longit_metric[metric_name][best_name.split("-")[0]] += 1
-                count_best_latit_metric[metric_name][best_name.split("-")[1]] += 1
+            count_best_longit_metric[metric_name][best_name.split("-")[0]] += 1
+            count_best_latit_metric[metric_name][best_name.split("-")[1]] += 1
+            if " " in metric_name:  
+                count_best_longit_latit_metric[metric_name + " no time t1"][best_name_no_t1] += 1
+                count_best_longit_metric[metric_name + " no time t1"][best_name_no_t1.split("-")[0]] += 1
+                count_best_latit_metric[metric_name + " no time t1"][best_name_no_t1.split("-")[1]] += 1
+
+                count_best_longit_latit_metric[metric_name + " no time sample"][best_name_no_sample] += 1
+                count_best_longit_metric[metric_name + " no time sample"][best_name_no_sample.split("-")[0]] += 1
+                count_best_latit_metric[metric_name + " no time sample"][best_name_no_sample.split("-")[1]] += 1
+
+                count_best_longit_latit_metric[metric_name + " no time t1 no time sample"][best_name_no_t1_no_sample] += 1
+                count_best_longit_metric[metric_name + " no time t1 no time sample"][best_name_no_t1_no_sample.split("-")[0]] += 1
+                count_best_latit_metric[metric_name + " no time t1 no time sample"][best_name_no_t1_no_sample.split("-")[1]] += 1
  
         #plt.legend()
         #plt.show()
@@ -800,7 +853,7 @@ for x in dict(sorted(count_best_longit.items(), key=lambda item: item[1], revers
     if count_best_longit[x] > 0:
         print(x, count_best_longit[x]) 
 
-for metric_name in metric_names:
+for metric_name in metric_names:   
     print(metric_name, "count_best_longit_latit")
     for x in dict(sorted(count_best_longit_latit_metric[metric_name].items(), key=lambda item: item[1], reverse=True)):
         if count_best_longit_latit_metric[metric_name][x] > 0:
@@ -814,4 +867,51 @@ for metric_name in metric_names:
     print(metric_name, "count_best_longit")
     for x in dict(sorted(count_best_longit_metric[metric_name].items(), key=lambda item: item[1], reverse=True)):
         if count_best_longit[x] > 0:
-            print(x, count_best_longit_metric[metric_name][x])    
+            print(x, count_best_longit_metric[metric_name][x]) 
+
+    if " " in metric_name:  
+
+        print(metric_name + " no time t1", "count_best_longit_latit")
+        for x in dict(sorted(count_best_longit_latit_metric[metric_name + " no time t1"].items(), key=lambda item: item[1], reverse=True)):
+            if count_best_longit_latit_metric[metric_name + " no time t1"][x] > 0:
+                print(x, count_best_longit_latit_metric[metric_name + " no time t1"][x]) 
+        
+        print(metric_name + " no time t1", "count_best_latit")
+        for x in dict(sorted(count_best_latit_metric[metric_name + " no time t1"].items(), key=lambda item: item[1], reverse=True)):
+            if count_best_latit_metric[metric_name + " no time t1"][x] > 0:
+                print(x, count_best_latit_metric[metric_name + " no time t1"][x]) 
+
+        print(metric_name + " no time t1", "count_best_longit")
+        for x in dict(sorted(count_best_longit_metric[metric_name + " no time t1"].items(), key=lambda item: item[1], reverse=True)):
+            if count_best_longit[x] > 0:
+                print(x, count_best_longit_metric[metric_name + " no time t1"][x]) 
+
+        print(metric_name + " no time sample", "count_best_longit_latit")
+        for x in dict(sorted(count_best_longit_latit_metric[metric_name + " no time sample"].items(), key=lambda item: item[1], reverse=True)):
+            if count_best_longit_latit_metric[metric_name + " no time sample"][x] > 0:
+                print(x, count_best_longit_latit_metric[metric_name + " no time sample"][x]) 
+        
+        print(metric_name + " no time sample", "count_best_latit")
+        for x in dict(sorted(count_best_latit_metric[metric_name + " no time sample"].items(), key=lambda item: item[1], reverse=True)):
+            if count_best_latit_metric[metric_name + " no time sample"][x] > 0:
+                print(x, count_best_latit_metric[metric_name + " no time sample"][x]) 
+
+        print(metric_name + " no time sample", "count_best_longit")
+        for x in dict(sorted(count_best_longit_metric[metric_name + " no time sample"].items(), key=lambda item: item[1], reverse=True)):
+            if count_best_longit[x] > 0:
+                print(x, count_best_longit_metric[metric_name + " no time sample"][x]) 
+
+        print(metric_name + " no time t1 no time sample", "count_best_longit_latit")
+        for x in dict(sorted(count_best_longit_latit_metric[metric_name + " no time t1 no time sample"].items(), key=lambda item: item[1], reverse=True)):
+            if count_best_longit_latit_metric[metric_name + " no time t1 no time sample"][x] > 0:
+                print(x, count_best_longit_latit_metric[metric_name + " no time t1 no time sample"][x]) 
+        
+        print(metric_name + " no time t1 no time sample", "count_best_latit")
+        for x in dict(sorted(count_best_latit_metric[metric_name + " no time t1 no time sample"].items(), key=lambda item: item[1], reverse=True)):
+            if count_best_latit_metric[metric_name + " no time t1 no time sample"][x] > 0:
+                print(x, count_best_latit_metric[metric_name + " no time t1 no time sample"][x]) 
+
+        print(metric_name + " no time t1 no time sample", "count_best_longit")
+        for x in dict(sorted(count_best_longit_metric[metric_name + " no time t1 no time sample"].items(), key=lambda item: item[1], reverse=True)):
+            if count_best_longit[x] > 0:
+                print(x, count_best_longit_metric[metric_name + " no time t1 no time sample"][x]) 
