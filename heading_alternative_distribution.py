@@ -14,6 +14,50 @@ def load_object(file_name):
         data = pickle.load(file_object) 
         file_object.close()
         return data
+        
+def preprocess_long_lat(long_list, lat_list):
+    x_dir = long_list[0] < long_list[-1]
+    y_dir = lat_list[0] < lat_list[-1]
+ 
+    long_list2 = [x - min(long_list) for x in long_list]
+    lat_list2 = [y - min(lat_list) for y in lat_list]
+    if x_dir == False: 
+        long_list2 = [max(long_list2) - x for x in long_list2]
+    if y_dir == False:
+        lat_list2 = [max(lat_list2) - y for y in lat_list2]
+
+    return long_list2, lat_list2    
+      
+def scale_long_lat(long_list, lat_list, xmax = 0, ymax = 0, keep_aspect_ratio = True):
+    minx = np.min(long_list)
+    maxx = np.max(long_list)
+    miny = np.min(lat_list)
+    maxy = np.max(lat_list)
+    x_diff = maxx - minx
+    if x_diff == 0:
+        x_diff = 1
+    y_diff = maxy - miny 
+    if y_diff == 0:
+        y_diff = 1
+    if xmax == 0 and ymax == 0 and keep_aspect_ratio:
+        xmax = max(x_diff, y_diff)
+        ymax = max(x_diff, y_diff)
+    if xmax == 0 and ymax == 0 and not keep_aspect_ratio:
+        xmax = x_diff
+        ymax = y_diff
+    if xmax == 0 and ymax != 0 and keep_aspect_ratio:
+        xmax = ymax 
+    if xmax == 0 and ymax != 0 and not keep_aspect_ratio:
+        xmax = x_diff 
+    if xmax != 0 and ymax == 0 and keep_aspect_ratio:
+        ymax = xmax 
+    if xmax != 0 and ymax == 0 and not keep_aspect_ratio:
+        ymax = y_diff 
+    if xmax != 0 and ymax != 0 and keep_aspect_ratio and xmax != ymax:
+        ymax = xmax # ymax = xmax or xmax = ymax or keep_aspect_ratio = False or return
+    long_list2 = [(x - min(long_list)) / xmax for x in long_list]
+    lat_list2 = [(y - min(lat_list)) / ymax for y in lat_list]
+    return long_list2, lat_list2  
     
 all_subdirs = os.listdir() 
 
@@ -44,10 +88,17 @@ if not os.path.isfile("num_occurences_of_direction_alternative"):
             file_with_ride = pd.read_csv(subdir_name + "/cleaned_csv/" + some_file)
             longitudes = list(file_with_ride["fields_longitude"]) 
             latitudes = list(file_with_ride["fields_latitude"]) 
-            xdistance_int = [longitudes[distance_index + 1] - longitudes[distance_index] + 0.001 for distance_index in range(len(longitudes) - 1)]
-            ydistance_int = [latitudes[distance_index + 1] - latitudes[distance_index] + 0.001 for distance_index in range(len(latitudes) - 1)]
-            direction_alternative_int = [(360 + np.round(np.arctan(ydistance_int[heading_alternative_index] / xdistance_int[heading_alternative_index]) / np.pi * 180, 0)) % 360 for heading_alternative_index in range(len(longitudes) - 1)]
-  
+            longitudes, latitudes = preprocess_long_lat(longitudes, latitudes)
+            longitudes, latitudes = scale_long_lat(longitudes, latitudes, 0.1, 0.1, True)
+            xdistance_int = [longitudes[distance_index + 1] - longitudes[distance_index] for distance_index in range(len(longitudes) - 1)]
+            ydistance_int = [latitudes[distance_index + 1] - latitudes[distance_index] for distance_index in range(len(latitudes) - 1)]
+            direction_alternative_int = []
+            for heading_alternative_index in range(len(longitudes) - 1):
+                if xdistance_int[heading_alternative_index] > 0:
+                    direction_alternative_int.append((360 + np.round(np.arctan(ydistance_int[heading_alternative_index] / xdistance_int[heading_alternative_index]) / np.pi * 180, 0)) % 360)
+                else:
+                    direction_alternative_int.append(90.0)
+            		
             for direction_alternative in direction_alternative_int:
                 if direction_alternative not in num_occurences_of_direction_alternative:
                     num_occurences_of_direction_alternative[direction_alternative] = 0
@@ -171,9 +222,17 @@ for subdir_name in all_subdirs:
         file_with_ride = pd.read_csv(subdir_name + "/cleaned_csv/" + some_file)
         longitudes = list(file_with_ride["fields_longitude"]) 
         latitudes = list(file_with_ride["fields_latitude"]) 
-        xdistance_int = [longitudes[distance_index + 1] - longitudes[distance_index] + 0.001 for distance_index in range(len(longitudes) - 1)]
-        ydistance_int = [latitudes[distance_index + 1] - latitudes[distance_index] + 0.001 for distance_index in range(len(latitudes) - 1)]
-        direction_alternative_int = [(360 + np.round(np.arctan(ydistance_int[heading_alternative_index] / xdistance_int[heading_alternative_index]) / np.pi * 180, 0)) % 360 for heading_alternative_index in range(len(longitudes) - 1)]
+        longitudes, latitudes = preprocess_long_lat(longitudes, latitudes)
+        longitudes, latitudes = scale_long_lat(longitudes, latitudes, 0.1, 0.1, True)
+        xdistance_int = [longitudes[distance_index + 1] - longitudes[distance_index] for distance_index in range(len(longitudes) - 1)]
+        ydistance_int = [latitudes[distance_index + 1] - latitudes[distance_index] for distance_index in range(len(latitudes) - 1)]
+        direction_alternative_int = []
+        for heading_alternative_index in range(len(longitudes) - 1):
+            if xdistance_int[heading_alternative_index] > 0:
+                direction_alternative_int.append((360 + np.round(np.arctan(ydistance_int[heading_alternative_index] / xdistance_int[heading_alternative_index]) / np.pi * 180, 0)) % 360)
+            else:
+                direction_alternative_int.append(90.0)
+            		
   
         x = []
         n = len(direction_alternative_int)
@@ -210,6 +269,7 @@ for subdir_name in all_subdirs:
         total_match_score += match_score 
         #plt.hist(delta_series)
         #plt.show()
+save_object("predicted_direction_alternative", x)
 print(total_match_score / total_guesses, total_match_score / total_guesses_no_empty, min(delta_series_total), np.quantile(delta_series_total, 0.25), np.quantile(delta_series_total, 0.5), np.quantile(delta_series_total, 0.75), max(delta_series_total), np.average(delta_series_total), np.std(delta_series_total), np.var(delta_series_total))
 
 plt.hist(delta_series_total)
