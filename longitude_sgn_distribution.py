@@ -185,7 +185,7 @@ total_match_score = 0
 total_guesses = 0 
 total_guesses_no_empty = 0
 delta_series_total = [] 
-
+all_x = []
 for subdir_name in all_subdirs: 
     if not os.path.isdir(subdir_name) or "Vehicle" not in subdir_name:
         continue 
@@ -244,7 +244,8 @@ for subdir_name in all_subdirs:
         total_match_score += match_score 
         #plt.hist(delta_series)
         #plt.show()
-save_object("predicted_longitude_sgn", x)
+        all_x.append(x)
+save_object("predicted_longitude_sgn", all_x)
 print(total_match_score / total_guesses, total_match_score / total_guesses_no_empty, min(delta_series_total), np.quantile(delta_series_total, 0.25), np.quantile(delta_series_total, 0.5), np.quantile(delta_series_total, 0.75), max(delta_series_total), np.average(delta_series_total), np.std(delta_series_total), np.var(delta_series_total))
 
 plt.hist(delta_series_total)

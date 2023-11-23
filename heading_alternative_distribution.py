@@ -94,11 +94,28 @@ if not os.path.isfile("num_occurences_of_direction_alternative"):
             ydistance_int = [latitudes[distance_index + 1] - latitudes[distance_index] for distance_index in range(len(latitudes) - 1)]
             direction_alternative_int = []
             for heading_alternative_index in range(len(longitudes) - 1):
-                if xdistance_int[heading_alternative_index] > 0:
+                if xdistance_int[heading_alternative_index] != 0:
                     direction_alternative_int.append((360 + np.round(np.arctan(ydistance_int[heading_alternative_index] / xdistance_int[heading_alternative_index]) / np.pi * 180, 0)) % 360)
                 else:
-                    direction_alternative_int.append(90.0)
-            		
+                    if ydistance_int[heading_alternative_index] > 0:
+                        direction_alternative_int.append(90.0)
+                    if ydistance_int[heading_alternative_index] < 0:
+                        direction_alternative_int.append(270.0)
+                    if ydistance_int[heading_alternative_index] == 0:
+                        direction_alternative_int.append("undefined")
+
+            last_value = "undefined"
+            for heading_alternative_index in range(len(longitudes) - 1):
+                if direction_alternative_int[heading_alternative_index] == "undefined":
+                    if last_value != "undefined":
+                        direction_alternative_int[heading_alternative_index] = last_value
+                    else:
+                        for heading_alternative_index2 in range(heading_alternative_index + 1, len(longitudes) - 1): 
+                            if direction_alternative_int[heading_alternative_index2] != "undefined":
+                                direction_alternative_int[heading_alternative_index] = direction_alternative_int[heading_alternative_index2]
+                                break  
+                last_value = direction_alternative_int[heading_alternative_index]
+ 
             for direction_alternative in direction_alternative_int:
                 if direction_alternative not in num_occurences_of_direction_alternative:
                     num_occurences_of_direction_alternative[direction_alternative] = 0
@@ -200,7 +217,7 @@ total_match_score = 0
 total_guesses = 0 
 total_guesses_no_empty = 0
 delta_series_total = [] 
-
+all_x = []
 for subdir_name in all_subdirs: 
     if not os.path.isdir(subdir_name) or "Vehicle" not in subdir_name:
         continue 
@@ -228,12 +245,28 @@ for subdir_name in all_subdirs:
         ydistance_int = [latitudes[distance_index + 1] - latitudes[distance_index] for distance_index in range(len(latitudes) - 1)]
         direction_alternative_int = []
         for heading_alternative_index in range(len(longitudes) - 1):
-            if xdistance_int[heading_alternative_index] > 0:
+            if xdistance_int[heading_alternative_index] != 0:
                 direction_alternative_int.append((360 + np.round(np.arctan(ydistance_int[heading_alternative_index] / xdistance_int[heading_alternative_index]) / np.pi * 180, 0)) % 360)
             else:
-                direction_alternative_int.append(90.0)
-            		
-  
+                if ydistance_int[heading_alternative_index] > 0:
+                    direction_alternative_int.append(90.0)
+                if ydistance_int[heading_alternative_index] < 0:
+                    direction_alternative_int.append(270.0)
+                if ydistance_int[heading_alternative_index] == 0:  
+                    direction_alternative_int.append("undefined")
+
+        last_value = "undefined"
+        for heading_alternative_index in range(len(longitudes) - 1):
+            if direction_alternative_int[heading_alternative_index] == "undefined":
+                if last_value != "undefined":
+                    direction_alternative_int[heading_alternative_index] = last_value
+                else:
+                    for heading_alternative_index2 in range(heading_alternative_index + 1, len(longitudes) - 1): 
+                        if direction_alternative_int[heading_alternative_index2] != "undefined":
+                            direction_alternative_int[heading_alternative_index] = direction_alternative_int[heading_alternative_index2]
+                            break  
+            last_value = direction_alternative_int[heading_alternative_index]
+
         x = []
         n = len(direction_alternative_int)
         prev_direction_alternative = 0
@@ -269,7 +302,8 @@ for subdir_name in all_subdirs:
         total_match_score += match_score 
         #plt.hist(delta_series)
         #plt.show()
-save_object("predicted_direction_alternative", x)
+        all_x.append(x)
+save_object("predicted_direction_alternative", all_x)
 print(total_match_score / total_guesses, total_match_score / total_guesses_no_empty, min(delta_series_total), np.quantile(delta_series_total, 0.25), np.quantile(delta_series_total, 0.5), np.quantile(delta_series_total, 0.75), max(delta_series_total), np.average(delta_series_total), np.std(delta_series_total), np.var(delta_series_total))
 
 plt.hist(delta_series_total)
