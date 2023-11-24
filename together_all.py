@@ -60,8 +60,10 @@ def decompose_fft(data: list, threshold: float = 0.0):
     plt.show()
  
 def process_time(time_as_str):
+    milisecond = int(time_as_str.split(".")[1])
     time_as_str = time_as_str.split(".")[0]
-    return datetime.strptime(time_as_str, '%Y-%m-%d %H:%M:%S')
+    epoch = datetime(1970, 1, 1)
+    return (datetime.strptime(time_as_str, '%Y-%m-%d %H:%M:%S') - epoch).total_seconds() + milisecond / 1000
 
 def poly_calc(coeffs, xs):
     ys = []
@@ -93,7 +95,7 @@ def get_surf_xt_yt(longitudes, latitudes, times_ride, metric_used):
 
 def transform_time(times_ride): 
     times_ride = [process_time(time_as_str) for time_as_str in times_ride]
-    times_ride = [(time_one - times_ride[0]).total_seconds() for time_one in times_ride] 
+    times_ride = [time_one - times_ride[0] for time_one in times_ride] 
     return times_ride
     
 def traj_len_offset(longitudes, latitudes):
@@ -460,15 +462,15 @@ def compare_traj_and_sample(sample_x, sample_y, sample_time, t1, metric_used, no
     if metric_used == "trapz":
         return abs(np.trapz(t1["lat"], t1["long"]) - np.trapz(sample_y, sample_x)) 
     if metric_used == "simpson":
-        return abs(simpson(t1["lat"], t1["long"]) - np.trapz(sample_y, sample_x))   
+        return abs(simpson(t1["lat"], t1["long"]) - simpson(sample_y, sample_x))   
     if metric_used == "trapz x": 
         return abs(np.trapz(t1["long"], t1["time"]) - np.trapz(sample_x, sample_time))
     if metric_used == "simpson x":
-        return abs(simpson(t1["long"], t1["time"]) - np.trapz(sample_x, sample_time)) 
+        return abs(simpson(t1["long"], t1["time"]) - simpson(sample_x, sample_time)) 
     if metric_used == "trapz y":
         return abs(np.trapz(t1["lat"], t1["time"]) - np.trapz(sample_y, sample_time))
     if metric_used == "simpson y":
-        return abs(simpson(t1["lat"], t1["time"]) - np.trapz(sample_y, sample_time))   
+        return abs(simpson(t1["lat"], t1["time"]) - simpson(sample_y, sample_time))   
     if metric_used == "euclidean":
         return euclidean(t1["long"], t1["lat"], sample_x, sample_y)
       
@@ -799,7 +801,7 @@ for subdir_name in all_subdirs:
                 min_for_metric_no_t1_no_sample = 100000
                 best_name_no_t1_no_sample = ""
             for latit in lat_dict:
-                for longit in long_dict: 
+                for longit in long_dict:  
                     if distance_predicted[subdir_name][some_file][metric_name][longit + "-" + latit] < min_for_metric:
                         min_for_metric = distance_predicted[subdir_name][some_file][metric_name][longit + "-" + latit]
                         best_name = longit + "-" + latit
@@ -813,25 +815,26 @@ for subdir_name in all_subdirs:
                         if distance_predicted[subdir_name][some_file][metric_name + " no time t1 no time sample"][longit + "-" + latit] < min_for_metric_no_t1_no_sample:
                             min_for_metric_no_t1_no_sample = distance_predicted[subdir_name][some_file][metric_name + " no time t1 no time sample"][longit + "-" + latit]
                             best_name_no_t1_no_sample = longit + "-" + latit
-            #print(metric_name, best_name)
-            count_best_longit_latit[best_name] += 1
-            count_best_longit[best_name.split("-")[0]] += 1
-            count_best_latit[best_name.split("-")[1]] += 1
-            count_best_longit_latit_metric[metric_name][best_name] += 1
-            count_best_longit_metric[metric_name][best_name.split("-")[0]] += 1
-            count_best_latit_metric[metric_name][best_name.split("-")[1]] += 1
-            if " " in metric_name:  
-                count_best_longit_latit_metric[metric_name + " no time t1"][best_name_no_t1] += 1
-                count_best_longit_metric[metric_name + " no time t1"][best_name_no_t1.split("-")[0]] += 1
-                count_best_latit_metric[metric_name + " no time t1"][best_name_no_t1.split("-")[1]] += 1
+            print(metric_name, best_name)
+            if best_name != '':
+                    count_best_longit_latit[best_name] += 1
+                    count_best_longit[best_name.split("-")[0]] += 1
+                    count_best_latit[best_name.split("-")[1]] += 1
+                    count_best_longit_latit_metric[metric_name][best_name] += 1
+                    count_best_longit_metric[metric_name][best_name.split("-")[0]] += 1
+                    count_best_latit_metric[metric_name][best_name.split("-")[1]] += 1
+                    if " " in metric_name:  
+                            count_best_longit_latit_metric[metric_name + " no time t1"][best_name_no_t1] += 1
+                            count_best_longit_metric[metric_name + " no time t1"][best_name_no_t1.split("-")[0]] += 1
+                            count_best_latit_metric[metric_name + " no time t1"][best_name_no_t1.split("-")[1]] += 1
 
-                count_best_longit_latit_metric[metric_name + " no time sample"][best_name_no_sample] += 1
-                count_best_longit_metric[metric_name + " no time sample"][best_name_no_sample.split("-")[0]] += 1
-                count_best_latit_metric[metric_name + " no time sample"][best_name_no_sample.split("-")[1]] += 1
+                            count_best_longit_latit_metric[metric_name + " no time sample"][best_name_no_sample] += 1
+                            count_best_longit_metric[metric_name + " no time sample"][best_name_no_sample.split("-")[0]] += 1
+                            count_best_latit_metric[metric_name + " no time sample"][best_name_no_sample.split("-")[1]] += 1
 
-                count_best_longit_latit_metric[metric_name + " no time t1 no time sample"][best_name_no_t1_no_sample] += 1
-                count_best_longit_metric[metric_name + " no time t1 no time sample"][best_name_no_t1_no_sample.split("-")[0]] += 1
-                count_best_latit_metric[metric_name + " no time t1 no time sample"][best_name_no_t1_no_sample.split("-")[1]] += 1
+                            count_best_longit_latit_metric[metric_name + " no time t1 no time sample"][best_name_no_t1_no_sample] += 1
+                            count_best_longit_metric[metric_name + " no time t1 no time sample"][best_name_no_t1_no_sample.split("-")[0]] += 1
+                            count_best_latit_metric[metric_name + " no time t1 no time sample"][best_name_no_t1_no_sample.split("-")[1]] += 1
  
         #plt.legend()
         #plt.show()
