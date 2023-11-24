@@ -1,19 +1,4 @@
-import os
-import pickle
-import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
-
-def save_object(file_name, std1):       
-    with open(file_name, 'wb') as file_object:
-        pickle.dump(std1, file_object) 
-        file_object.close()
-
-def load_object(file_name): 
-    with open(file_name, 'rb') as file_object:
-        data = pickle.load(file_object) 
-        file_object.close()
-        return data
+from utilities import *
     
 all_subdirs = os.listdir() 
 

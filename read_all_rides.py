@@ -1,23 +1,4 @@
-import os
-import matplotlib.pyplot as plt
-import pandas as pd
-from datetime import datetime
-import pickle
-    
-def process_time(time_as_str):
-    time_as_str = time_as_str.split(".")[0]
-    return (datetime.strptime(time_as_str, '%Y-%m-%d %H:%M:%S') - datetime(1970, 1, 1)).total_seconds() + milisecond / 1000
-
-def save_object(file_name, std1):       
-    with open(file_name, 'wb') as file_object:
-        pickle.dump(std1, file_object) 
-        file_object.close()
-
-def load_object(file_name): 
-    with open(file_name, 'rb') as file_object:
-        data = pickle.load(file_object) 
-        file_object.close()
-        return data
+from utilities import *
     
 all_subdirs = os.listdir() 
 
@@ -75,7 +56,7 @@ for subdir_name in all_subdirs:
                 datetime_end = process_time(file_with_tours["end"][entry_num])
                 if min(list_time) >= datetime_start and max(list_time) <= datetime_end:
                     #print("yes", file_with_tours["id"][entry_num], datetime_start, datetime_end)
-                    predicted = (datetime_end - datetime_start).total_seconds()
+                    predicted = datetime_end - datetime_start
                     average_time = predicted / len(list_time)
                     #print("measurements", len(list_time))
                     #print("predicted time", predicted, datetime_end - datetime_start) 
@@ -117,14 +98,14 @@ for subdir_name in all_subdirs:
                 max_gap = max(max_gap, max_gap_for_ride)
             #print("max gap for ride", max_gap_for_ride) 
                 
-            if max_gap_for_ride.total_seconds() < 5:
+            if max_gap_for_ride < 5:
                 if file_name_new not in bad_rides_filenames or (file_name_new in bad_rides_filenames and bad_rides_filenames[file_name_new] > 0):
-                    good_rides_filenames[file_name_new] = max_gap_for_ride.total_seconds()
+                    good_rides_filenames[file_name_new] = max_gap_for_ride
                 if file_name_new in bad_rides_filenames and bad_rides_filenames[file_name_new] > 0: 
                     bad_rides_filenames.pop(file_name_new)
             else:
                 if file_name_new not in bad_rides_filenames or (file_name_new in bad_rides_filenames and bad_rides_filenames[file_name_new] > 0):
-                    bad_rides_filenames[file_name_new] = max_gap_for_ride.total_seconds()  
+                    bad_rides_filenames[file_name_new] = max_gap_for_ride
             ride_for_file[some_file] = file_name_new
 
             if os.path.isfile(file_name_new):
@@ -155,11 +136,8 @@ for subdir_name in all_subdirs:
                 new_indexes = [x for x in range(len(list_time))] 
             if some_file in unsorted_set:
                 new_indexes = [list_time.index(list_time_sorted[x]) for x in range(len(list_time))] 
-
-            new_indexes_reversed = [new_indexes[x] for x in range(len(new_indexes))]
-            new_indexes.reverse() 
-
-            for row_num in new_indexes_reversed:
+    
+            for row_num in new_indexes:
                 col_index = 0
                 for col_name in cols_of_csv: 
                     if "fields" not in col_name:

@@ -1,23 +1,4 @@
-import os
-import matplotlib.pyplot as plt
-import pandas as pd
-from datetime import datetime
-import pickle
-    
-def process_time(time_as_str):
-    time_as_str = time_as_str.split(".")[0]
-    return (datetime.strptime(time_as_str, '%Y-%m-%d %H:%M:%S') - datetime(1970, 1, 1)).total_seconds() + milisecond / 1000
-
-def save_object(file_name, std1):       
-    with open(file_name, 'wb') as file_object:
-        pickle.dump(std1, file_object) 
-        file_object.close()
-
-def load_object(file_name): 
-    with open(file_name, 'rb') as file_object:
-        data = pickle.load(file_object) 
-        file_object.close()
-        return data
+from utilities import *
     
 all_subdirs = os.listdir() 
 
@@ -85,14 +66,14 @@ for subdir_name in all_subdirs:
                 max_gap = max(max_gap, max_gap_for_ride)
             #print("max gap for ride", max_gap_for_ride) 
                 
-            if max_gap_for_ride.total_seconds() < 5:
+            if max_gap_for_ride < 5:
                 if file_name_new not in bad_rides_filenames or (file_name_new in bad_rides_filenames and bad_rides_filenames[file_name_new] > 0):
-                    good_rides_filenames[file_name_new] = max_gap_for_ride.total_seconds()
+                    good_rides_filenames[file_name_new] = max_gap_for_ride
                 if file_name_new in bad_rides_filenames and bad_rides_filenames[file_name_new] > 0: 
                     bad_rides_filenames.pop(file_name_new)
             else:
                 if file_name_new not in bad_rides_filenames or (file_name_new in bad_rides_filenames and bad_rides_filenames[file_name_new] > 0):
-                    bad_rides_filenames[file_name_new] = max_gap_for_ride.total_seconds()  
+                    bad_rides_filenames[file_name_new] = max_gap_for_ride 
             ride_for_file[some_file] = file_name_new
   
     print(len(sorted_set), len(reverse_set), len(unsorted_set)) 

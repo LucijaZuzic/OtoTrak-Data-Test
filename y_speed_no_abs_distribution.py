@@ -1,69 +1,5 @@
-import os
-import pickle
-import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
-from datetime import datetime
+from utilities import * 
 
-def process_time(time_as_str):
-    time_as_str = time_as_str.split(".")[0]
-    return (datetime.strptime(time_as_str, '%Y-%m-%d %H:%M:%S') - datetime(1970, 1, 1)).total_seconds() + milisecond / 1000
- 
-def save_object(file_name, std1):       
-    with open(file_name, 'wb') as file_object:
-        pickle.dump(std1, file_object) 
-        file_object.close()
-
-def load_object(file_name): 
-    with open(file_name, 'rb') as file_object:
-        data = pickle.load(file_object) 
-        file_object.close()
-        return data
-
-def preprocess_long_lat(long_list, lat_list):
-    x_dir = long_list[0] < long_list[-1]
-    y_dir = lat_list[0] < lat_list[-1]
- 
-    long_list2 = [x - min(long_list) for x in long_list]
-    lat_list2 = [y - min(lat_list) for y in lat_list]
-    if x_dir == False: 
-        long_list2 = [max(long_list2) - x for x in long_list2]
-    if y_dir == False:
-        lat_list2 = [max(lat_list2) - y for y in lat_list2]
-
-    return long_list2, lat_list2    
-      
-def scale_long_lat(long_list, lat_list, xmax = 0, ymax = 0, keep_aspect_ratio = True):
-    minx = np.min(long_list)
-    maxx = np.max(long_list)
-    miny = np.min(lat_list)
-    maxy = np.max(lat_list)
-    x_diff = maxx - minx
-    if x_diff == 0:
-        x_diff = 1
-    y_diff = maxy - miny 
-    if y_diff == 0:
-        y_diff = 1
-    if xmax == 0 and ymax == 0 and keep_aspect_ratio:
-        xmax = max(x_diff, y_diff)
-        ymax = max(x_diff, y_diff)
-    if xmax == 0 and ymax == 0 and not keep_aspect_ratio:
-        xmax = x_diff
-        ymax = y_diff
-    if xmax == 0 and ymax != 0 and keep_aspect_ratio:
-        xmax = ymax 
-    if xmax == 0 and ymax != 0 and not keep_aspect_ratio:
-        xmax = x_diff 
-    if xmax != 0 and ymax == 0 and keep_aspect_ratio:
-        ymax = xmax 
-    if xmax != 0 and ymax == 0 and not keep_aspect_ratio:
-        ymax = y_diff 
-    if xmax != 0 and ymax != 0 and keep_aspect_ratio and xmax != ymax:
-        ymax = xmax # ymax = xmax or xmax = ymax or keep_aspect_ratio = False or return
-    long_list2 = [(x - min(long_list)) / xmax for x in long_list]
-    lat_list2 = [(y - min(lat_list)) / ymax for y in lat_list]
-    return long_list2, lat_list2  
-    
 all_subdirs = os.listdir() 
 
 if not os.path.isdir("num_occurences"):
@@ -103,10 +39,10 @@ if not os.path.isfile("num_occurences/num_occurences_of_y_speed_no_abs_alternati
             longitudes, latitudes = scale_long_lat(longitudes, latitudes, 0.1, 0.1, True)  
             times = list(file_with_ride["time"])
             times_processed = [process_time(time_new) for time_new in times] 
-            times_delays = [(times_processed[time_index + 1] - times_processed[time_index]).total_seconds() for time_index in range(len(times_processed) - 1)] 
-            for index_delay in range(len(times_delays)):
-                if times_delays[index_delay] < 1.0:
-                    times_delays[index_delay] = 1.0
+            times_delays = [times_processed[time_index + 1] - times_processed[time_index] for time_index in range(len(times_processed) - 1)] 
+            for time_index in range(len(times_delays)):
+                if times_delays[time_index] == 0:
+                    times_delays[time_index] = 10 ** -4
             distance_int = [latitudes[distance_index + 1] - latitudes[distance_index] for distance_index in range(len(latitudes) - 1)]
             y_speed_no_abs_alternative_int = [np.round(distance_int[y_speed_no_abs_alternative_index] / times_delays[y_speed_no_abs_alternative_index], 10) for y_speed_no_abs_alternative_index in range(len(times_delays))]
 
@@ -230,10 +166,10 @@ for subdir_name in all_subdirs:
         longitudes, latitudes = scale_long_lat(longitudes, latitudes, 0.1, 0.1, True)  
         times = list(file_with_ride["time"])
         times_processed = [process_time(time_new) for time_new in times] 
-        times_delays = [(times_processed[time_index + 1] - times_processed[time_index]).total_seconds() for time_index in range(len(times_processed) - 1)] 
-        for index_delay in range(len(times_delays)):
-            if times_delays[index_delay] < 1.0:
-                times_delays[index_delay] = 1.0
+        times_delays = [times_processed[time_index + 1] - times_processed[time_index] for time_index in range(len(times_processed) - 1)] 
+        for time_index in range(len(times_delays)):
+                if times_delays[time_index] == 0:
+                    times_delays[time_index] = 10 ** -4
         distance_int = [latitudes[distance_index + 1] - latitudes[distance_index] for distance_index in range(len(latitudes) - 1)]
         y_speed_no_abs_alternative_int = [np.round(distance_int[y_speed_no_abs_alternative_index] / times_delays[y_speed_no_abs_alternative_index], 10) for y_speed_no_abs_alternative_index in range(len(times_delays))]
 

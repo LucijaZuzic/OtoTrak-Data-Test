@@ -1,22 +1,4 @@
-import pandas as pd
-from datetime import datetime
-import os
-import pickle
-     
-def process_time(time_as_str):
-    time_as_str = time_as_str.split(".")[0]
-    return (datetime.strptime(time_as_str, '%Y-%m-%d %H:%M:%S') - datetime(1970, 1, 1)).total_seconds() + milisecond / 1000
-
-def save_object(file_name, std1):       
-    with open(file_name, 'wb') as file_object:
-        pickle.dump(std1, file_object) 
-        file_object.close()
-
-def load_object(file_name): 
-    with open(file_name, 'rb') as file_object:
-        data = pickle.load(file_object) 
-        file_object.close()
-        return data
+from utilities import *
 
 all_subdirs = os.listdir() 
 

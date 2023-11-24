@@ -1,24 +1,4 @@
-import os
-import pickle
-import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
-from datetime import datetime
-
-def process_time(time_as_str):
-    time_as_str = time_as_str.split(".")[0]
-    return (datetime.strptime(time_as_str, '%Y-%m-%d %H:%M:%S') - datetime(1970, 1, 1)).total_seconds() + milisecond / 1000
- 
-def save_object(file_name, std1):       
-    with open(file_name, 'wb') as file_object:
-        pickle.dump(std1, file_object) 
-        file_object.close()
-
-def load_object(file_name): 
-    with open(file_name, 'rb') as file_object:
-        data = pickle.load(file_object) 
-        file_object.close()
-        return data
+from utilities import *
     
 all_subdirs = os.listdir() 
 
@@ -55,8 +35,11 @@ if not os.path.isfile("num_occurences/num_occurences_of_time"):
             file_with_ride = pd.read_csv(subdir_name + "/cleaned_csv/" + some_file) 
             times = list(file_with_ride["time"])
             times_processed = [process_time(time_new) for time_new in times] 
-            time_int = [(times_processed[time_index + 1] - times_processed[time_index]).total_seconds() for time_index in range(len(times_processed) - 1)] 
-
+            time_int = [np.round(times_processed[time_index + 1] - times_processed[time_index], 10) for time_index in range(len(times_processed) - 1)] 
+            for time_index in range(len(time_int)):
+                            if time_int[time_index] == 0:
+                                time_int[time_index] = 10 ** -4
+                                
             for time in time_int:
                 if time not in num_occurences_of_time:
                     num_occurences_of_time[time] = 0
@@ -173,7 +156,10 @@ for subdir_name in all_subdirs:
         file_with_ride = pd.read_csv(subdir_name + "/cleaned_csv/" + some_file)
         times = list(file_with_ride["time"])
         times_processed = [process_time(time_new) for time_new in times] 
-        time_int = [(times_processed[time_index + 1] - times_processed[time_index]).total_seconds() for time_index in range(len(times_processed) - 1)] 
+        time_int = [np.round(times_processed[time_index + 1] - times_processed[time_index], 10) for time_index in range(len(times_processed) - 1)] 
+        for time_index in range(len(time_int)):
+                if time_int[time_index] == 0:
+                    time_int[time_index] = 10 ** -4
  
         x = []
         n = len(time_int)

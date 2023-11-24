@@ -1,20 +1,5 @@
-import os
-import pickle
-import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
+from utilities import *
 
-def save_object(file_name, std1):       
-    with open(file_name, 'wb') as file_object:
-        pickle.dump(std1, file_object) 
-        file_object.close()
-
-def load_object(file_name): 
-    with open(file_name, 'rb') as file_object:
-        data = pickle.load(file_object) 
-        file_object.close()
-        return data
-    
 all_subdirs = os.listdir() 
 
 if not os.path.isdir("num_occurences"):
