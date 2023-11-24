@@ -1,14 +1,9 @@
 from utilities import *
     
 window_size = 20
-
-dotsx_original = []
-dotsy_original = []
-size = 8
-for x in range(size):
-	px, py = make_ray(0.5, 360 / size * x, 0.5, 0.5) 
-	dotsx_original.append(px)
-	dotsy_original.append(py)
+ 
+size = 36
+dotsx_original, dotsy_original = make_rays(size)
 
 deg = 5
 maxoffset = 0.005
@@ -51,9 +46,12 @@ for subdir_name in all_subdirs:
     bad_rides_filenames = set()
     if os.path.isfile(subdir_name + "/bad_rides_filenames"):
         bad_rides_filenames = load_object(subdir_name + "/bad_rides_filenames")
+    gap_rides_filenames = set()
+    if os.path.isfile(subdir_name + "/gap_rides_filenames"):
+        gap_rides_filenames = load_object(subdir_name + "/gap_rides_filenames")
         
     for some_file in all_files:  
-        if subdir_name + "/cleaned_csv/" + some_file in bad_rides_filenames:
+        if subdir_name + "/cleaned_csv/" + some_file in bad_rides_filenames or subdir_name + "/cleaned_csv/" + some_file in gap_rides_filenames:
             #print("Skipped ride", some_file)
             continue
         #print("Used ride", some_file)
@@ -106,9 +104,8 @@ for subdir_name in all_subdirs:
             all_distances_preprocessed_trajs[window_size][subdir_name][only_num_ride][x] = {"scale": compare_traj_ray(size, window_size, dotsx_original, dotsy_original, longitudes_tmp_transform, latitudes_tmp_transform, True, False), "offset": compare_traj_ray(size, window_size, dotsx_original, dotsy_original, longitudes_tmp_transform, latitudes_tmp_transform, True, True), "no scale": compare_traj_ray(size, window_size, dotsx_original, dotsy_original, longitudes_tmp_transform, latitudes_tmp_transform, False, False)}
             all_distances_scaled_trajs[window_size][subdir_name][only_num_ride][x] = {"scale": compare_traj_ray(size, window_size, dotsx_original, dotsy_original, longitudes_scaled, latitudes_scaled, True, False), "offset": compare_traj_ray(size, window_size, dotsx_original, dotsy_original, longitudes_scaled, latitudes_scaled, True, True), "no scale": compare_traj_ray(size, window_size, dotsx_original, dotsy_original, longitudes_scaled, latitudes_scaled, False, False)} 
             all_distances_scaled_to_max_trajs[window_size][subdir_name][only_num_ride][x] = {"scale": compare_traj_ray(size, window_size, dotsx_original, dotsy_original, longitudes_scaled_to_max, latitudes_scaled_to_max, True, False), "offset": compare_traj_ray(size, window_size, dotsx_original, dotsy_original, longitudes_scaled_to_max, latitudes_scaled_to_max, True, True), "no scale": compare_traj_ray(size, window_size, dotsx_original, dotsy_original, longitudes_scaled_to_max, latitudes_scaled_to_max, False, False)}
-  
-  
-process_csv_ray(window_size,all_distances_trajs, "all_distances_trajs.csv")
-process_csv_ray(window_size,all_distances_preprocessed_trajs, "all_distances_preprocessed_trajs.csv")
-process_csv_ray(window_size,all_distances_scaled_trajs, "all_distances_scaled_trajs.csv")
-process_csv_ray(window_size,all_distances_scaled_to_max_trajs, "all_distances_scaled_to_max_trajs.csv")
+   
+process_csv_ray(window_size, all_distances_trajs, "all_distances_trajs_" + str(size) + ".csv")
+process_csv_ray(window_size, all_distances_preprocessed_trajs, "all_distances_preprocessed_trajs_" + str(size) + ".csv")
+process_csv_ray(window_size, all_distances_scaled_trajs, "all_distances_scaled_trajs_" + str(size) + ".csv")
+process_csv_ray(window_size, all_distances_scaled_to_max_trajs, "all_distances_scaled_to_max_trajs_" + str(size) + ".csv")

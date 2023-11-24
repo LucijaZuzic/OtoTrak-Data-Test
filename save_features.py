@@ -39,35 +39,8 @@ label_I = 0
 label_D = 0
  
 total_possible_trajs = 0
- 
-def compare_traj_and_sample(sample_x, sample_y, sample_time, t1, metric_used): 
-    sample_time_new = [x for x in sample_time]
-    for x in range(1, len(sample_time_new)):
-        if sample_time_new[x] == sample_time_new[x - 1]:
-            sample_time_new[x] = sample_time_new[x - 1] + 10 ** -4
-    t1_new = [x for x in t1["time"]]
-    for x in range(1, len(t1_new)):
-        if t1_new[x] == t1_new[x - 1]:
-            t1_new[x] = t1_new[x - 1] + 10 ** -4 
-    if metric_used == "custom":
-        return traj_dist(t1["long"], t1["lat"], sample_x, sample_y)  
-    if metric_used == "dtw":
-        return dtw(t1["long"], t1["lat"], sample_x, sample_y)    
-    if metric_used == "trapz":
-        return abs(np.trapz(t1["lat"], t1["long"]) - np.trapz(sample_y, sample_x)) 
-    if metric_used == "simpson":
-        return abs(simpson(t1["lat"], t1["long"]) - simpson(sample_y, sample_x))  
-    if metric_used == "trapz x":
-        return abs(np.trapz(t1["long"], t1_new) - np.trapz(sample_x, sample_time_new))
-    if metric_used == "simpson x": 
-        return abs(simpson(t1["long"], t1_new) - simpson(sample_x, sample_time_new)) 
-    if metric_used == "trapz y":
-        return abs(np.trapz(t1["lat"], t1_new) - np.trapz(sample_y, sample_time_new))
-    if metric_used == "simpson y": 
-        return abs(simpson(t1["lat"], t1_new) - simpson(sample_y, sample_time_new))  
-    if metric_used == "euclidean":
-        return euclidean(t1["long"], t1["lat"], sample_x, sample_y)
 
+metric_names = ["euclidean", "dtw", "simpson", "trapz", "custom", "simpson x", "trapz x", "simpson y", "trapz y", "rays"]
 metric_names = ["euclidean", "dtw", "simpson", "trapz", "custom", "simpson x", "trapz x", "simpson y", "trapz y"]
 sample_names = dict()
 
@@ -139,6 +112,8 @@ cos_half_reverse_x = [x * 1 / (window_size - 1) for x in range(window_size)]
 cos_half_reverse_y = [np.cos(x * np.pi + np.pi) for x in cos_half_x]  
 sample_names["cos_half_reverse"] = {"long": cos_half_reverse_x, "lat": cos_half_reverse_y}
 
+size = 8
+dotsx_original, dotsy_original = make_rays(size)
 for subdir_name in all_subdirs:
 
     trajs_in_dir = 0
@@ -160,9 +135,12 @@ for subdir_name in all_subdirs:
     bad_rides_filenames = set()
     if os.path.isfile(subdir_name + "/bad_rides_filenames"):
         bad_rides_filenames = load_object(subdir_name + "/bad_rides_filenames")
+    gap_rides_filenames = set()
+    if os.path.isfile(subdir_name + "/gap_rides_filenames"):
+        gap_rides_filenames = load_object(subdir_name + "/gap_rides_filenames")
         
     for some_file in all_files:  
-        if subdir_name + "/cleaned_csv/" + some_file in bad_rides_filenames:
+        if subdir_name + "/cleaned_csv/" + some_file in bad_rides_filenames or subdir_name + "/cleaned_csv/" + some_file in gap_rides_filenames:
             #print("Skipped ride", some_file)
             continue
         #print("Used ride", some_file)
@@ -303,8 +281,8 @@ for subdir_name in all_subdirs:
                     oldy = [valy for valy in sample_names[sample_name]["lat"]]
                     newx = [valx * max(max(longitudes_tmp_transform), max(latitudes_tmp_transform)) for valx in sample_names[sample_name]["long"]]
                     newy = [valy * max(max(longitudes_tmp_transform), max(latitudes_tmp_transform)) for valy in sample_names[sample_name]["lat"]]
-                    all_feats_trajs[window_size][subdir_name][only_num_ride][x][sample_name + "_same_" + metric_name] = compare_traj_and_sample(newx, newy, range(len(newx)), {"long": longitudes_tmp_transform, "lat": latitudes_tmp_transform, "time": times_tmp_transform}, metric_name)
-                    all_feats_trajs[window_size][subdir_name][only_num_ride][x][sample_name + "_diff_" + metric_name] = compare_traj_and_sample(oldx, oldy, range(len(oldx)), {"long": longitudes_tmp_transform, "lat": latitudes_tmp_transform, "time": times_tmp_transform}, metric_name)
+                    all_feats_trajs[window_size][subdir_name][only_num_ride][x][sample_name + "_same_" + metric_name] = compare_traj_and_sample(newx, newy, range(len(newx)), {"long": longitudes_tmp_transform, "lat": latitudes_tmp_transform, "time": times_tmp_transform}, metric_name, False, False, size, True, True, dotsx_original, dotsy_original)
+                    all_feats_trajs[window_size][subdir_name][only_num_ride][x][sample_name + "_diff_" + metric_name] = compare_traj_and_sample(oldx, oldy, range(len(oldx)), {"long": longitudes_tmp_transform, "lat": latitudes_tmp_transform, "time": times_tmp_transform}, metric_name, False, False, size, True, True, dotsx_original, dotsy_original)
 
             all_feats_scaled_trajs[window_size][subdir_name][only_num_ride][x] = {"mean_vect_turning_angles": turn_angles_scaled / np.pi * 180, 
                                                                            "max_x": max(longitudes_scaled),
@@ -379,44 +357,6 @@ for subdir_name in all_subdirs:
 print(total_possible_trajs)
 print("NF", label_NF, "NM", label_NM, "D", label_D, "I", label_I) 
 
-def process_csv(some_dict, save_name): 
-    new_csv_content = "window_size,vehicle,ride,start,mean_vect_turning_angles,max_x,max_y,surf_trapz_x,surf_trapz_y,surf_simpson_x,surf_simpson_y,"
-    for d in range(deg + 1):
-        new_csv_content += "x_poly_" + str(d + 1) + ","
-    for d in range(deg + 1):
-        new_csv_content += "y_poly_" + str(d + 1) + ","
-    for d in range(deg + 1):
-        new_csv_content += "xy_poly_" + str(d + 1) + "," 
-    new_csv_content += "duration,len,offset,mean_speed_len,mean_speed_offset,len_vs_offset,total_surf,"
-    for sample_name in sample_names:
-        for metric_name in metric_names: 
-            new_csv_content += sample_name + "_same_" + metric_name + "," 
-            new_csv_content += sample_name + "_diff_" + metric_name + ","
-    new_csv_content += "monotonous," 
-    for flag in flag_list:
-        new_csv_content += flag + ","
-    new_csv_content += "\n"
-    for vehicle1 in all_possible_trajs[window_size].keys():  
-        for r1 in all_possible_trajs[window_size][vehicle1]:
-            for x1 in all_possible_trajs[window_size][vehicle1][r1]: 
-                new_csv_content += str(window_size) + "," + str(vehicle1) + "," + str(r1) + "," + str(x1) + ","  
-                for feat_name in some_dict[window_size][vehicle1][r1][x1]: 
-                    if "poly" in feat_name: 
-                        for val in list(some_dict[window_size][vehicle1][r1][x1][feat_name]): 
-                            new_csv_content += str(val) + ","
-                        if len(list(some_dict[window_size][vehicle1][r1][x1][feat_name])) == 0:
-                            for d in range(deg + 1): 
-                                new_csv_content += ","
-                    else:
-                        new_csv_content += str(some_dict[window_size][vehicle1][r1][x1][feat_name]) + ","
-                new_csv_content += trajectory_monotonous[window_size][vehicle1][r1][x1] + ","  
-                for flag in flag_list:
-                     new_csv_content += str(trajectory_flags[flag][window_size][vehicle1][r1][x1]) + ","  
-                new_csv_content += "\n"    
-    csv_file = open(save_name, "w")
-    csv_file.write(new_csv_content)
-    csv_file.close()
-  
-process_csv(all_feats_trajs, "all_feats.csv")
-process_csv(all_feats_scaled_trajs, "all_feats_scaled.csv")
-process_csv(all_feats_scaled_to_max_trajs, "all_feats_scaled_to_max.csv")
+process_csv(trajectory_flags, trajectory_monotonous, window_size, all_possible_trajs, sample_names, metric_names, deg, flag_list, all_feats_trajs, "all_feats.csv")
+process_csv(trajectory_flags, trajectory_monotonous, window_size, all_possible_trajs, sample_names, metric_names, deg, flag_list, all_feats_scaled_trajs, "all_feats_scaled.csv")
+process_csv(trajectory_flags, trajectory_monotonous, window_size, all_possible_trajs, sample_names, metric_names, deg, flag_list, all_feats_scaled_to_max_trajs, "all_feats_scaled_to_max.csv")

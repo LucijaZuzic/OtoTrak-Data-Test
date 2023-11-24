@@ -24,7 +24,7 @@ for subdir_name in all_subdirs:
 
     bad_rides_filenames = dict()
     if os.path.isfile(subdir_name + "/bad_rides_filenames"):
-        bad_rides_filenames = load_object(subdir_name + "/bad_rides_filenames")
+        bad_rides_filenames = load_object(subdir_name + "/bad_rides_filenames") 
 
     max_start_found = process_time("2023-08-01 00:00:00.000")
     min_start_found = process_time("2023-07-01 00:00:00.000") 

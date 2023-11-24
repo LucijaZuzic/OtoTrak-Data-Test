@@ -8,8 +8,9 @@ if not os.path.isdir("probability"):
     os.makedirs("probability")
 if not os.path.isdir("predicted"):
     os.makedirs("predicted")
+flag_replace = False
 
-if not os.path.isfile("num_occurences/num_occurences_of_time"):
+if flag_replace or not os.path.isfile("num_occurences/num_occurences_of_time"):
     num_occurences_of_time = dict()
     num_occurences_of_time_in_next_step = dict()
     num_occurences_of_time_in_next_next_step = dict()
@@ -24,12 +25,15 @@ if not os.path.isfile("num_occurences/num_occurences_of_time"):
         bad_rides_filenames = set()
         if os.path.isfile(subdir_name + "/bad_rides_filenames"):
             bad_rides_filenames = load_object(subdir_name + "/bad_rides_filenames")
+        gap_rides_filenames = set()
+        if os.path.isfile(subdir_name + "/gap_rides_filenames"):
+            gap_rides_filenames = load_object(subdir_name + "/gap_rides_filenames")
         test_rides = set()
         if os.path.isfile(subdir_name + "/test_rides"):
             test_rides = load_object(subdir_name + "/test_rides")
             
         for some_file in all_files:  
-            if subdir_name + "/cleaned_csv/" + some_file in bad_rides_filenames or some_file in test_rides: 
+            if subdir_name + "/cleaned_csv/" + some_file in bad_rides_filenames or subdir_name + "/cleaned_csv/" + some_file in gap_rides_filenames or some_file in test_rides: 
                 continue 
         
             file_with_ride = pd.read_csv(subdir_name + "/cleaned_csv/" + some_file) 
@@ -38,7 +42,7 @@ if not os.path.isfile("num_occurences/num_occurences_of_time"):
             time_int = [np.round(times_processed[time_index + 1] - times_processed[time_index], 10) for time_index in range(len(times_processed) - 1)] 
             for time_index in range(len(time_int)):
                             if time_int[time_index] == 0:
-                                time_int[time_index] = 10 ** -4
+                                time_int[time_index] = 10 ** -20
                                 
             for time in time_int:
                 if time not in num_occurences_of_time:
@@ -134,7 +138,7 @@ total_match_score = 0
 total_guesses = 0 
 total_guesses_no_empty = 0
 delta_series_total = [] 
-all_x = []
+all_x = dict()
 for subdir_name in all_subdirs: 
     if not os.path.isdir(subdir_name) or "Vehicle" not in subdir_name:
         continue 
@@ -145,12 +149,15 @@ for subdir_name in all_subdirs:
     bad_rides_filenames = set()
     if os.path.isfile(subdir_name + "/bad_rides_filenames"):
         bad_rides_filenames = load_object(subdir_name + "/bad_rides_filenames")
+    gap_rides_filenames = set()
+    if os.path.isfile(subdir_name + "/gap_rides_filenames"):
+        gap_rides_filenames = load_object(subdir_name + "/gap_rides_filenames")
     train_rides = set()
     if os.path.isfile(subdir_name + "/train_rides"):
         train_rides= load_object(subdir_name + "/train_rides")
         
     for some_file in all_files:  
-        if subdir_name + "/cleaned_csv/" + some_file in bad_rides_filenames or some_file in train_rides: 
+        if subdir_name + "/cleaned_csv/" + some_file in bad_rides_filenames or subdir_name + "/cleaned_csv/" + some_file in gap_rides_filenames or some_file in train_rides: 
             continue 
     
         file_with_ride = pd.read_csv(subdir_name + "/cleaned_csv/" + some_file)
@@ -159,7 +166,7 @@ for subdir_name in all_subdirs:
         time_int = [np.round(times_processed[time_index + 1] - times_processed[time_index], 10) for time_index in range(len(times_processed) - 1)] 
         for time_index in range(len(time_int)):
                 if time_int[time_index] == 0:
-                    time_int[time_index] = 10 ** -4
+                    time_int[time_index] = 10 ** -20
  
         x = []
         n = len(time_int)
@@ -194,7 +201,7 @@ for subdir_name in all_subdirs:
         total_match_score += match_score 
         #plt.hist(delta_series)
         #plt.show()
-        all_x.append(x)
+        all_x[subdir_name + "/cleaned_csv/" + some_file] = x
 save_object("predicted/predicted_time", all_x)
 print(total_match_score / total_guesses, total_match_score / total_guesses_no_empty, min(delta_series_total), np.quantile(delta_series_total, 0.25), np.quantile(delta_series_total, 0.5), np.quantile(delta_series_total, 0.75), max(delta_series_total), np.average(delta_series_total), np.std(delta_series_total), np.var(delta_series_total))
 

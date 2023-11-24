@@ -10,8 +10,11 @@ for subdir_name in all_subdirs:
     bad_rides_filenames = dict()
     if os.path.isfile(subdir_name + "/bad_rides_filenames"):
         bad_rides_filenames = load_object(subdir_name + "/bad_rides_filenames")
+    gap_rides_filenames = dict()
+    if os.path.isfile(subdir_name + "/gap_rides_filenames"):
+        gap_rides_filenames = load_object(subdir_name + "/gap_rides_filenames")
     for some_file in all_files:  
-        if subdir_name + "/cleaned_csv/" + some_file in bad_rides_filenames:
+        if subdir_name + "/cleaned_csv/" + some_file in bad_rides_filenames or subdir_name + "/cleaned_csv/" + some_file in gap_rides_filenames:
             #print("Skipped ride", some_file)
             continue
         #print("Used ride", some_file)

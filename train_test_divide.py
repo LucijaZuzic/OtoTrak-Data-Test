@@ -15,13 +15,17 @@ for subdir_name in all_subdirs:
     all_rides_cleaned = os.listdir(subdir_name + "/cleaned_csv/")
       
     all_files = os.listdir(subdir_name + "/cleaned_csv/") 
-    bad_rides_filenames = set()
     good_rides = dict()  
+
+    bad_rides_filenames = set()
     if os.path.isfile(subdir_name + "/bad_rides_filenames"):
         bad_rides_filenames = load_object(subdir_name + "/bad_rides_filenames")
+    gap_rides_filenames = set()
+    if os.path.isfile(subdir_name + "/gap_rides_filenames"):
+        gap_rides_filenames = load_object(subdir_name + "/gap_rides_filenames")
         
     for some_file in all_files:  
-        if subdir_name + "/cleaned_csv/" + some_file not in bad_rides_filenames:
+        if subdir_name + "/cleaned_csv/" + some_file not in bad_rides_filenames and subdir_name + "/cleaned_csv/" + some_file not in gap_rides_filenames:
             good_rides[some_file] = 0 
 
     if os.path.isfile(subdir_name + "/test_rides"):

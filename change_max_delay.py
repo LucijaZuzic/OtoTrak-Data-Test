@@ -16,12 +16,12 @@ for subdir_name in all_subdirs:
  
     ride_for_file = dict() 
 
-    files_seen = set() 
-    bad_rides_filenames = dict()
+    files_seen = set()  
     good_rides_filenames = dict()
     
+    bad_rides_filenames = dict()
     if os.path.isfile(subdir_name + "/bad_rides_filenames"):
-        bad_rides_filenames = load_object(subdir_name + "/bad_rides_filenames")
+        bad_rides_filenames = load_object(subdir_name + "/bad_rides_filenames") 
 
     all_files = os.listdir(subdir_name + "/cleaned_csv/")  
 

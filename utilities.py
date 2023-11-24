@@ -7,6 +7,7 @@ from scipy.integrate import simpson
 import scipy.fft 
 from datetime import datetime     
 from scipy.spatial import ConvexHull, convex_hull_plot_2d
+from sklearn.model_selection import train_test_split
 
 def dtw(longitudes1, latitudes1, longitudes2, latitudes2): 
     if len(longitudes1) == 0 and len(latitudes1) == 0 and len(longitudes2) == 0 and len(latitudes2) == 0:
@@ -328,8 +329,9 @@ def total_surf(long_list, lat_list):
     for vx in ch.vertices:
         corners.append((points_data[vx, 0], points_data[vx, 1]))  
     value_ret = SomePolyArea(corners)
+    return value_ret
  
-def compare_traj_and_sample(sample_x, sample_y, sample_time, t1, metric_used, no_time_t1 = False, no_time_sample = False): 
+def compare_traj_and_sample(sample_x, sample_y, sample_time, t1, metric_used, no_time_t1 = False, no_time_sample = False, size = 8, scale = True, offset = True, dotsx_original = [], dotsy_original = []): 
     if no_time_t1:
         t1["time"] = range(len(t1["long"]))
     if no_time_sample:
@@ -337,11 +339,11 @@ def compare_traj_and_sample(sample_x, sample_y, sample_time, t1, metric_used, no
     sample_time_new = [x for x in sample_time]
     for x in range(1, len(sample_time_new)):
         if sample_time_new[x] == sample_time_new[x - 1]:
-            sample_time_new[x] = sample_time_new[x - 1] + 10 ** -4
+            sample_time_new[x] = sample_time_new[x - 1] + 10 ** -20
     t1_new = [x for x in t1["time"]]
     for x in range(1, len(t1_new)):
         if t1_new[x] == t1_new[x - 1]:
-            t1_new[x] = t1_new[x - 1] + 10 ** -4 
+            t1_new[x] = t1_new[x - 1] + 10 ** -20 
     if metric_used == "custom":
         return traj_dist(t1["long"], t1["lat"], sample_x, sample_y)  
     if metric_used == "dtw":
@@ -352,14 +354,22 @@ def compare_traj_and_sample(sample_x, sample_y, sample_time, t1, metric_used, no
         return abs(simpson(t1["lat"], t1["long"]) - simpson(sample_y, sample_x))  
     if metric_used == "trapz x":
         return abs(np.trapz(t1["long"], t1_new) - np.trapz(sample_x, sample_time_new))
-    if metric_used == "simpson x": 
+    if metric_used == "simpson x":  
         return abs(simpson(t1["long"], t1_new) - simpson(sample_x, sample_time_new)) 
     if metric_used == "trapz y":
         return abs(np.trapz(t1["lat"], t1_new) - np.trapz(sample_y, sample_time_new))
     if metric_used == "simpson y": 
         return abs(simpson(t1["lat"], t1_new) - simpson(sample_y, sample_time_new))  
     if metric_used == "euclidean":
-        return euclidean(t1["long"], t1["lat"], sample_x, sample_y)
+        return euclidean(t1["long"], t1["lat"], sample_x, sample_y) 
+    if metric_used == "rays":
+        if len(dotsx_original) == 0:
+            dotsx_original, dotsy_original = make_rays(size)
+        else:
+            size = len(dotsx_original)
+        a1, x1, y1 = compare_traj_ray(size, 1, dotsx_original, dotsy_original, t1["long"], t1["lat"], scale, offset)
+        a2, x2, y2 = compare_traj_ray(size, 1, dotsx_original, dotsy_original, sample_x, sample_y, scale, offset)
+        return abs(a1 - a2)
     
 def get_sides_from_angle(longest, angle):
     return longest * np.cos(angle / 180 * np.pi), longest * np.sin(angle / 180 * np.pi)
@@ -522,3 +532,77 @@ def process_csv_ray(window_size, some_dict, save_name):
 	csv_file = open(save_name, "w")
 	csv_file.write(new_csv_content)
 	csv_file.close()
+     
+def process_csv(trajectory_flags, trajectory_monotonous, window_size, all_possible_trajs, sample_names, metric_names, deg, flag_list, some_dict, save_name): 
+    new_csv_content = "window_size,vehicle,ride,start,mean_vect_turning_angles,max_x,max_y,surf_trapz_x,surf_trapz_y,surf_simpson_x,surf_simpson_y,"
+    for d in range(deg + 1):
+        new_csv_content += "x_poly_" + str(d + 1) + ","
+    for d in range(deg + 1):
+        new_csv_content += "y_poly_" + str(d + 1) + ","
+    for d in range(deg + 1):
+        new_csv_content += "xy_poly_" + str(d + 1) + "," 
+    new_csv_content += "duration,len,offset,mean_speed_len,mean_speed_offset,len_vs_offset,total_surf,"
+    for sample_name in sample_names:
+        for metric_name in metric_names: 
+            new_csv_content += sample_name + "_same_" + metric_name + "," 
+            new_csv_content += sample_name + "_diff_" + metric_name + ","
+    new_csv_content += "monotonous," 
+    for flag in flag_list:
+        new_csv_content += flag + ","
+    new_csv_content += "\n"
+    for vehicle1 in all_possible_trajs[window_size].keys():  
+        for r1 in all_possible_trajs[window_size][vehicle1]:
+            for x1 in all_possible_trajs[window_size][vehicle1][r1]: 
+                new_csv_content += str(window_size) + "," + str(vehicle1) + "," + str(r1) + "," + str(x1) + ","  
+                for feat_name in some_dict[window_size][vehicle1][r1][x1]: 
+                    if "poly" in feat_name: 
+                        for val in list(some_dict[window_size][vehicle1][r1][x1][feat_name]): 
+                            new_csv_content += str(val) + ","
+                        if len(list(some_dict[window_size][vehicle1][r1][x1][feat_name])) == 0:
+                            for d in range(deg + 1): 
+                                new_csv_content += ","
+                    else:
+                        new_csv_content += str(some_dict[window_size][vehicle1][r1][x1][feat_name]) + ","
+                new_csv_content += trajectory_monotonous[window_size][vehicle1][r1][x1] + ","  
+                for flag in flag_list:
+                     new_csv_content += str(trajectory_flags[flag][window_size][vehicle1][r1][x1]) + ","  
+                new_csv_content += "\n"    
+    csv_file = open(save_name, "w")
+    csv_file.write(new_csv_content)
+    csv_file.close()
+  
+def make_rays(size): 
+    dotsx_original = []
+    dotsy_original = [] 
+    for x in range(size):
+        px, py = make_ray(0.5, 360 / size * x, 0.5, 0.5) 
+        dotsx_original.append(px)
+        dotsy_original.append(py)
+    return dotsx_original, dotsy_original
+
+def load_traj(vehicle, ride): 
+    file_with_ride = pd.read_csv(vehicle + "/cleaned_csv/events_" + str(ride) + ".csv")
+    longitudes = list(file_with_ride["fields_longitude"])
+    latitudes = list(file_with_ride["fields_latitude"]) 
+    times = list(file_with_ride["time"])  
+    return longitudes, latitudes, times
+
+def load_traj_name(name): 
+    file_with_ride = pd.read_csv(name)
+    longitudes = list(file_with_ride["fields_longitude"])
+    latitudes = list(file_with_ride["fields_latitude"]) 
+    times = list(file_with_ride["time"])  
+    return longitudes, latitudes, times
+
+def plot_long_lat_dict(title, long_dict, lat_dict, longer_file_name, long_keys, lat_keys, scalex, scaley):
+    longitudes, latitudes, times = load_traj_name(longer_file_name)
+    longitudes, latitudes = preprocess_long_lat(longitudes, latitudes)
+    longitudes, latitudes = scale_long_lat(longitudes, latitudes, scalex, scaley, True) 
+    plt.title(title + " " + longer_file_name.replace("/cleaned_csv/events_", "").replace(".csv", ""))
+    plt.plot(longitudes, latitudes, label = "original")
+    plt.plot(longitudes[0], latitudes[0], 'ro', label = "original")
+    for latit in lat_keys:
+        for longit in long_keys: 
+            plt.plot(long_dict[longer_file_name][longit], lat_dict[longer_file_name][latit], label = longit + " " + latit)
+    plt.legend()
+    plt.show()
