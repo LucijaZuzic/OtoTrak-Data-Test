@@ -10,9 +10,7 @@ all_good_rides = dict()
 
 for subdir_name in all_subdirs: 
     if not os.path.isdir(subdir_name) or "Vehicle" not in subdir_name:
-        continue 
-    
-    all_rides_cleaned = os.listdir(subdir_name + "/cleaned_csv/")
+        continue
       
     all_files = os.listdir(subdir_name + "/cleaned_csv/") 
     good_rides = dict()  

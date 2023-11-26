@@ -331,33 +331,42 @@ def total_surf(long_list, lat_list):
     value_ret = SomePolyArea(corners)
     return value_ret
  
-def compare_traj_and_sample(sample_x, sample_y, sample_time, t1, metric_used, no_time_t1 = False, no_time_sample = False, size = 8, scale = True, offset = True, dotsx_original = [], dotsy_original = []): 
-    if no_time_t1:
-        t1["time"] = range(len(t1["long"]))
-    if no_time_sample:
-        sample_time = range(len(sample_x))
-    sample_time_new = [x for x in sample_time]
-    for x in range(1, len(sample_time_new)):
-        if sample_time_new[x] == sample_time_new[x - 1]:
-            sample_time_new[x] = sample_time_new[x - 1] + 10 ** -20
-    t1_new = [x for x in t1["time"]]
-    for x in range(1, len(t1_new)):
-        if t1_new[x] == t1_new[x - 1]:
-            t1_new[x] = t1_new[x - 1] + 10 ** -20 
+def compare_traj_and_sample(sample_x, sample_y, sample_time, t1, metric_used, no_time_t1 = False, no_time_sample = False, scale = True, offset = True, dotsx_original = [], dotsy_original = []): 
+    if "simpson " in metric_used:
+        if no_time_t1:
+            t1["time"] = range(len(t1["long"]))
+        if no_time_sample:
+            sample_time = range(len(sample_x))
+        sample_time_new = [x for x in sample_time]
+        for x in range(1, len(sample_time_new)):
+            if sample_time_new[x] == sample_time_new[x - 1]:
+                sample_time_new[x] = sample_time_new[x - 1] + 10 ** -20
+        t1_new = [x for x in t1["time"]]
+        for x in range(1, len(t1_new)):
+            if t1_new[x] == t1_new[x - 1]:
+                t1_new[x] = t1_new[x - 1] + 10 ** -20 
     if metric_used == "custom":
         return traj_dist(t1["long"], t1["lat"], sample_x, sample_y)  
     if metric_used == "dtw":
         return dtw(t1["long"], t1["lat"], sample_x, sample_y)    
     if metric_used == "trapz":
         return abs(np.trapz(t1["lat"], t1["long"]) - np.trapz(sample_y, sample_x)) 
-    if metric_used == "simpson":
+    if metric_used == "simpson": 
+        sample_x_sgn = sample_x[1] > sample_x[0]
+        for x in range(1, len(sample_x)):
+            if sample_x[x] > sample_x[x - 1] != sample_x_sgn: 
+                return 1000000 
+        t1_sgn = t1["long"][1] > t1["long"][0]
+        for x in range(1, len(t1_sgn)):
+            if t1["long"][x] > t1["long"][x - 1] != t1_sgn: 
+                return 1000000  
         return abs(simpson(t1["lat"], t1["long"]) - simpson(sample_y, sample_x))  
     if metric_used == "trapz x":
-        return abs(np.trapz(t1["long"], t1_new) - np.trapz(sample_x, sample_time_new))
+        return abs(np.trapz(t1["long"], t1["time"]) - np.trapz(sample_x, sample_time))
     if metric_used == "simpson x":  
         return abs(simpson(t1["long"], t1_new) - simpson(sample_x, sample_time_new)) 
     if metric_used == "trapz y":
-        return abs(np.trapz(t1["lat"], t1_new) - np.trapz(sample_y, sample_time_new))
+        return abs(np.trapz(t1["lat"], t1["time"]) - np.trapz(sample_y, sample_time))
     if metric_used == "simpson y": 
         return abs(simpson(t1["lat"], t1_new) - simpson(sample_y, sample_time_new))  
     if metric_used == "euclidean":
@@ -367,18 +376,25 @@ def compare_traj_and_sample(sample_x, sample_y, sample_time, t1, metric_used, no
             dotsx_original, dotsy_original = make_rays(size)
         else:
             size = len(dotsx_original)
-        a1, x1, y1 = compare_traj_ray(size, 1, dotsx_original, dotsy_original, t1["long"], t1["lat"], scale, offset)
-        a2, x2, y2 = compare_traj_ray(size, 1, dotsx_original, dotsy_original, sample_x, sample_y, scale, offset)
+        a1, x1, y1, i1, d1, dx1, dy1 = compare_traj_ray(dotsx_original, dotsy_original, t1["long"], t1["lat"], scale, offset)
+        a2, x2, y2, i2, d2, dx2, dy2 = compare_traj_ray(dotsx_original, dotsy_original, sample_x, sample_y, scale, offset)
         return abs(a1 - a2)
     
 def get_sides_from_angle(longest, angle):
     return longest * np.cos(angle / 180 * np.pi), longest * np.sin(angle / 180 * np.pi)
 
+def count_gap(list_gap): 
+    gap_num = 0
+    for index_num in range(len(list_gap)):
+        if list_gap[index_num] == "undefined":
+            gap_num += 1
+    return gap_num
+
 def fill_gap(list_gap):
     list_no_gap = []
     last_val = 0
     for index_num in range(len(list_gap)):
-        if list_gap[index_num] != -1:
+        if list_gap[index_num] != "undefined":
             last_val = list_gap[index_num]
         list_no_gap.append(last_val)  
     return list_no_gap
@@ -386,26 +402,29 @@ def fill_gap(list_gap):
 def make_ray(radius, angle, sx, sy):
     return sx + np.cos(angle / 180 * np.pi) * radius, sy + np.sin(angle / 180 * np.pi) * radius
  
-def compare_traj_ray(size, window_size, dotsx_original, dotsy_original, test_x, test_y, scale = False, offset = False):
+def compare_traj_ray(dotsx_original, dotsy_original, test_x, test_y, scale = False, offset = False):
+	window_size = len(test_x)
+	size = len(dotsx_original)
 	
 	dotsx = []
 	dotsy = []
 	for x in range(size):
 		dotsx.append(dotsx_original[x])
 		dotsy.append(dotsy_original[x])
-		
+	scaling_factor = 1
 	if scale:
 		x_range = max(test_x) - min(test_x)
 		y_range = max(test_y) - min(test_y)
 		scaling_factor = max(x_range, y_range)
 		
-		for x1 in range(size): 
-			if offset:
-				dotsx[x1] = (min(test_x) + max(test_x)) / 2 - scaling_factor / 2 + dotsx[x1] * scaling_factor
-				dotsy[x1] = (min(test_y) + max(test_y)) / 2 - scaling_factor / 2 + dotsy[x1] * scaling_factor 
-			else:
-				dotsx[x1] = min(test_x) + dotsx[x1] * scaling_factor
-				dotsy[x1] = min(test_y) + dotsy[x1] * scaling_factor 
+	for x1 in range(size): 
+		if offset:
+			dotsx[x1] = (min(test_x) + max(test_x)) / 2 - scaling_factor / 2 + dotsx[x1] * scaling_factor
+			dotsy[x1] = (min(test_y) + max(test_y)) / 2 - scaling_factor / 2 + dotsy[x1] * scaling_factor 
+		else:
+			dotsx[x1] = min(test_x) + dotsx[x1] * scaling_factor
+			dotsy[x1] = min(test_y) + dotsy[x1] * scaling_factor 
+			
 	'''
 	for x1 in range(size):  
 		for x2 in range(x1 + 1, size): 
@@ -517,21 +536,55 @@ def compare_traj_ray(size, window_size, dotsx_original, dotsy_original, test_x, 
 		all_distancesy /= scaling_factor	
 	#print(all_distances, all_distancesx, all_distancesy)
 	#plt.show()
-	return all_distances, all_distancesx, all_distancesy 
+	return all_distances, all_distancesx, all_distancesy, intersections, distances, distancesx, distancesy
 
-def process_csv_ray(window_size, some_dict, save_name): 
-	new_csv_content = "window_size,vehicle,ride,start,scale,scale_x,scale_y,offset,offset_x,offset_y,no_scale,no_scale_x,no_scale_y\n"
-	for vehicle1 in some_dict[window_size].keys():  
-		for r1 in some_dict[window_size][vehicle1]:
-			for x1 in some_dict[window_size][vehicle1][r1]: 
-				new_csv_content += str(window_size) + "," + str(vehicle1) + "," + str(r1) + "," + str(x1) + ","  
-				for feat_name in some_dict[window_size][vehicle1][r1][x1]:  
-					for val in some_dict[window_size][vehicle1][r1][x1][feat_name]:  
-						new_csv_content += str(val) + "," 
-				new_csv_content += "\n"
-	csv_file = open(save_name, "w")
-	csv_file.write(new_csv_content)
-	csv_file.close()
+def process_csv_ray(window_size, vehicle1, r1, some_dict, save_name): 
+    if not os.path.isfile(save_name):
+        new_csv_content = "window_size,vehicle,ride,start,"
+        for key in some_dict[0].keys():
+            new_csv_content += key + "," + key + " x," + key + " y,"  
+        new_csv_content += "\n"
+        for x1 in some_dict: 
+            new_csv_content += str(window_size) + "," + str(vehicle1) + "," + str(r1) + "," + str(x1) + ","  
+            for feat_name in some_dict[x1]:  
+                for val in some_dict[x1][feat_name]:  
+                    new_csv_content += str(val) + "," 
+            new_csv_content += "\n"
+        csv_file = open(save_name, "w")
+        csv_file.write(new_csv_content)
+        csv_file.close()
+    else:
+        csv_file = open(save_name, "r")
+        old_lines = csv_file.readlines()
+        csv_file.close()
+        new_csv_content = old_lines[0]
+        skip_feats = set()
+        for key in some_dict[0].keys():
+            if key + "," + key + " x," + key + " y," not in new_csv_content:
+                new_csv_content = new_csv_content.replace("\n", key + "," + key + " x," + key + " y,\n")  
+            else:
+                skip_feats.add(key)
+        for x1 in some_dict: 
+            line_start = str(window_size) + "," + str(vehicle1) + "," + str(r1) + "," + str(x1) + ","  
+            index_line = -1  
+            for index_some in range(len(old_lines)):
+                if line_start in old_lines[index_some]:
+                    index_line = index_some
+                    break
+            new_csv_line = "" 
+            for feat_name in some_dict[x1]:  
+                if feat_name in skip_feats:
+                    continue
+                for val in some_dict[x1][feat_name]:  
+                    new_csv_line += str(val) + "," 
+            new_csv_line += "\n"
+            if index_line != -1:
+                old_lines[index_line] = old_lines[index_line].replace("\n", new_csv_line)
+        for line_old_index in range(1, len(old_lines)):
+            new_csv_content += old_lines[line_old_index]
+        csv_file = open(save_name, "w")
+        csv_file.write(new_csv_content)
+        csv_file.close() 
      
 def process_csv(trajectory_flags, trajectory_monotonous, window_size, all_possible_trajs, sample_names, metric_names, deg, flag_list, some_dict, save_name): 
     new_csv_content = "window_size,vehicle,ride,start,mean_vect_turning_angles,max_x,max_y,surf_trapz_x,surf_trapz_y,surf_simpson_x,surf_simpson_y,"
@@ -550,7 +603,9 @@ def process_csv(trajectory_flags, trajectory_monotonous, window_size, all_possib
     for flag in flag_list:
         new_csv_content += flag + ","
     new_csv_content += "\n"
+    header = new_csv_content
     for vehicle1 in all_possible_trajs[window_size].keys():  
+        new_csv_content = header
         for r1 in all_possible_trajs[window_size][vehicle1]:
             for x1 in all_possible_trajs[window_size][vehicle1][r1]: 
                 new_csv_content += str(window_size) + "," + str(vehicle1) + "," + str(r1) + "," + str(x1) + ","  
@@ -567,9 +622,9 @@ def process_csv(trajectory_flags, trajectory_monotonous, window_size, all_possib
                 for flag in flag_list:
                      new_csv_content += str(trajectory_flags[flag][window_size][vehicle1][r1][x1]) + ","  
                 new_csv_content += "\n"    
-    csv_file = open(save_name, "w")
-    csv_file.write(new_csv_content)
-    csv_file.close()
+        csv_file = open(save_name.replace(".csv", "_" + vehicle1 + ".csv"), "w")
+        csv_file.write(new_csv_content)
+        csv_file.close()
   
 def make_rays(size): 
     dotsx_original = []
@@ -581,11 +636,16 @@ def make_rays(size):
     return dotsx_original, dotsy_original
 
 def load_traj(vehicle, ride): 
-    file_with_ride = pd.read_csv(vehicle + "/cleaned_csv/events_" + str(ride) + ".csv")
-    longitudes = list(file_with_ride["fields_longitude"])
-    latitudes = list(file_with_ride["fields_latitude"]) 
-    times = list(file_with_ride["time"])  
-    return longitudes, latitudes, times
+    name = vehicle + "/cleaned_csv/events_" + str(ride) + ".csv" 
+    return load_traj_name(name)
+
+def load_traj_window(vehicle, ride, x, window): 
+    longitudes, latitudes, times = load_traj(vehicle, ride) 
+    return longitudes[x:x + window], latitudes[x:x + window], times[x:x + window]
+
+def load_traj_window_name(name, x, window): 
+    longitudes, latitudes, times = load_traj_name(name) 
+    return longitudes[x:x + window], latitudes[x:x + window], times[x:x + window]
 
 def load_traj_name(name): 
     file_with_ride = pd.read_csv(name)
@@ -593,16 +653,217 @@ def load_traj_name(name):
     latitudes = list(file_with_ride["fields_latitude"]) 
     times = list(file_with_ride["time"])  
     return longitudes, latitudes, times
-
+ 
 def plot_long_lat_dict(title, long_dict, lat_dict, longer_file_name, long_keys, lat_keys, scalex, scaley):
     longitudes, latitudes, times = load_traj_name(longer_file_name)
     longitudes, latitudes = preprocess_long_lat(longitudes, latitudes)
     longitudes, latitudes = scale_long_lat(longitudes, latitudes, scalex, scaley, True) 
-    plt.title(title + " " + longer_file_name.replace("/cleaned_csv/events_", "").replace(".csv", ""))
-    plt.plot(longitudes, latitudes, label = "original")
-    plt.plot(longitudes[0], latitudes[0], 'ro', label = "original")
+    plt.title(title + " " + longer_file_name.replace("/cleaned_csv/events_", " ").replace(".csv", ""))
     for latit in lat_keys:
         for longit in long_keys: 
             plt.plot(long_dict[longer_file_name][longit], lat_dict[longer_file_name][latit], label = longit + " " + latit)
-    plt.legend()
+    plt.plot(longitudes, latitudes, label = "original", color = 'blue')
+    plt.plot(longitudes[0], latitudes[0], 'ro', label = "start")
+    plt.legend(loc = "upper center", bbox_to_anchor = (-0.02, -0.02), ncol = 10)
     plt.show()
+
+def plot_long_lat_pairs(title, long_dict, lat_dict, longer_file_name, long_lat_pairs, scalex, scaley):
+    longitudes, latitudes, times = load_traj_name(longer_file_name)
+    longitudes, latitudes = preprocess_long_lat(longitudes, latitudes)
+    longitudes, latitudes = scale_long_lat(longitudes, latitudes, scalex, scaley, True) 
+    plt.title(title + " " + longer_file_name.replace("/cleaned_csv/events_", " ").replace(".csv", ""))
+    for latit_longit in long_lat_pairs:
+        longit = latit_longit.split("-")[0]
+        latit = latit_longit.split("-")[1]
+        plt.plot(long_dict[longer_file_name][longit], lat_dict[longer_file_name][latit], label = longit + " " + latit)
+    plt.plot(longitudes, latitudes, label = "original", color = 'blue')
+    plt.plot(longitudes[0], latitudes[0], 'ro', label = "start")
+    plt.legend(loc = "upper center", bbox_to_anchor = (-0.02, -0.02), ncol = 10)
+    plt.show()
+  
+def fix_prob_max(num_occurences, num_occurences_in_next_step, num_occurences_in_next_next_step, minval, maxval, stepv):
+    possible_values = (maxval - minval) / stepv + 1  
+
+    probability = dict()
+    for distance in num_occurences:
+        probability[distance] = num_occurences[distance] / (sum(list(num_occurences.values())) + possible_values - len(num_occurences.keys()))
+    probability["undefined"] = (possible_values - len(num_occurences.keys())) / (sum(list(num_occurences.values())) + possible_values - len(num_occurences.keys()))
+    
+    probability_in_next_step = dict()
+    for prev_distance in num_occurences_in_next_step:
+        probability_in_next_step[prev_distance] = dict()
+        for distance in num_occurences_in_next_step[prev_distance]:
+            probability_in_next_step[prev_distance][distance] = num_occurences_in_next_step[prev_distance][distance] / (sum(list(num_occurences_in_next_step[prev_distance].values())) + possible_values - len(num_occurences_in_next_step[prev_distance].keys()))
+        probability_in_next_step[prev_distance]["undefined"] = (possible_values - len(num_occurences_in_next_step[prev_distance].keys())) / (sum(list(num_occurences_in_next_step[prev_distance].values())) + possible_values - len(num_occurences_in_next_step[prev_distance].keys()))
+
+    probability_in_next_step["undefined"] = dict()
+    for distance in num_occurences:
+        probability_in_next_step["undefined"][distance] = 1 / possible_values
+    probability_in_next_step["undefined"]["undefined"] = 1 - len(num_occurences.keys()) / possible_values
+
+    probability_in_next_next_step = dict()
+    for prev_prev_distance in num_occurences_in_next_next_step:
+        probability_in_next_next_step[prev_prev_distance] = dict()
+        for prev_distance in num_occurences_in_next_next_step[prev_prev_distance]:
+            probability_in_next_next_step[prev_prev_distance][prev_distance] = dict()
+            for distance in num_occurences_in_next_next_step[prev_prev_distance][prev_distance]:
+                probability_in_next_next_step[prev_prev_distance][prev_distance][distance] = num_occurences_in_next_next_step[prev_prev_distance][prev_distance][distance] / (sum(list(num_occurences_in_next_next_step[prev_prev_distance][prev_distance].values())) + possible_values - len(num_occurences_in_next_next_step[prev_prev_distance][prev_distance].keys()))
+            probability_in_next_next_step[prev_prev_distance][prev_distance]["undefined"] = (possible_values - len(num_occurences_in_next_next_step[prev_prev_distance][prev_distance].keys())) / (sum(list(num_occurences_in_next_next_step[prev_prev_distance][prev_distance].values())) + possible_values - len(num_occurences_in_next_next_step[prev_prev_distance][prev_distance].keys()))
+ 
+    probability_in_next_next_step["undefined"] = dict()
+
+    probability_in_next_next_step["undefined"]["undefined"] = dict() 
+    for distance in num_occurences: 
+        probability_in_next_next_step["undefined"]["undefined"][distance] = 1 / possible_values
+    probability_in_next_next_step["undefined"]["undefined"]["undefined"] = 1 - len(num_occurences.keys()) / possible_values
+
+    for prev_distance in num_occurences:
+        probability_in_next_next_step["undefined"][prev_distance] = dict() 
+        probability_in_next_next_step[prev_distance]["undefined"] = dict() 
+        for distance in num_occurences:
+            probability_in_next_next_step["undefined"][prev_distance][distance] = 1 / possible_values
+            probability_in_next_next_step[prev_distance]["undefined"][distance] = 1 / possible_values
+        probability_in_next_next_step["undefined"][prev_distance]["undefined"] = 1 - len(num_occurences.keys()) / possible_values
+        probability_in_next_next_step[prev_distance]["undefined"]["undefined"] = 1 - len(num_occurences.keys()) / possible_values
+
+    return probability, probability_in_next_step, probability_in_next_next_step
+ 
+def fix_prob(num_occurences, num_occurences_in_next_step, num_occurences_in_next_next_step, fix = True):
+    min_prob = 10 ** -20  
+    if not fix:
+        min_prob = 0
+    probability = dict()
+    for distance in num_occurences:
+        probability[distance] = num_occurences[distance] / sum(list(num_occurences.values())) - min_prob
+    if fix:
+        probability["undefined"] = min_prob
+    
+    probability_in_next_step = dict()
+    for prev_distance in num_occurences_in_next_step:
+        probability_in_next_step[prev_distance] = dict()
+        for distance in num_occurences_in_next_step[prev_distance]:
+            probability_in_next_step[prev_distance][distance] = num_occurences_in_next_step[prev_distance][distance] / sum(list(num_occurences_in_next_step[prev_distance].values())) - min_prob
+        if fix:    
+            probability_in_next_step[prev_distance]["undefined"] = min_prob
+
+    if fix:
+        probability_in_next_step["undefined"] = dict()
+        for distance in num_occurences:
+            probability_in_next_step["undefined"][distance] = num_occurences[distance] / sum(list(num_occurences.values())) - min_prob
+        probability_in_next_step["undefined"]["undefined"] = min_prob
+
+    probability_in_next_next_step = dict()
+    for prev_prev_distance in num_occurences_in_next_next_step:
+        probability_in_next_next_step[prev_prev_distance] = dict()
+        for prev_distance in num_occurences_in_next_next_step[prev_prev_distance]:
+            probability_in_next_next_step[prev_prev_distance][prev_distance] = dict()
+            for distance in num_occurences_in_next_next_step[prev_prev_distance][prev_distance]:
+                probability_in_next_next_step[prev_prev_distance][prev_distance][distance] = num_occurences_in_next_next_step[prev_prev_distance][prev_distance][distance] / sum(list(num_occurences_in_next_next_step[prev_prev_distance][prev_distance].values())) - min_prob
+            if fix:    
+                probability_in_next_next_step[prev_prev_distance][prev_distance]["undefined"] = min_prob
+ 
+    if fix:
+        probability_in_next_next_step["undefined"] = dict()
+
+        probability_in_next_next_step["undefined"]["undefined"] = dict() 
+        for distance in num_occurences: 
+            probability_in_next_next_step["undefined"]["undefined"][distance] = num_occurences[distance] / sum(list(num_occurences.values())) - min_prob
+        probability_in_next_next_step["undefined"]["undefined"]["undefined"] = min_prob
+
+        for prev_distance in num_occurences:
+            probability_in_next_next_step["undefined"][prev_distance] = dict()  
+            for distance in num_occurences:
+                probability_in_next_next_step["undefined"][prev_distance][distance] = num_occurences[distance] / sum(list(num_occurences.values())) - min_prob
+            probability_in_next_next_step["undefined"][prev_distance]["undefined"] = min_prob 
+
+        for prev_distance in probability_in_next_next_step: 
+            probability_in_next_next_step[prev_distance]["undefined"] = dict() 
+            for distance in num_occurences:
+                probability_in_next_next_step[prev_distance]["undefined"][distance] = num_occurences[distance] / sum(list(num_occurences.values())) - min_prob
+            probability_in_next_next_step[prev_distance]["undefined"]["undefined"] = min_prob
+
+    return probability, probability_in_next_step, probability_in_next_next_step
+ 
+def predict_prob(probability, probability_in_next_step, probability_in_next_next_step, minval, maxval, stepv):
+    roundingval = int(-np.log10(stepv))
+    possible_values = (maxval - minval) / stepv + 1 
+    x = []
+    n = 10000
+    prev_distance = 0
+    prev_prev_distance = 0
+    for i in range(n):
+        if i == 0:
+            distance = np.random.choice(list(probability.keys()),p=list(probability.values()))  
+        if i == 1:
+            if prev_distance in probability_in_next_step:
+                distance = np.random.choice(list(probability_in_next_step[prev_distance].keys()),p=list(probability_in_next_step[prev_distance].values())) 
+            else:
+                distance = np.random.choice(list(probability_in_next_step["undefined"].keys()),p=list(probability_in_next_step["undefined"].values())) 
+        if i > 1:
+            if prev_prev_distance in probability_in_next_next_step and prev_distance in probability_in_next_next_step[prev_prev_distance]:
+                distance = np.random.choice(list(probability_in_next_next_step[prev_prev_distance][prev_distance].keys()),p=list(probability_in_next_next_step[prev_prev_distance][prev_distance].values())) 
+            else:
+                if prev_prev_distance in probability_in_next_next_step:
+                    distance = np.random.choice(list(probability_in_next_next_step[prev_prev_distance]["undefined"].keys()),p=list(probability_in_next_next_step[prev_prev_distance]["undefined"].values())) 
+                else:
+                    if prev_distance in probability_in_next_next_step["undefined"]:
+                        distance = np.random.choice(list(probability_in_next_next_step["undefined"][prev_distance].keys()),p=list(probability_in_next_next_step["undefined"][prev_distance].values()))
+                    else:
+                        distance = np.random.choice(list(probability_in_next_next_step["undefined"]["undefined"].keys()),p=list(probability_in_next_next_step["undefined"]["undefined"].values()))
+        if distance == "undefined": 
+            distance = np.round(np.random.randint(possible_values) * stepv, roundingval) 
+        prev_prev_distance = prev_distance
+        prev_distance = distance
+        x.append(distance)
+    return x
+
+def predict_prob_with_array(probability, probability_in_next_step, probability_in_next_next_step, array_vals, minval, maxval, stepv, isangle = False):
+    roundingval = int(-np.log10(stepv))
+    possible_values = (maxval - minval) / stepv + 1 
+    x = []
+    n = len(array_vals)
+    prev_distance = 0
+    prev_prev_distance = 0
+    no_empty = 0
+    match_score = 0 
+    no_empty = 0
+    delta_series = [] 
+    for i in range(n):
+        if i > 1:
+            prev_prev_distance = array_vals[i - 2]
+        if i > 0:
+            prev_distance = array_vals[i - 1]
+        if i == 0:
+            distance = np.random.choice(list(probability.keys()),p=list(probability.values()))  
+        if i == 1:
+            if prev_distance in probability_in_next_step:
+                distance = np.random.choice(list(probability_in_next_step[prev_distance].keys()),p=list(probability_in_next_step[prev_distance].values())) 
+            else:
+                distance = np.random.choice(list(probability_in_next_step["undefined"].keys()),p=list(probability_in_next_step["undefined"].values())) 
+        if i > 1:
+            if prev_prev_distance in probability_in_next_next_step and prev_distance in probability_in_next_next_step[prev_prev_distance]:
+                distance = np.random.choice(list(probability_in_next_next_step[prev_prev_distance][prev_distance].keys()),p=list(probability_in_next_next_step[prev_prev_distance][prev_distance].values())) 
+            else:
+                if prev_prev_distance in probability_in_next_next_step:
+                    distance = np.random.choice(list(probability_in_next_next_step[prev_prev_distance]["undefined"].keys()),p=list(probability_in_next_next_step[prev_prev_distance]["undefined"].values())) 
+                else:
+                    if prev_distance in probability_in_next_next_step["undefined"]:
+                        distance = np.random.choice(list(probability_in_next_next_step["undefined"][prev_distance].keys()),p=list(probability_in_next_next_step["undefined"][prev_distance].values()))
+                    else:
+                        distance = np.random.choice(list(probability_in_next_next_step["undefined"]["undefined"].keys()),p=list(probability_in_next_next_step["undefined"]["undefined"].values()))
+        if distance == "undefined": 
+            distance = np.round(np.random.randint(possible_values) * stepv, roundingval)
+        else:
+            no_empty += 1
+        x.append(float(distance)) 
+        if float(array_vals[i]) == float(x[i]):
+            match_score += 1   
+        delta_x = abs(float(array_vals[i]) - float(x[i]))
+        if isangle:
+            if delta_x > 180:
+                delta_x = 360 - delta_x
+        delta_series.append(delta_x) 
+    #print(match_score / n, match_score / no_empty, min(delta_series), np.quantile(delta_series, 0.25), np.quantile(delta_series, 0.5), np.quantile(delta_series, 0.75), max(delta_series), np.average(delta_series), np.std(delta_series), np.var(delta_series))
+    #plt.hist(delta_series)
+    #plt.show() 
+    return x, n, match_score, no_empty, delta_series

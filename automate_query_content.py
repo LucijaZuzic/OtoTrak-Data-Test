@@ -49,7 +49,7 @@ for subdir_name in all_subdirs:
         error_mode = file_with_tours["operation_mode_name"][entry_num]
         if datetime_start < min_start_found or datetime_end >= max_start_found: 
             bad_rides_filenames[name_new_file] = -4
-            continue  
+            continue
         in_time.add(name_new_file)
         if error_mode == "ERROR":
             #print("ERROR") 

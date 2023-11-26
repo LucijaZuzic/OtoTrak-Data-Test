@@ -2,7 +2,7 @@ from utilities import *
     
 window_size = 20
  
-size = 36
+size = 32
 dotsx_original, dotsy_original = make_rays(size)
 
 deg = 5
@@ -13,34 +13,16 @@ max_trajs = 100
 name_extension = "_window_" + str(window_size) + "_step_" + str(step_size) + "_segments_" + str(max_trajs)
 
 all_subdirs = os.listdir()  
-
-all_distances_trajs = dict()   
-all_distances_trajs[window_size] = dict()
-
-all_distances_preprocessed_trajs = dict()   
-all_distances_preprocessed_trajs[window_size] = dict()
-
-all_distances_scaled_trajs = dict()   
-all_distances_scaled_trajs[window_size] = dict()
-
-all_distances_scaled_to_max_trajs = dict()   
-all_distances_scaled_to_max_trajs[window_size] = dict()
-
-total_possible_trajs = 0
-  
+ 
+scale_val = [True, True, False, False]
+offset_val = [False, True, False, True]
+name_val = ["scale", "offset", "no scale", "only offset"]  
+ 
 for subdir_name in all_subdirs:
-
-    trajs_in_dir = 0
-    
+  
     if not os.path.isdir(subdir_name) or "Vehicle" not in subdir_name:
         continue
-    print(subdir_name)  
-    all_distances_trajs[window_size][subdir_name] = dict() 
-    all_distances_preprocessed_trajs[window_size][subdir_name] = dict() 
-    all_distances_scaled_trajs[window_size][subdir_name] = dict() 
-    all_distances_scaled_to_max_trajs[window_size][subdir_name] = dict()  
-
-    all_rides_cleaned = os.listdir(subdir_name + "/cleaned_csv/")
+    print(subdir_name)    
     
     all_files = os.listdir(subdir_name + "/cleaned_csv/") 
     bad_rides_filenames = set()
@@ -57,13 +39,29 @@ for subdir_name in all_subdirs:
         #print("Used ride", some_file)
 
         only_num_ride = some_file.replace(".csv", "").replace("events_", "")
-        
-        trajs_in_ride = 0
+         
+        all_distances_trajs = dict()
+        all_distances_preprocessed_trajs = dict()
+        all_distances_scaled_trajs = dict()
+        all_distances_scaled_to_max_trajs = dict() 
+
+        only_number = some_file.replace(".csv", "").replace("events_", "")
+         
+        start_path = "rays/" + str(size) + "/" + subdir_name + "/" + only_number
  
-        all_distances_trajs[window_size][subdir_name][only_num_ride] = dict()
-        all_distances_preprocessed_trajs[window_size][subdir_name][only_num_ride] = dict()
-        all_distances_scaled_trajs[window_size][subdir_name][only_num_ride] = dict()
-        all_distances_scaled_to_max_trajs[window_size][subdir_name][only_num_ride] = dict() 
+        all_distances_trajs_other = dict()
+        all_distances_preprocessed_trajs_other = dict()
+        all_distances_scaled_trajs_other = dict()
+        all_distances_scaled_to_max_trajs_other = dict() 
+
+        if os.path.isfile(start_path + "/all_distances_scaled_to_max_trajs.csv"):
+            continue
+
+        if os.path.isfile(start_path + "/all_distances_trajs_other"):
+            all_distances_trajs_other = load_object(start_path + "/all_distances_trajs_other")  
+            all_distances_preprocessed_trajs_other = load_object(start_path + "/all_distances_preprocessed_trajs_other")  
+            all_distances_scaled_trajs_other = load_object(start_path + "/all_distances_scaled_trajs_other")  
+            all_distances_scaled_to_max_trajs_other = load_object(start_path + "/all_distances_scaled_to_max_trajs_other")   
         
         file_with_ride = pd.read_csv(subdir_name + "/cleaned_csv/" + some_file)
         longitudes = list(file_with_ride["fields_longitude"])
@@ -85,27 +83,56 @@ for subdir_name in all_subdirs:
             for some_index in range(len(latitudes_tmp)):
                 set_points.add((latitudes_tmp[some_index], longitudes_tmp[some_index]))
                 
-            if len(set_lats) == 1 or len(set_longs) == 1:
-                continue   
+            if len(set_lats) == 1 or len(set_longs) == 1:                
+                continue
             if len(set_points) < 3:
-                continue   
+                continue
             
             longitudes_tmp_transform, latitudes_tmp_transform = preprocess_long_lat(longitudes_tmp, latitudes_tmp)
             
             longitudes_scaled, latitudes_scaled = scale_long_lat(longitudes_tmp_transform, latitudes_tmp_transform)
             
             longitudes_scaled_to_max, latitudes_scaled_to_max = scale_long_lat(longitudes_tmp_transform, latitudes_tmp_transform, xmax = maxoffset, ymax = maxoffset, keep_aspect_ratio = True)
-		  
-            total_possible_trajs += 1
-            trajs_in_ride += 1
-            trajs_in_dir += 1
+		   
+            all_distances_trajs[x] = dict()
+            all_distances_preprocessed_trajs[x] = dict()
+            all_distances_scaled_trajs[x] = dict()
+            all_distances_scaled_to_max_trajs[x] = dict()
+                
+            if x not in all_distances_trajs_other:
+                all_distances_trajs_other[x] = dict()
+                all_distances_preprocessed_trajs_other[x] = dict()
+                all_distances_scaled_trajs_other[x] = dict()
+                all_distances_scaled_to_max_trajs_other[x] = dict()
             
-            all_distances_trajs[window_size][subdir_name][only_num_ride][x] = {"scale": compare_traj_ray(size, window_size, dotsx_original, dotsy_original, longitudes_tmp, latitudes_tmp, True, False), "offset": compare_traj_ray(size, window_size, dotsx_original, dotsy_original, longitudes_tmp, latitudes_tmp, True, True), "no scale": compare_traj_ray(size, window_size, dotsx_original, dotsy_original, longitudes_tmp, latitudes_tmp, False, False)}
-            all_distances_preprocessed_trajs[window_size][subdir_name][only_num_ride][x] = {"scale": compare_traj_ray(size, window_size, dotsx_original, dotsy_original, longitudes_tmp_transform, latitudes_tmp_transform, True, False), "offset": compare_traj_ray(size, window_size, dotsx_original, dotsy_original, longitudes_tmp_transform, latitudes_tmp_transform, True, True), "no scale": compare_traj_ray(size, window_size, dotsx_original, dotsy_original, longitudes_tmp_transform, latitudes_tmp_transform, False, False)}
-            all_distances_scaled_trajs[window_size][subdir_name][only_num_ride][x] = {"scale": compare_traj_ray(size, window_size, dotsx_original, dotsy_original, longitudes_scaled, latitudes_scaled, True, False), "offset": compare_traj_ray(size, window_size, dotsx_original, dotsy_original, longitudes_scaled, latitudes_scaled, True, True), "no scale": compare_traj_ray(size, window_size, dotsx_original, dotsy_original, longitudes_scaled, latitudes_scaled, False, False)} 
-            all_distances_scaled_to_max_trajs[window_size][subdir_name][only_num_ride][x] = {"scale": compare_traj_ray(size, window_size, dotsx_original, dotsy_original, longitudes_scaled_to_max, latitudes_scaled_to_max, True, False), "offset": compare_traj_ray(size, window_size, dotsx_original, dotsy_original, longitudes_scaled_to_max, latitudes_scaled_to_max, True, True), "no scale": compare_traj_ray(size, window_size, dotsx_original, dotsy_original, longitudes_scaled_to_max, latitudes_scaled_to_max, False, False)}
-   
-process_csv_ray(window_size, all_distances_trajs, "all_distances_trajs_" + str(size) + ".csv")
-process_csv_ray(window_size, all_distances_preprocessed_trajs, "all_distances_preprocessed_trajs_" + str(size) + ".csv")
-process_csv_ray(window_size, all_distances_scaled_trajs, "all_distances_scaled_trajs_" + str(size) + ".csv")
-process_csv_ray(window_size, all_distances_scaled_to_max_trajs, "all_distances_scaled_to_max_trajs_" + str(size) + ".csv")
+            for value_for_dict in range(len(name_val)):  
+                if name_val[value_for_dict] in all_distances_trajs_other[x]: 
+                    continue
+
+                all_distances, all_distancesx, all_distancesy, intersections, distances, distancesx, distancesy = compare_traj_ray(dotsx_original, dotsy_original, longitudes_tmp, latitudes_tmp, scale_val[value_for_dict], offset_val[value_for_dict]) 
+                all_distances_trajs[x][name_val[value_for_dict]] = (all_distances, all_distancesx, all_distancesy)
+                all_distances_trajs_other[x][name_val[value_for_dict]] = (intersections, distances, distancesx, distancesy)
+            	
+                all_preprocessed_trajs_distances, all_preprocessed_trajs_distancesx, all_preprocessed_trajs_distancesy, intersections_preprocessed_trajs, distances_preprocessed_trajs, distancesx_preprocessed_trajs, distancesy_preprocessed_trajs = compare_traj_ray(dotsx_original, dotsy_original, longitudes_tmp_transform, latitudes_tmp_transform, scale_val[value_for_dict], offset_val[value_for_dict]) 
+                all_distances_preprocessed_trajs[x][name_val[value_for_dict]] = (all_preprocessed_trajs_distances, all_preprocessed_trajs_distancesx, all_preprocessed_trajs_distancesy)
+                all_distances_preprocessed_trajs_other[x][name_val[value_for_dict]] = (intersections_preprocessed_trajs, distances_preprocessed_trajs, distancesx_preprocessed_trajs, distancesy_preprocessed_trajs)
+                
+                all_scaled_trajs_distances, all_scaled_trajs_distancesx, all_scaled_trajs_distancesy, intersections_scaled_trajs, distances_scaled_trajs, distancesx_scaled_trajs, distancesy_scaled_trajs = compare_traj_ray(dotsx_original, dotsy_original, longitudes_scaled, latitudes_scaled, scale_val[value_for_dict], offset_val[value_for_dict]) 
+                all_distances_scaled_trajs[x][name_val[value_for_dict]] = (all_scaled_trajs_distances, all_scaled_trajs_distancesx, all_scaled_trajs_distancesy)
+                all_distances_scaled_trajs_other[x][name_val[value_for_dict]] = (intersections_scaled_trajs, distances_scaled_trajs, distancesx_scaled_trajs, distancesy_scaled_trajs)
+                 
+                all_scaled_to_max_distances, all_scaled_to_max_distancesx, all_scaled_to_max_distancesy, intersections_scaled_to_max, distances_scaled_to_max, distancesx_scaled_to_max, distancesy_scaled_to_max = compare_traj_ray(dotsx_original, dotsy_original, longitudes_scaled_to_max, latitudes_scaled_to_max, scale_val[value_for_dict], offset_val[value_for_dict]) 
+                all_distances_scaled_to_max_trajs[x][name_val[value_for_dict]] = (all_scaled_to_max_distances, all_scaled_to_max_distancesx, all_scaled_to_max_distancesy)
+                all_distances_scaled_to_max_trajs_other[x][name_val[value_for_dict]] = (intersections_scaled_to_max, distances_scaled_to_max, distancesx_scaled_to_max, distancesy_scaled_to_max)
+                 
+        if not os.path.isdir(start_path):
+            os.makedirs(start_path)
+             
+        save_object(start_path + "/all_distances_trajs_other", all_distances_trajs_other)  
+        save_object(start_path + "/all_distances_preprocessed_trajs_other", all_distances_preprocessed_trajs_other)    
+        save_object(start_path + "/all_distances_scaled_trajs_other", all_distances_scaled_trajs_other)  
+        save_object(start_path + "/all_distances_scaled_to_max_trajs_other", all_distances_scaled_to_max_trajs_other)  
+        process_csv_ray(window_size, subdir_name, int(only_number), all_distances_trajs, start_path + "/all_distances_trajs.csv")
+        process_csv_ray(window_size, subdir_name, int(only_number), all_distances_preprocessed_trajs, start_path + "/all_distances_preprocessed_trajs.csv")
+        process_csv_ray(window_size, subdir_name, int(only_number), all_distances_scaled_trajs, start_path + "/all_distances_scaled_trajs.csv")
+        process_csv_ray(window_size, subdir_name, int(only_number), all_distances_scaled_to_max_trajs, start_path + "/all_distances_scaled_to_max_trajs.csv")

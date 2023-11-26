@@ -127,10 +127,8 @@ for subdir_name in all_subdirs:
     all_feats_scaled_to_max_trajs[window_size][subdir_name] = dict() 
     trajectory_monotonous[window_size][subdir_name] = dict() 
     for flag in flag_list:
-        trajectory_flags[flag][window_size][subdir_name] = dict() 
+        trajectory_flags[flag][window_size][subdir_name] = dict()  
 
-    all_rides_cleaned = os.listdir(subdir_name + "/cleaned_csv/")
-    
     all_files = os.listdir(subdir_name + "/cleaned_csv/") 
     bad_rides_filenames = set()
     if os.path.isfile(subdir_name + "/bad_rides_filenames"):
@@ -191,9 +189,9 @@ for subdir_name in all_subdirs:
                 set_points.add((latitudes_tmp[some_index], longitudes_tmp[some_index]))
                 
             if len(set_lats) == 1 or len(set_longs) == 1:
-                continue   
+                continue
             if len(set_points) < 3:
-                continue   
+                continue
             
             longitudes_tmp_transform, latitudes_tmp_transform = preprocess_long_lat(longitudes_tmp, latitudes_tmp)
             

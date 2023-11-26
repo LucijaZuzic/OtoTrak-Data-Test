@@ -4,10 +4,8 @@ all_subdirs = os.listdir()
  
 for subdir_name in all_subdirs: 
     if not os.path.isdir(subdir_name) or "Vehicle" not in subdir_name:
-        continue 
-    
-    all_rides_cleaned = os.listdir(subdir_name + "/cleaned_csv/")
-    
+        continue
+     
     all_files = os.listdir(subdir_name + "/cleaned_csv/") 
 
     bad_rides_filenames = set()
@@ -19,7 +17,7 @@ for subdir_name in all_subdirs:
         
     for some_file in all_files:  
         if subdir_name + "/cleaned_csv/" + some_file in bad_rides_filenames or subdir_name + "/cleaned_csv/" + some_file in gap_rides_filenames: 
-            continue  
+            continue
     
         file_with_ride = pd.read_csv(subdir_name + "/cleaned_csv/" + some_file)
         
