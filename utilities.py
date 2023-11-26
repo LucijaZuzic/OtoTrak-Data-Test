@@ -357,7 +357,7 @@ def compare_traj_and_sample(sample_x, sample_y, sample_time, t1, metric_used, no
             if sample_x[x] > sample_x[x - 1] != sample_x_sgn: 
                 return 1000000 
         t1_sgn = t1["long"][1] > t1["long"][0]
-        for x in range(1, len(t1_sgn)):
+        for x in range(1, len(t1["long"])):
             if t1["long"][x] > t1["long"][x - 1] != t1_sgn: 
                 return 1000000  
         return abs(simpson(t1["lat"], t1["long"]) - simpson(sample_y, sample_x))  

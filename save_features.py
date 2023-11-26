@@ -279,8 +279,8 @@ for subdir_name in all_subdirs:
                     oldy = [valy for valy in sample_names[sample_name]["lat"]]
                     newx = [valx * max(max(longitudes_tmp_transform), max(latitudes_tmp_transform)) for valx in sample_names[sample_name]["long"]]
                     newy = [valy * max(max(longitudes_tmp_transform), max(latitudes_tmp_transform)) for valy in sample_names[sample_name]["lat"]]
-                    all_feats_trajs[window_size][subdir_name][only_num_ride][x][sample_name + "_same_" + metric_name] = compare_traj_and_sample(newx, newy, range(len(newx)), {"long": longitudes_tmp_transform, "lat": latitudes_tmp_transform, "time": times_tmp_transform}, metric_name, False, False, size, True, True, dotsx_original, dotsy_original)
-                    all_feats_trajs[window_size][subdir_name][only_num_ride][x][sample_name + "_diff_" + metric_name] = compare_traj_and_sample(oldx, oldy, range(len(oldx)), {"long": longitudes_tmp_transform, "lat": latitudes_tmp_transform, "time": times_tmp_transform}, metric_name, False, False, size, True, True, dotsx_original, dotsy_original)
+                    all_feats_trajs[window_size][subdir_name][only_num_ride][x][sample_name + "_same_" + metric_name] = compare_traj_and_sample(newx, newy, range(len(newx)), {"long": longitudes_tmp_transform, "lat": latitudes_tmp_transform, "time": times_tmp_transform}, metric_name, False, False, True, True, dotsx_original, dotsy_original)
+                    all_feats_trajs[window_size][subdir_name][only_num_ride][x][sample_name + "_diff_" + metric_name] = compare_traj_and_sample(oldx, oldy, range(len(oldx)), {"long": longitudes_tmp_transform, "lat": latitudes_tmp_transform, "time": times_tmp_transform}, metric_name, False, False, True, True, dotsx_original, dotsy_original)
 
             all_feats_scaled_trajs[window_size][subdir_name][only_num_ride][x] = {"mean_vect_turning_angles": turn_angles_scaled / np.pi * 180, 
                                                                            "max_x": max(longitudes_scaled),
@@ -355,6 +355,9 @@ for subdir_name in all_subdirs:
 print(total_possible_trajs)
 print("NF", label_NF, "NM", label_NM, "D", label_D, "I", label_I) 
 
-process_csv(trajectory_flags, trajectory_monotonous, window_size, all_possible_trajs, sample_names, metric_names, deg, flag_list, all_feats_trajs, "all_feats.csv")
-process_csv(trajectory_flags, trajectory_monotonous, window_size, all_possible_trajs, sample_names, metric_names, deg, flag_list, all_feats_scaled_trajs, "all_feats_scaled.csv")
-process_csv(trajectory_flags, trajectory_monotonous, window_size, all_possible_trajs, sample_names, metric_names, deg, flag_list, all_feats_scaled_to_max_trajs, "all_feats_scaled_to_max.csv")
+if not os.path.isdir("all_feats"):
+    os.makedirs("all_feats")
+
+process_csv(trajectory_flags, trajectory_monotonous, window_size, all_possible_trajs, sample_names, metric_names, deg, flag_list, all_feats_trajs, "all_feats/all_feats.csv")
+process_csv(trajectory_flags, trajectory_monotonous, window_size, all_possible_trajs, sample_names, metric_names, deg, flag_list, all_feats_scaled_trajs, "all_feats/all_feats_scaled.csv")
+process_csv(trajectory_flags, trajectory_monotonous, window_size, all_possible_trajs, sample_names, metric_names, deg, flag_list, all_feats_scaled_to_max_trajs, "all_feats/all_feats_scaled_to_max.csv")
