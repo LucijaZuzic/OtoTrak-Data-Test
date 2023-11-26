@@ -20,8 +20,7 @@ predicted_y_speed_no_abs_alternative = load_object("predicted/predicted_y_speed_
 
 metric_names = ["simpson", "trapz", "simpson x", "trapz x", "simpson y", "trapz y", "euclidean", "custom", "rays", "dtw"]
 metric_names = ["simpson", "trapz", "simpson x", "trapz x", "simpson y", "trapz y", "euclidean", "custom", "rays"]  
-metric_names = ["simpson x", "trapz x", "simpson y", "trapz y", "euclidean", "custom", "rays"] 
-metric_names = ["simpson x", "trapz x", "simpson y", "trapz y", "euclidean", "custom"]  
+metric_names = ["simpson x", "trapz x", "simpson y", "trapz y", "euclidean", "custom", "rays"]  
 
 metric_names_longer = []
 for metric_name in metric_names: 

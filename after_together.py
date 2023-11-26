@@ -210,8 +210,10 @@ for metric_name in best_match_name_for_metric:
              
 print("Best occurence") 
 first_row = ""
+sum_cols = dict()
 for metric_name in best_best:
-    first_row += metric_name + " & "         
+    first_row += metric_name + " & "   
+    sum_cols[metric_name] = 0            
 print(first_row + "\\\\ \\hline") 
 for longlat in best_best["euclidean"]:
     sum_row = 0
@@ -219,12 +221,21 @@ for longlat in best_best["euclidean"]:
     for metric_name in best_best:
         row_str += str(best_best[metric_name][longlat]) + " & "
         sum_row += best_best[metric_name][longlat]
+        sum_cols[metric_name] += best_best[metric_name][longlat]
     if sum_row > 0:
-        print(row_str + "\\\\ \\hline")               
+        print(row_str + str(sum_row) + " \\\\ \\hline")  
+last_row = "" 
+sum_sum_cols = 0
+for metric_name in sum_cols:
+    last_row += str(sum_cols[metric_name]) + " & "  
+    sum_sum_cols += sum_cols[metric_name]
+print(last_row + str(sum_sum_cols) + " \\\\ \\hline") 
 print("Worst occurence") 
 first_row = ""
+sum_cols = dict()
 for metric_name in worst_worst:
-    first_row += metric_name + " & "         
+    first_row += metric_name + " & "   
+    sum_cols[metric_name] = 0      
 print(first_row + "\\\\ \\hline") 
 for longlat in worst_worst["euclidean"]:
     sum_row = 0
@@ -232,8 +243,15 @@ for longlat in worst_worst["euclidean"]:
     for metric_name in worst_worst:
         row_str += str(worst_worst[metric_name][longlat]) + " & "
         sum_row += worst_worst[metric_name][longlat]
+        sum_cols[metric_name] += worst_worst[metric_name][longlat]
     if sum_row > 0:
-        print(row_str + "\\\\ \\hline")               
+        print(row_str + str(sum_row) + " \\\\ \\hline")      
+last_row = "" 
+sum_sum_cols = 0
+for metric_name in sum_cols:
+    last_row += str(sum_cols[metric_name]) + " & "  
+    sum_sum_cols += sum_cols[metric_name]
+print(last_row + str(sum_sum_cols) + " \\\\ \\hline")  
 print("Best ride") 
 first_row = ""
 for metric_name in best_best_ride:
