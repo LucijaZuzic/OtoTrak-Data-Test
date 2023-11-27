@@ -600,6 +600,12 @@ def read_y_speed_no_abs(title):
             all_mine[subdir_name + "/cleaned_csv/" + some_file] = y_speed_no_abs_alternative_int
     end_read(title, all_x, all_mine)
 
+def format_e(n):
+    if n >= 1:
+        return str(np.round(n, 2)) + " & "
+    a = '%.2E' % n
+    return str(a.split('E')[0].rstrip('0').rstrip('.') + 'E' + a.split('E')[1]) + " & "
+
 def end_read(title, all_x, all_mine, isangle = False):
     total_match_score = 0
     total_guesses = 0 
@@ -635,7 +641,7 @@ def end_read(title, all_x, all_mine, isangle = False):
             match_score = 0 
             no_empty = 0
             delta_series = [] 
-            for i in range(n):
+            for i in range(2, n):
                 if x[i] == other[i]:
                     match_score += 1
                 if x[i] != "undefined":
@@ -648,14 +654,17 @@ def end_read(title, all_x, all_mine, isangle = False):
                     delta_series_total.append(delta_x)
                     data_series_total.append(x[i]) 
 
-    total_guesses += n
+    total_guesses += n - 2
     total_guesses_no_empty += no_empty
     total_match_score += match_score  
     no_extension = title.replace(".png", "").replace("markov_hist/", "").capitalize()
     plt.rcParams.update({'font.size': 22})
     plt.figure(figsize=(25, 10))
     print(no_extension)
-    print(minval, maxval, (total_guesses - total_guesses_no_empty) / total_guesses, total_match_score / total_guesses, total_match_score / total_guesses_no_empty, min(delta_series_total), np.quantile(delta_series_total, 0.25), np.quantile(delta_series_total, 0.5), np.quantile(delta_series_total, 0.75), max(delta_series_total), np.average(delta_series_total), np.std(delta_series_total), np.var(delta_series_total))
+    #print(minval, maxval, (total_guesses - total_guesses_no_empty) / total_guesses, total_match_score / total_guesses, total_match_score / total_guesses_no_empty, min(delta_series_total), np.quantile(delta_series_total, 0.25), np.quantile(delta_series_total, 0.5), np.quantile(delta_series_total, 0.75), max(delta_series_total), np.average(delta_series_total), np.std(delta_series_total), np.var(delta_series_total))
+    #print(np.quantile(delta_series_total, 0.80), np.quantile(delta_series_total, 0.85), np.quantile(delta_series_total, 0.90), np.quantile(delta_series_total, 0.95))
+    print(format_e(minval), format_e(maxval), str(np.round(total_match_score / total_guesses * 100, 2)) + "\\% & ", format_e(np.average(delta_series_total)), format_e(np.std(delta_series_total)), format_e(np.var(delta_series_total))) 
+    print(format_e(np.quantile(delta_series_total, 0.25)), format_e(np.quantile(delta_series_total, 0.50)), format_e(np.quantile(delta_series_total, 0.75)), format_e(np.quantile(delta_series_total, 0.80)),format_e(np.quantile(delta_series_total, 0.85)), format_e(np.quantile(delta_series_total, 0.90)), format_e(np.quantile(delta_series_total, 0.95)))
     plt.subplot(1, 2, 1)
     plt.title(no_extension + " data")  
     plt.hist(data_series_total)

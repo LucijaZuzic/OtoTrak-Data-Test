@@ -7,7 +7,8 @@ num_occurences_of_direction_in_next_step = dict()
 num_occurences_of_direction_in_next_next_step = dict()
 
 all_good_rides = dict()
-
+test_all = 0
+train_all = 0
 for subdir_name in all_subdirs: 
     if not os.path.isdir(subdir_name) or "Vehicle" not in subdir_name:
         continue
@@ -44,5 +45,9 @@ for subdir_name in all_subdirs:
         X_test = []
 
     print(subdir_name, len(good_rides), len(X_train), len(X_test))
+    train_all += len(X_train)
+    test_all += len(X_test)
     save_object(subdir_name + "/train_rides", X_train) 
     save_object(subdir_name + "/test_rides", X_test)
+print(test_all + train_all, train_all, test_all)
+print(train_all / (test_all + train_all), test_all / (test_all + train_all))

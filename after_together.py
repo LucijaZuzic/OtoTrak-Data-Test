@@ -155,6 +155,8 @@ worst_worst_score = dict()
 for metric_name in best_match_name_for_metric:   
     #if "ray" in metric_name or "custom" in metric_name:
         #continue
+    if "no time" in metric_name or "custom" in metric_name:
+        continue
     best_best[metric_name] = dict()
     worst_worst[metric_name] = dict()
     best_best_ride[metric_name] = dict()
@@ -215,6 +217,7 @@ for metric_name in best_best:
     first_row += metric_name + " & "   
     sum_cols[metric_name] = 0            
 print(first_row + "\\\\ \\hline") 
+sum_rows = dict()
 for longlat in best_best["euclidean"]:
     sum_row = 0
     row_str = longlat + " & "
@@ -222,6 +225,7 @@ for longlat in best_best["euclidean"]:
         row_str += str(best_best[metric_name][longlat]) + " & "
         sum_row += best_best[metric_name][longlat]
         sum_cols[metric_name] += best_best[metric_name][longlat]
+    sum_rows[longlat] = sum_row
     if sum_row > 0:
         print(row_str + str(sum_row) + " \\\\ \\hline")  
 last_row = "" 
@@ -229,14 +233,45 @@ sum_sum_cols = 0
 for metric_name in sum_cols:
     last_row += str(sum_cols[metric_name]) + " & "  
     sum_sum_cols += sum_cols[metric_name]
-print(last_row + str(sum_sum_cols) + " \\\\ \\hline") 
+print(last_row + str(sum_sum_cols) + " \\\\ \\hline")  
+print("Best occurence percent")   
+print(first_row + "\\\\ \\hline") 
+for longlat in dict(sorted(sum_rows.items(), key=lambda item: item[1], reverse=True)): 
+    if sum_rows[longlat] > 0:
+        row_str = longlat + " & "
+        for metric_name in best_best:
+            row_str += str(np.round(best_best[metric_name][longlat] / sum_cols[metric_name] * 100, 2)) + "\\% & "  
+        print(row_str + str(np.round(sum_rows[longlat] / sum_sum_cols * 100, 2)) + "\\% \\\\ \\hline")  
+print(last_row + str(sum_sum_cols) + " \\\\ \\hline")   
+print("Best occurence percent x")   
+for longlat in sum_rows.keys(): 
+    if sum_rows[longlat] > 0:
+        row_str = longlat + " & "
+        for metric_name in ["simpson x", "trapz x"]:
+            row_str += str(np.round(best_best[metric_name][longlat] / sum_cols[metric_name] * 100, 2)) + "\\% & "  
+        print(row_str + "\\\\ \\hline")    
+print("Best occurence percent y")    
+for longlat in sum_rows.keys(): 
+    if sum_rows[longlat] > 0:
+        row_str = longlat + " & "
+        for metric_name in ["simpson y", "trapz y"]:
+            row_str += str(np.round(best_best[metric_name][longlat] / sum_cols[metric_name] * 100, 2)) + "\\% & "  
+        print(row_str +  "\\\\ \\hline")    
+print("Best occurence percent euclidean total")    
+for longlat in sum_rows.keys(): 
+    if sum_rows[longlat] > 0:
+        row_str = longlat + " & "
+        for metric_name in ["euclidean"]:
+            row_str += str(np.round(best_best[metric_name][longlat] / sum_cols[metric_name] * 100, 2)) + "\\% & "  
+        print(row_str + str(np.round(sum_rows[longlat] / sum_sum_cols * 100, 2)) + "\\% \\\\ \\hline")  
 print("Worst occurence") 
 first_row = ""
 sum_cols = dict()
 for metric_name in worst_worst:
     first_row += metric_name + " & "   
-    sum_cols[metric_name] = 0      
+    sum_cols[metric_name] = 0            
 print(first_row + "\\\\ \\hline") 
+sum_rows = dict()
 for longlat in worst_worst["euclidean"]:
     sum_row = 0
     row_str = longlat + " & "
@@ -244,14 +279,26 @@ for longlat in worst_worst["euclidean"]:
         row_str += str(worst_worst[metric_name][longlat]) + " & "
         sum_row += worst_worst[metric_name][longlat]
         sum_cols[metric_name] += worst_worst[metric_name][longlat]
+    sum_rows[longlat] = sum_row
     if sum_row > 0:
-        print(row_str + str(sum_row) + " \\\\ \\hline")      
+        print(row_str + str(sum_row) + " \\\\ \\hline")  
 last_row = "" 
 sum_sum_cols = 0
 for metric_name in sum_cols:
     last_row += str(sum_cols[metric_name]) + " & "  
     sum_sum_cols += sum_cols[metric_name]
 print(last_row + str(sum_sum_cols) + " \\\\ \\hline")  
+print("Worst occurence percent")   
+print(first_row + "\\\\ \\hline") 
+for longlat in dict(sorted(sum_rows.items(), key=lambda item: item[1], reverse=False)): 
+    if sum_rows[longlat] > 0:
+        row_str = longlat + " & "
+        for metric_name in worst_worst:
+            row_str += str(np.round(worst_worst[metric_name][longlat] / sum_cols[metric_name] * 100, 2)) + "\\% & "  
+        print(row_str + str(np.round(sum_rows[longlat] / sum_sum_cols * 100, 2)) + "\\% \\\\ \\hline")  
+print(last_row + str(sum_sum_cols) + " \\\\ \\hline")  
+
+'''
 print("Best ride") 
 first_row = ""
 for metric_name in best_best_ride:
@@ -316,3 +363,4 @@ for metric_name in worst_worst_ride:
             worst_worst_of_name = longlat
             worst_worst_of_file = worst_worst_ride[metric_name][longlat]
     print(" ", metric_name, worst_worst_of_name, worst_worst_of, worst_worst_of_file)
+'''

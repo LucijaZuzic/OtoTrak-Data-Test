@@ -1,5 +1,5 @@
 from utilities import *
-from sympy import Matrix 
+#from sympy import Matrix 
 from sklearn.cluster import KMeans
 from kneed import KneeLocator
 from sklearn.metrics import silhouette_score
@@ -135,9 +135,8 @@ def make_cluster(type_clus, size, variable_name, sd_x_train, sd_y_train, sd_name
 		test_arr.append([sd_x_test[index_val], sd_y_test[index_val]])
  
 	vals_clus = range(2, 15) 
-	vals_nn = [int(len(train_arr) // val_clus) for val_clus in vals_clus] 
-	vals_nn = [5 for val_clus in vals_clus] 
-	vals_eps_range = np.arange(10 ** -3, 10 ** -2, 10 ** -3)
+	vals_nn = [int(len(train_arr) // val_clus) for val_clus in vals_clus]  
+	vals_eps_range = np.arange(0.005, 0.015, 0.001)
 	index_clustering = 0
 
 	if type_clus == "KMeans":
@@ -177,14 +176,17 @@ def make_cluster(type_clus, size, variable_name, sd_x_train, sd_y_train, sd_name
 			vals_clus_sil_train[vals_clus] = []
 			vals_clus_sil_test[vals_clus] = []
 			new_eps_vals = [eps_val for eps_val in vals_eps_range]
-			#new_eps = kneefind(val_nn, train_arr)
-			#print(vals_clus[index_clustering], val_nn, new_eps)
-			#new_eps_vals.append(new_eps)
-			#new_eps_vals.sort()
+			new_eps = kneefind(val_nn, train_arr)
+			print(vals_clus[index_clustering], val_nn, new_eps)
+			new_eps_vals.append(new_eps)
+			new_eps_vals.sort()
 			for val_eps in new_eps_vals: 
 				attempt = DBSCAN(eps = val_eps, min_samples = val_nn) 
-				siltrain, siltest = one_cluster(size, type_clus, attempt, train_arr, test_arr, variable_name, "nn " + str(val_nn) + " eps " + str(np.round(val_eps, 3)), sd_names_train, sd_start_train, sd_window_train, sd_names_test, sd_start_test, sd_window_test) 
-				
+				if val_eps != new_eps:
+					siltrain, siltest = one_cluster(size, type_clus, attempt, train_arr, test_arr, variable_name, "nn " + str(val_nn) + " eps " + str(np.round(val_eps, 3)), sd_names_train, sd_start_train, sd_window_train, sd_names_test, sd_start_test, sd_window_test) 
+				else:
+					siltrain, siltest = one_cluster(size, type_clus, attempt, train_arr, test_arr, variable_name, "nn " + str(val_nn) + " best eps " + str(np.round(val_eps, 3)), sd_names_train, sd_start_train, sd_window_train, sd_names_test, sd_start_test, sd_window_test) 
+
 				if siltrain != "undefined":
 					silhouette_list_train[vals_clus].append(siltrain)
 					vals_clus_sil_train[vals_clus].append(val_eps)
@@ -306,9 +308,8 @@ stuff_to_plot_common = dict()
 stuff_to_plot_names = dict() 
 
 common_elements = ["window_size", "vehicle", "ride", "start"]
-
-for size in ["8"]: 
-#for size in ["4", "8", "12", "16", "20", "24", "28", "36"]:
+ 
+for size in ["4", "8", "12", "16", "20", "24", "28", "36"]:
 
 	stuff_to_plot_all[size] = dict() 
 
@@ -398,10 +399,9 @@ for size in ["8"]:
 						#print(distances_matrix_j)  
 			'''
 #scatter_me(stuff_to_plot_x, stuff_to_plot_y)
-#scatter_train_test(stuff_to_plot_x, stuff_to_plot_y, stuff_to_plot_common, stuff_to_plot_names, train_names, test_names)
+scatter_train_test(stuff_to_plot_x, stuff_to_plot_y, stuff_to_plot_common, stuff_to_plot_names, train_names, test_names)
 
-for size in ["8"]: 
-#for size in ["4", "8", "12", "16", "20", "24", "28", "36"]:
+for size in ["4", "8", "12", "16", "20", "24", "28", "36"]:
 	for filename_clus in os.listdir("rays/" + size + "/clustering"):
 		if "DBSCAN" in filename_clus:
 			object_clus = load_object("rays/" + size + "/clustering/" + filename_clus)
