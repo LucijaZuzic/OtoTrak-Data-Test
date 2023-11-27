@@ -21,7 +21,62 @@ def random_sample_of_cluster(files_in_cluster, num_to_sample):
 				plt.plot(long, lat)
 				plt.show()
 				plt.close()
-			 
+
+def class_sample_of_cluster(files_in_cluster): 
+	flag_list = ["key", "flip", "zone", "engine", "in_zone", "ignition", "sleep_mode", "staff_mode", "buzzer_active", 
+				"in_primary_zone", "in_restricted_zone", "onboard_geofencing", "speed_limit_active"]
+	dict_all_monot = {"NF": dict(), "NM": dict(),"I": dict(), "D": dict()}
+	for mono in dict_all_monot:	
+		for cluster in files_in_cluster:
+			dict_all_monot[mono][cluster] = 0
+	dict_all_flag = dict()
+	for flag in flag_list:
+		dict_all_flag[flag] = dict()
+		for cluster in files_in_cluster:
+			dict_all_flag[flag][cluster] = 0
+	for cluster in files_in_cluster: 
+		for name_file in files_in_cluster[cluster]:
+			file_with_ride = pd.read_csv(name_file)
+			x, window_size = files_in_cluster[cluster][name_file]["start"], files_in_cluster[cluster][name_file]["window"]
+			longitudes = list(file_with_ride["fields_longitude"])
+			latitudes = list(file_with_ride["fields_latitude"]) 
+			longitudes_tmp = longitudes[x:x + window_size]
+			latitudes_tmp = latitudes[x:x + window_size]
+			longitudes_tmp_transform, latitudes_tmp_transform = preprocess_long_lat(longitudes_tmp, latitudes_tmp)
+			
+			long_sgn = set()
+			for long_ind in range(len(longitudes_tmp_transform) - 1):
+				long_sgn.add(longitudes_tmp_transform[long_ind + 1] > longitudes_tmp_transform[long_ind])
+				if len(long_sgn) > 1:
+					break
+
+			lat_sgn = set()
+			for lat_ind in range(len(latitudes_tmp_transform) - 1):
+				lat_sgn.add(latitudes_tmp_transform[lat_ind + 1] > latitudes_tmp_transform[lat_ind])
+				if len(lat_sgn) > 1:
+					break
+			
+			if len(lat_sgn) > 1 and len(long_sgn) > 1:
+				dict_all_monot["NF"][cluster] += 1  
+			if (len(lat_sgn) == 1 and len(long_sgn) > 1) or (len(lat_sgn) > 1 and len(long_sgn) == 1):
+				dict_all_monot["NM"][cluster] += 1    
+			if len(lat_sgn) == 1 and len(long_sgn) == 1:
+				if (True in lat_sgn and True in long_sgn) or (False in lat_sgn and False in long_sgn):
+					dict_all_monot["D"][cluster] += 1  
+				else: 
+					dict_all_monot["I"][cluster] += 1  
+
+			for fl in dict_all_flag:
+				appears = 0
+				for val in file_with_ride[x:x + window_size]: 
+					if val:
+						appears = True
+						break
+				if appears: 
+					dict_all_flag[fl][cluster] += 1
+	print(dict_all_monot)		
+	print(dict_all_flag)		
+
 def kneefind(NN, X_embedded):
 	nbrs = NearestNeighbors(n_neighbors = NN).fit(X_embedded)
 	distances, indices = nbrs.kneighbors(X_embedded)
@@ -399,11 +454,12 @@ for size in ["4", "8", "12", "16", "20", "24", "28", "36"]:
 						#print(distances_matrix_j)  
 			'''
 #scatter_me(stuff_to_plot_x, stuff_to_plot_y)
-scatter_train_test(stuff_to_plot_x, stuff_to_plot_y, stuff_to_plot_common, stuff_to_plot_names, train_names, test_names)
+#scatter_train_test(stuff_to_plot_x, stuff_to_plot_y, stuff_to_plot_common, stuff_to_plot_names, train_names, test_names)
 
 for size in ["4", "8", "12", "16", "20", "24", "28", "36"]:
 	for filename_clus in os.listdir("rays/" + size + "/clustering"):
 		if "DBSCAN" in filename_clus:
 			object_clus = load_object("rays/" + size + "/clustering/" + filename_clus)
 			print(filename_clus, len(object_clus))
-			#random_sample_of_cluster(oobject_clus, 1)
+			#random_sample_of_cluster(object_clus, 1)
+			class_sample_of_cluster(object_clus)
