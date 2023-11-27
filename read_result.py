@@ -601,10 +601,10 @@ def read_y_speed_no_abs(title):
     end_read(title, all_x, all_mine)
 
 def format_e(n):
-    if n >= 1:
-        return str(np.round(n, 2)) + " & "
+    if n >= 10 ** -2 or n == 0:
+        return "$" + str(np.round(n, 2)).replace(".0", "") + "$ &"
     a = '%.2E' % n
-    return str(a.split('E')[0].rstrip('0').rstrip('.') + 'E' + a.split('E')[1]) + " & "
+    return "$" + str(str(a.split('E')[0].rstrip('0').rstrip('.') + 'E' + a.split('E')[1]) + "}$ &").replace("E-0", "*10^{-").replace("E+0", "*10^{")
 
 def end_read(title, all_x, all_mine, isangle = False):
     total_match_score = 0
@@ -663,7 +663,7 @@ def end_read(title, all_x, all_mine, isangle = False):
     print(no_extension)
     #print(minval, maxval, (total_guesses - total_guesses_no_empty) / total_guesses, total_match_score / total_guesses, total_match_score / total_guesses_no_empty, min(delta_series_total), np.quantile(delta_series_total, 0.25), np.quantile(delta_series_total, 0.5), np.quantile(delta_series_total, 0.75), max(delta_series_total), np.average(delta_series_total), np.std(delta_series_total), np.var(delta_series_total))
     #print(np.quantile(delta_series_total, 0.80), np.quantile(delta_series_total, 0.85), np.quantile(delta_series_total, 0.90), np.quantile(delta_series_total, 0.95))
-    print(format_e(minval), format_e(maxval), str(np.round(total_match_score / total_guesses * 100, 2)) + "\\% & ", format_e(np.average(delta_series_total)), format_e(np.std(delta_series_total)), format_e(np.var(delta_series_total))) 
+    print(format_e(minval), format_e(maxval), "$" + str(np.round(total_match_score / total_guesses * 100, 2)) + "\\%$ & ", format_e(np.average(delta_series_total)), format_e(np.std(delta_series_total)), format_e(np.var(delta_series_total)), format_e(max(delta_series_total))) 
     print(format_e(np.quantile(delta_series_total, 0.25)), format_e(np.quantile(delta_series_total, 0.50)), format_e(np.quantile(delta_series_total, 0.75)), format_e(np.quantile(delta_series_total, 0.80)),format_e(np.quantile(delta_series_total, 0.85)), format_e(np.quantile(delta_series_total, 0.90)), format_e(np.quantile(delta_series_total, 0.95)))
     plt.subplot(1, 2, 1)
     plt.title(no_extension + " data")  

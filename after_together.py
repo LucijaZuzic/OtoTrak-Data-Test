@@ -218,6 +218,13 @@ for metric_name in best_best:
     sum_cols[metric_name] = 0            
 print(first_row + "\\\\ \\hline") 
 sum_rows = dict()
+sum_x = dict()
+sum_y = dict()
+sum_else = dict()
+for longlat in best_best["euclidean"]:
+    sum_x[longlat] = 0
+    sum_y[longlat] = 0
+    sum_else[longlat] = 0 
 for longlat in best_best["euclidean"]:
     sum_row = 0
     row_str = longlat + " & "
@@ -225,6 +232,12 @@ for longlat in best_best["euclidean"]:
         row_str += str(best_best[metric_name][longlat]) + " & "
         sum_row += best_best[metric_name][longlat]
         sum_cols[metric_name] += best_best[metric_name][longlat]
+        if " x" in metric_name:
+            sum_x[longlat] += best_best[metric_name][longlat]
+        if " y" in metric_name:
+            sum_y[longlat] += best_best[metric_name][longlat]
+        if " y" not in metric_name and " x" not in metric_name:
+            sum_else[longlat] += best_best[metric_name][longlat]
     sum_rows[longlat] = sum_row
     if sum_row > 0:
         print(row_str + str(sum_row) + " \\\\ \\hline")  
@@ -244,21 +257,21 @@ for longlat in dict(sorted(sum_rows.items(), key=lambda item: item[1], reverse=T
         print(row_str + str(np.round(sum_rows[longlat] / sum_sum_cols * 100, 2)) + "\\% \\\\ \\hline")  
 print(last_row + str(sum_sum_cols) + " \\\\ \\hline")   
 print("Best occurence percent x")   
-for longlat in sum_rows.keys(): 
+for longlat in dict(sorted(sum_x.items(), key=lambda item: item[1], reverse=True)): 
     if sum_rows[longlat] > 0:
         row_str = longlat + " & "
         for metric_name in ["simpson x", "trapz x"]:
             row_str += str(np.round(best_best[metric_name][longlat] / sum_cols[metric_name] * 100, 2)) + "\\% & "  
         print(row_str + "\\\\ \\hline")    
 print("Best occurence percent y")    
-for longlat in sum_rows.keys(): 
+for longlat in dict(sorted(sum_y.items(), key=lambda item: item[1], reverse=True)): 
     if sum_rows[longlat] > 0:
         row_str = longlat + " & "
         for metric_name in ["simpson y", "trapz y"]:
             row_str += str(np.round(best_best[metric_name][longlat] / sum_cols[metric_name] * 100, 2)) + "\\% & "  
         print(row_str +  "\\\\ \\hline")    
-print("Best occurence percent euclidean total")    
-for longlat in sum_rows.keys(): 
+print("Best occurence percent other total")    
+for longlat in dict(sorted(sum_else.items(), key=lambda item: item[1], reverse=True)): 
     if sum_rows[longlat] > 0:
         row_str = longlat + " & "
         for metric_name in ["euclidean"]:
