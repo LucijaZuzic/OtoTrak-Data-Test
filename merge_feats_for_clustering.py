@@ -1,4 +1,268 @@
 from utilities import *
+#from sympy import Matrix 
+from sklearn.cluster import KMeans
+from kneed import KneeLocator
+from sklearn.metrics import silhouette_score
+from sklearn.cluster import DBSCAN
+from sklearn.neighbors import NearestNeighbors
+
+ 
+def one_cluster(size, type_clus, attempt, train_arr, test_arr, variable_name, clus_params, sd_names_train, sd_start_train, sd_window_train, sd_names_test, sd_start_test, sd_window_test):
+	clus_train = attempt.fit(train_arr)
+	train_labels = clus_train.labels_
+
+	dict_train_by_label = dict()
+	for label in train_labels:
+		dict_train_by_label[label] = {"x": [], "y": []}
+	
+	filenames_in_cluster_train = dict()
+	for label_index in range(len(train_labels)):
+		label = train_labels[label_index]
+		dict_train_by_label[label]["x"].append(float(train_arr[label_index][0]))
+		dict_train_by_label[label]["y"].append(float(train_arr[label_index][1]))
+		if label not in filenames_in_cluster_train:
+			filenames_in_cluster_train[label] = dict()
+		filenames_in_cluster_train[label][sd_names_train[label_index]] = {"window": sd_window_train[label_index], "start": sd_start_train[label_index]}
+	
+	if type_clus == "KMeans":
+		clus_test = attempt.predict(test_arr) 
+		test_labels = clus_test
+	if type_clus == "DBSCAN":
+		clus_test = attempt.fit_predict(test_arr) 
+		test_labels = clus_test
+
+	dict_test_by_label = dict()
+	for label in clus_test:
+		dict_test_by_label[label] = {"x": [], "y": []}
+	
+	filenames_in_cluster_test = dict()
+	for label_index in range(len(clus_test)):
+		label = clus_test[label_index]
+		dict_test_by_label[label]["x"].append(test_arr[label_index][0])
+		dict_test_by_label[label]["y"].append(test_arr[label_index][1])
+		if label not in filenames_in_cluster_test:
+			filenames_in_cluster_test[label] = dict()
+		filenames_in_cluster_test[label][sd_names_test[label_index]] = {"window": sd_window_test[label_index], "start": sd_start_test[label_index]}
+	
+	random_colors_set = random_colors(len(set(dict_train_by_label.keys()).union(set(dict_test_by_label.keys()))))
+	random_colors_dict = dict()
+	index_num = 0
+	for label in set(dict_train_by_label.keys()).union(set(dict_test_by_label.keys())):
+		random_colors_dict[label] = random_colors_set[index_num]
+		index_num += 1
+ 
+	plt.rcParams.update({'font.size': 22})
+	plt.figure(figsize=(20, 10))
+	plt.subplot(1, 2, 1)
+	label_index = 0 
+	for label in dict_train_by_label:  
+		plt.title(type_clus + " train size " + size + " " + variable_name + " " + str(clus_params))  
+		plt.scatter(dict_train_by_label[label]["x"], dict_train_by_label[label]["y"], color = random_colors_dict[label], label = str(label) + " train")   
+		label_index += 1 
+	plt.legend()
+	plt.subplot(1, 2, 2) 
+	label_index = 0
+	for label in dict_test_by_label:  
+		plt.title(type_clus + " test size " + size + " " + variable_name + " " + str(clus_params))    
+		plt.scatter(dict_test_by_label[label]["x"], dict_test_by_label[label]["y"], color = random_colors_dict[label], label = str(label) + " test")  
+		label_index += 1
+	plt.legend()
+	if not os.path.isdir("rays/" + size + "/rays_plot/"):
+		os.makedirs("rays/" + size + "/rays_plot/")
+	plt.savefig("rays/" + size + "/rays_plot/" + type_clus + " test size " + size + " " + variable_name+ " " + str(clus_params) + ".png")
+	plt.close()
+
+	score_train = "undefined"
+	if len(dict_train_by_label) > 1:
+		score_train = silhouette_score(train_arr, train_labels)
+		
+	score_test = "undefined"
+	if len(dict_test_by_label) > 1:
+		score_test = silhouette_score(test_arr, test_labels) 
+ 
+	if not os.path.isdir("rays/" + size + "/clustering/"):
+		os.makedirs("rays/" + size + "/clustering/")
+	
+	save_object("rays/" + size + "/clustering/filenames_in_cluster_train " + type_clus + " test size " + size + " " + variable_name+ " " + str(clus_params), filenames_in_cluster_train)
+	save_object("rays/" + size + "/clustering/filenames_in_cluster_test " + type_clus + " test size " + size + " " + variable_name+ " " + str(clus_params), filenames_in_cluster_test)
+	#random_sample_of_cluster(filenames_in_cluster_train, 3)
+	#random_sample_of_cluster(filenames_in_cluster_test, 3)
+	if type_clus == "KMeans":
+		return attempt.inertia_, score_train, score_test 
+	if type_clus == "DBSCAN":
+		return score_train, score_test 
+
+def make_cluster(type_clus, size, variable_name, sd_x_train, sd_y_train, sd_names_train, sd_start_train, sd_window_train, sd_x_test, sd_y_test, sd_names_test, sd_start_test, sd_window_test):
+	train_arr = []
+	test_arr = []
+	for index_val in range(len(sd_x_train)):
+		train_arr.append([sd_x_train[index_val], sd_y_train[index_val]])
+	for index_val in range(len(sd_x_test)):
+		test_arr.append([sd_x_test[index_val], sd_y_test[index_val]])
+ 
+	vals_clus = range(2, 15) 
+	vals_nn = [int(len(train_arr) // val_clus) for val_clus in vals_clus]  
+	vals_eps_range = np.arange(0.005, 0.015, 0.001)
+	index_clustering = 0
+
+	if type_clus == "KMeans":
+
+		inertia_list = []
+		silhouette_list_train = []
+		silhouette_list_test = []
+		vals_clus_sil_train = []
+		vals_clus_sil_test = [] 
+
+		for val_clus in vals_clus:
+			attempt = KMeans(n_clusters = val_clus, random_state = 42) 
+			inertia_val, siltrain, siltest = one_cluster(size, type_clus, attempt, train_arr, test_arr, variable_name, "nclus " + str(val_clus), sd_names_train, sd_start_train, sd_window_train, sd_names_test, sd_start_test, sd_window_test)
+
+			inertia_list.append(inertia_val)
+
+			if siltrain != "undefined":
+				silhouette_list_train.append(siltrain)
+				vals_clus_sil_train.append(val_clus)
+
+			if siltest != "undefined":
+				silhouette_list_test.append(siltest) 
+				vals_clus_sil_test.append(val_clus)
+ 
+	if type_clus == "DBSCAN": 
+
+		inertia_list = dict()
+		silhouette_list_train = dict()
+		silhouette_list_test = dict()
+		vals_clus_sil_train = dict()
+		vals_clus_sil_test = dict()
+
+		index_clustering = 0
+		for val_nn in vals_nn:
+			silhouette_list_train[vals_clus] = []
+			silhouette_list_test[vals_clus] = []
+			vals_clus_sil_train[vals_clus] = []
+			vals_clus_sil_test[vals_clus] = []
+			new_eps_vals = [eps_val for eps_val in vals_eps_range]
+			new_eps = kneefind(val_nn, train_arr)
+			print(vals_clus[index_clustering], val_nn, new_eps)
+			new_eps_vals.append(new_eps)
+			new_eps_vals.sort()
+			for val_eps in new_eps_vals: 
+				attempt = DBSCAN(eps = val_eps, min_samples = val_nn) 
+				if val_eps != new_eps:
+					siltrain, siltest = one_cluster(size, type_clus, attempt, train_arr, test_arr, variable_name, "nn " + str(val_nn) + " eps " + str(np.round(val_eps, 3)), sd_names_train, sd_start_train, sd_window_train, sd_names_test, sd_start_test, sd_window_test) 
+				else:
+					siltrain, siltest = one_cluster(size, type_clus, attempt, train_arr, test_arr, variable_name, "nn " + str(val_nn) + " best eps " + str(np.round(val_eps, 3)), sd_names_train, sd_start_train, sd_window_train, sd_names_test, sd_start_test, sd_window_test) 
+
+				if siltrain != "undefined":
+					silhouette_list_train[vals_clus].append(siltrain)
+					vals_clus_sil_train[vals_clus].append(val_eps)
+
+				if siltest != "undefined":
+					silhouette_list_test[vals_clus].append(siltest) 
+					vals_clus_sil_test[vals_clus].append(val_eps)
+  
+			index_clustering += 1
+			 
+	if type_clus == "KMeans":
+		#plt.title(type_clus + " inertia")
+		#plt.plot(vals_clus, inertia_list)
+		#plt.show()
+		#plt.close()
+
+		#kl = KneeLocator(vals_clus, inertia_list, curve = "convex", direction = "decreasing")
+		#print(kl.knee_y)
+
+		#plt.title(type_clus + " silhouette train")
+		#plt.plot(vals_clus_sil_train, silhouette_list_train)
+		#plt.show()
+		#plt.close()
+
+		#plt.title(type_clus + " silhouette test")
+		#plt.plot(vals_clus_sil_test, silhouette_list_test)
+		#plt.show()
+		#plt.close()
+
+		print(max(silhouette_list_train), vals_clus_sil_train[silhouette_list_train.index(max(silhouette_list_train))])
+		print(max(silhouette_list_test), vals_clus_sil_test[silhouette_list_test.index(max(silhouette_list_test))])	
+
+	if type_clus == "DBSCAN":
+
+		for val_clus in vals_clus_sil_train:
+
+			#plt.title(type_clus + " silhouette train nclus " + str(val_clus))
+			#plt.plot(vals_clus_sil_train[val_clus], silhouette_list_train[val_clus])
+			#plt.show()
+			#plt.close()
+
+			print(max(silhouette_list_test[val_clus]), vals_clus_sil_test[val_clus][silhouette_list_test[val_clus].index(max(silhouette_list_test[val_clus]))])	
+
+		for val_clus in vals_clus_sil_test:
+
+			#plt.title(type_clus + " silhouette test nclus " + str(val_clus))
+			#plt.plot(vals_clus_sil_test[val_clus], silhouette_list_test[val_clus])
+			#plt.show()
+			#plt.close()
+ 
+			print(max(silhouette_list_train[val_clus]), vals_clus_sil_train[val_clus][silhouette_list_train[val_clus].index(max(silhouette_list_train[val_clus]))])
+ 
+def scatter_train_test(sd_x, sd_y, sd_common, sd_names, train_set, test_set):
+	for size in sd_names:
+		sd_x_train = dict()
+		for variable_name in sd_x[size]: 
+			sd_x_train[variable_name] = []
+		sd_y_train = dict()
+		for variable_name in sd_y[size]: 
+			sd_y_train[variable_name] = []
+		sd_names_train = []
+		sd_start_train = []
+		sd_window_train = []
+
+		sd_x_test = dict()
+		for variable_name in sd_x[size]: 
+			sd_x_test[variable_name] = []
+		sd_y_test= dict()
+		for variable_name in sd_y[size]: 
+			sd_y_test[variable_name] = []
+		sd_names_test = []
+		sd_start_test = []
+		sd_window_test = []
+
+		for index_val in range(len(sd_names[size])):
+			if sd_names[size][index_val] in train_set:
+				sd_names_train.append(sd_names[size][index_val])
+				sd_start_train.append(sd_common[size]["start"][index_val])
+				sd_window_train.append(sd_common[size]["window_size"][index_val])
+				for variable_name in sd_y[size]: 
+					sd_y_train[variable_name].append(sd_y[size][variable_name][index_val])
+				for variable_name in sd_x[size]: 
+					sd_x_train[variable_name].append(sd_x[size][variable_name][index_val])
+
+			if sd_names[size][index_val] in test_set:
+				sd_names_test.append(sd_names[size][index_val])
+				sd_start_test.append(sd_common[size]["start"][index_val])
+				sd_window_test.append(sd_common[size]["window_size"][index_val])
+				for variable_name in sd_y[size]: 
+					sd_y_test[variable_name].append(sd_y[size][variable_name][index_val])
+				for variable_name in sd_x[size]: 
+					sd_x_test[variable_name].append(sd_x[size][variable_name][index_val])
+
+		for variable_name in sd_x[size]:  
+			if variable_name != "offset":
+				continue 
+			print(len(sd_names_test), len(sd_names_test) / (len(sd_names_train) + len(sd_names_test)))
+			print(len(sd_names_train), len(sd_names_train) / (len(sd_names_train) + len(sd_names_test)))
+			'''
+			plt.subplot(1, 2, 1)
+			plt.title("size " + size + " train " + variable_name) 
+			plt.scatter(sd_x_train[variable_name], sd_y_train[variable_name], color = 'b')
+			plt.subplot(1, 2, 2)
+			plt.title("size " + size + " test " + variable_name) 
+			plt.scatter(sd_x_test[variable_name], sd_y_test[variable_name], color = 'r')
+			plt.show()
+			'''
+			make_cluster("KMeans", size, variable_name, sd_x_train[variable_name], sd_y_train[variable_name], sd_names_train, sd_start_train, sd_window_train, sd_x_test[variable_name], sd_y_test[variable_name], sd_names_test, sd_start_test, sd_window_test)
+			make_cluster("DBSCAN", size, variable_name, sd_x_train[variable_name], sd_y_train[variable_name], sd_names_train, sd_start_train, sd_window_train, sd_x_test[variable_name], sd_y_test[variable_name], sd_names_test, sd_start_test, sd_window_test)
+ 
  
 window_size = 20
 deg = 5
@@ -7,128 +271,37 @@ step_size = window_size
 #step_size = 1
 max_trajs = 100
 name_extension = "_window_" + str(window_size) + "_step_" + str(step_size) + "_segments_" + str(max_trajs)
-
+header = ["start", "window_size", "vehicle", "ride"]
 all_subdirs = os.listdir() 
+
+dict_for_clustering = dict()
+train_names = set()
+test_names = set()
+for subdir_name in all_subdirs:
+    if not os.path.isdir(subdir_name) or "Vehicle" not in subdir_name:
+        continue
+    dict_for_clustering[subdir_name] = dict()
+    all_files = os.listdir(subdir_name + "/cleaned_csv/") 
+    bad_rides_filenames = set()
+    if os.path.isfile(subdir_name + "/bad_rides_filenames"):
+        bad_rides_filenames = load_object(subdir_name + "/bad_rides_filenames")
+    gap_rides_filenames = set()
+    if os.path.isfile(subdir_name + "/gap_rides_filenames"):
+        gap_rides_filenames = load_object(subdir_name + "/gap_rides_filenames")
+        
+    for some_file in all_files:  
+        if subdir_name + "/cleaned_csv/" + some_file in bad_rides_filenames or subdir_name + "/cleaned_csv/" + some_file in gap_rides_filenames:
+            continue 
+        dict_for_clustering[subdir_name][some_file] = dict()
   
-all_possible_trajs = dict()   
-all_possible_trajs[window_size] = dict()
-
-all_feats_trajs = dict()   
-all_feats_trajs[window_size] = dict()
-
-all_feats_scaled_trajs = dict()   
-all_feats_scaled_trajs[window_size] = dict()
-
-all_feats_scaled_to_max_trajs = dict()   
-all_feats_scaled_to_max_trajs[window_size] = dict()
-
-trajectory_monotonous = dict()
-trajectory_monotonous[window_size] = dict()
-
-flag_list = ["key", "flip", "zone", "engine", "in_zone", "ignition", "sleep_mode", "staff_mode", "buzzer_active", 
-             "in_primary_zone", "in_restricted_zone", "onboard_geofencing", "speed_limit_active"]
-
-trajectory_flags = dict()
-for flag in flag_list:
-    trajectory_flags[flag] = dict()
-    trajectory_flags[flag][window_size] = dict()
-
-label_NF = 0
-label_NM = 0
-label_I = 0
-label_D = 0
- 
-total_possible_trajs = 0
-
-metric_names = ["euclidean", "dtw", "simpson", "trapz", "custom", "simpson x", "trapz x", "simpson y", "trapz y", "rays"]
-metric_names = ["euclidean", "dtw", "simpson", "trapz", "custom", "simpson x", "trapz x", "simpson y", "trapz y"]
-sample_names = dict()
-
-left_edge_x = [0 for i in range(window_size)]
-left_edge_y = [x * 1 / (window_size - 1) for x in range(window_size)] 
-sample_names["left"] = {"long": left_edge_x, "lat": left_edge_y}
-
-right_edge_x = [1 for i in range(window_size)]
-right_edge_y = [x * 1 / (window_size - 1) for x in range(window_size)] 
-sample_names["right"] = {"long": right_edge_x, "lat": right_edge_y}
-
-down_edge_x = [x * 1 / (window_size - 1) for x in range(window_size)]
-down_edge_y = [0 for i in range(window_size)] 
-sample_names["down"] = {"long": down_edge_x, "lat": down_edge_y}
-
-up_edge_x = [x * 1 / (window_size - 1) for x in range(window_size)]
-up_edge_y = [1 for i in range(window_size)] 
-sample_names["up"] = {"long": up_edge_x, "lat": up_edge_y}
-
-diagonal_edge_x = [x * 1 / (window_size - 1) for x in range(window_size)]
-diagonal_edge_y = [x * 1 / (window_size - 1) for x in range(window_size)] 
-sample_names["diagonal"] = {"long": diagonal_edge_x, "lat": diagonal_edge_y}
-
-left_circle_y = [x * 1 / (window_size - 1) for x in range(window_size)]
-left_circle_x = [np.sqrt(- y * (y - 1)) for y in left_circle_y] 
-sample_names["left_circle"] = {"long": left_circle_x, "lat": left_circle_y}
-
-right_circle_y = [x * 1 / (window_size - 1) for x in range(window_size)]
-right_circle_x = [1 - np.sqrt(- y * (y - 1)) for y in right_circle_y] 
-sample_names["right_circle"] = {"long": right_circle_x, "lat": right_circle_y}
-
-down_circle_x = [x * 1 / (window_size - 1) for x in range(window_size)]
-down_circle_y = [np.sqrt(- x * (x - 1)) for x in down_circle_x] 
-sample_names["down_circle"] = {"long": down_circle_x, "lat": down_circle_y}
-
-up_circle_x = [x * 1 / (window_size - 1) for x in range(window_size)]
-up_circle_y = [1 - np.sqrt(- x * (x - 1)) for x in up_circle_x]  
-sample_names["up_circle"] = {"long": up_circle_x, "lat": up_circle_y}
-
-sin_x = [x * 1 / (window_size - 1) for x in range(window_size)]
-sin_y = [np.sin(x * np.pi * 2) for x in sin_x]  
-sample_names["sin"] = {"long": sin_x, "lat": sin_y}
-
-sin_reverse_x = [x * 1 / (window_size - 1) for x in range(window_size)]
-sin_reverse_y = [np.sin(x * np.pi * 2 + np.pi) for x in sin_x]  
-sample_names["sin_reverse"] = {"long": sin_reverse_x, "lat": sin_reverse_y}
-
-sin_half_x = [x * 1 / (window_size - 1) for x in range(window_size)]
-sin_half_y = [np.sin(x * np.pi) for x in sin_half_x]  
-sample_names["sin_half"] = {"long": sin_half_x, "lat": sin_half_y}
-
-sin_half_reverse_x = [x * 1 / (window_size - 1) for x in range(window_size)]
-sin_half_reverse_y = [np.sin(x * np.pi + np.pi) for x in sin_half_x]  
-sample_names["sin_half_reverse"] = {"long": sin_half_reverse_x, "lat": sin_half_reverse_y}
-
-cos_x = [x * 1 / (window_size - 1) for x in range(window_size)]
-cos_y = [np.cos(x * np.pi * 2) for x in cos_x]  
-sample_names["cos"] = {"long": cos_x, "lat": cos_y}
-
-cos_reverse_x = [x * 1 / (window_size - 1) for x in range(window_size)]
-cos_reverse_y = [np.cos(x * np.pi * 2 + np.pi) for x in cos_x]  
-sample_names["cos_reverse"] = {"long": cos_reverse_x, "lat": cos_reverse_y}
-
-cos_half_x = [x * 1 / (window_size - 1) for x in range(window_size)]
-cos_half_y = [np.cos(x * np.pi) for x in cos_half_x]  
-sample_names["cos_half"] = {"long": cos_half_x, "lat": cos_half_y}
-
-cos_half_reverse_x = [x * 1 / (window_size - 1) for x in range(window_size)]
-cos_half_reverse_y = [np.cos(x * np.pi + np.pi) for x in cos_half_x]  
-sample_names["cos_half_reverse"] = {"long": cos_half_reverse_x, "lat": cos_half_reverse_y}
-
-size = 8
-dotsx_original, dotsy_original = make_rays(size)
 for subdir_name in all_subdirs:
 
     trajs_in_dir = 0
     
     if not os.path.isdir(subdir_name) or "Vehicle" not in subdir_name:
         continue
+    print(subdir_name)
      
-    all_possible_trajs[window_size][subdir_name] = dict() 
-    all_feats_trajs[window_size][subdir_name] = dict() 
-    all_feats_scaled_trajs[window_size][subdir_name] = dict() 
-    all_feats_scaled_to_max_trajs[window_size][subdir_name] = dict() 
-    trajectory_monotonous[window_size][subdir_name] = dict() 
-    for flag in flag_list:
-        trajectory_flags[flag][window_size][subdir_name] = dict()  
-
     all_files = os.listdir(subdir_name + "/cleaned_csv/") 
     bad_rides_filenames = set()
     if os.path.isfile(subdir_name + "/bad_rides_filenames"):
@@ -141,223 +314,84 @@ for subdir_name in all_subdirs:
         if subdir_name + "/cleaned_csv/" + some_file in bad_rides_filenames or subdir_name + "/cleaned_csv/" + some_file in gap_rides_filenames:
             #print("Skipped ride", some_file)
             continue
-        #print("Used ride", some_file)
+        print("Used ride", some_file)
 
         only_num_ride = some_file.replace(".csv", "").replace("events_", "")
         
         trajs_in_ride = 0
-
-        all_possible_trajs[window_size][subdir_name][only_num_ride] = dict()
-        all_feats_trajs[window_size][subdir_name][only_num_ride] = dict()
-        all_feats_scaled_trajs[window_size][subdir_name][only_num_ride] = dict()
-        all_feats_scaled_to_max_trajs[window_size][subdir_name][only_num_ride] = dict() 
-        trajectory_monotonous[window_size][subdir_name][only_num_ride] = dict() 
-        for flag in flag_list:
-            trajectory_flags[flag][window_size][subdir_name][only_num_ride] = dict() 
-    
+ 
         file_with_ride = pd.read_csv(subdir_name + "/cleaned_csv/" + some_file)
         longitudes = list(file_with_ride["fields_longitude"])
         latitudes = list(file_with_ride["fields_latitude"]) 
-        times = list(file_with_ride["time"])  
-        flags_dict = dict()
-        for flag in flag_list:
-            flags_dict[flag] = list(file_with_ride["fields_" + flag])
-  
-        for x in range(0, len(longitudes) - window_size + 1, step_size):
-            longitudes_tmp = longitudes[x:x + window_size]
-            latitudes_tmp = latitudes[x:x + window_size]
-            times_tmp = times[x:x + window_size] 
-            for flag in flag_list:
-                trajectory_flags_tmp = flags_dict[flag][x:x + window_size] 
- 
-                count_limit = False 
-                for val_flag in trajectory_flags_tmp:  
-                    if val_flag:
-                        count_limit = True
-                        break
-                        
-                trajectory_flags[flag][window_size][subdir_name][only_num_ride][x] = count_limit
+        times = list(file_with_ride["time"])   
 
-            set_longs = set()
-            set_lats = set()
-            set_points = set()
-            for tmp_long in longitudes_tmp:
-                set_longs.add(tmp_long)
-            for tmp_lat in latitudes_tmp:
-                set_lats.add(tmp_lat)
-            for some_index in range(len(latitudes_tmp)):
-                set_points.add((latitudes_tmp[some_index], longitudes_tmp[some_index]))
+        open_feats_scaled = pd.read_csv("all_feats/all_feats_scaled_" + subdir_name + ".csv", index_col = False)
+        open_feats_scaled_max = pd.read_csv("all_feats/all_feats_scaled_to_max_" + subdir_name + ".csv", index_col = False)
+        open_feats = pd.read_csv("all_feats/all_feats_" + subdir_name + ".csv", index_col = False)
+   
+        for x in range(0, len(longitudes) - window_size + 1, step_size): 
+
+            print(x)
+            dict_for_clustering[subdir_name][some_file][x] = dict()
+
+            only_number = some_file.replace(".csv", "").replace("events_", "")   
+            for index in range(len(open_feats_scaled["start"])):
+                if str(open_feats_scaled["start"][index]) != str(x):
+                    continue
+                if str(open_feats_scaled["window_size"][index]) != str(window_size):
+                    continue
+                if str(open_feats_scaled["vehicle"][index]) != str(subdir_name):
+                    continue
+                if str(open_feats_scaled["ride"][index]) != str(only_number):
+                    continue  
+                print("Located feats")
+                for key_name in open_feats_scaled.head(): 
+                    if key_name in header:
+                        continue
+                    dict_for_clustering[subdir_name][some_file][x]["all_feats_scaled_" + key_name] = open_feats_scaled[key_name][index]
+                    dict_for_clustering[subdir_name][some_file][x]["all_feats_scaled_to_max_" + key_name] = open_feats_scaled_max[key_name][index]
+                    dict_for_clustering[subdir_name][some_file][x]["all_feats_" + key_name] = open_feats[key_name][index]
                 
-            if len(set_lats) == 1 or len(set_longs) == 1:
-                continue
-            if len(set_points) < 3:
-                continue
-            
-            longitudes_tmp_transform, latitudes_tmp_transform = preprocess_long_lat(longitudes_tmp, latitudes_tmp)
-            
-            longitudes_scaled, latitudes_scaled = scale_long_lat(longitudes_tmp_transform, latitudes_tmp_transform)
-            
-            longitudes_scaled_to_max, latitudes_scaled_to_max = scale_long_lat(longitudes_tmp_transform, latitudes_tmp_transform, xmax = maxoffset, ymax = maxoffset, keep_aspect_ratio = True)
+            print(len(dict_for_clustering[subdir_name][some_file][x]))
 
-            times_tmp_transform = transform_time(times_tmp)
+            #for size in os.listdir("rays"):
+            for size in ["4", "8"]:
+                start_path = "rays/" + str(size) + "/" + subdir_name + "/" + only_number
+                dsmax = pd.read_csv(start_path + "/all_distances_scaled_to_max_trajs.csv", index_col = False)
+                dsc = pd.read_csv(start_path + "/all_distances_scaled_trajs.csv", index_col = False)
+                dpp = pd.read_csv(start_path + "/all_distances_preprocessed_trajs.csv", index_col = False)
+                d = pd.read_csv(start_path + "/all_distances_trajs.csv", index_col = False)
+             
+                for index in range(len(dsmax["start"])):
+                    if str(dsmax["start"][index]) != str(x):
+                        continue
+                    if str(dsmax["window_size"][index]) != str(window_size):
+                        continue
+                    if str(dsmax["vehicle"][index]) != str(subdir_name):
+                        continue
+                    if str(dsmax["ride"][index]) != str(only_number):
+                        continue  
+                    print("Located dist", size)
+                    for key_name in dsmax.head(): 
+                        if key_name in header:
+                            continue
+                        dict_for_clustering[subdir_name][some_file][x][str(size) + "all_distances_scaled_to_max_trajs_distances_" + key_name] = dsmax[key_name][index]
+                        dict_for_clustering[subdir_name][some_file][x][str(size) + "all_distances_scaled_trajs_distances_" + key_name] = dsc[key_name][index]
+                        dict_for_clustering[subdir_name][some_file][x][str(size) + "all_distances_trajs_distances_" + key_name] = d[key_name][index]
+                        dict_for_clustering[subdir_name][some_file][x][str(size) + "all_distances_preprocesssed_trajs_distances_" + key_name] = dpp[key_name][index]
 
-            total_possible_trajs += 1
-            trajs_in_ride += 1
-            trajs_in_dir += 1 
+                print(len(dict_for_clustering[subdir_name][some_file][x]))
+                print("Located num", size)
 
-            all_possible_trajs[window_size][subdir_name][only_num_ride][x] = {"long": longitudes_tmp_transform, "lat": latitudes_tmp_transform, "time": times_tmp_transform}
+                nsmax = load_object(start_path + "/all_nums_scaled_to_max_trajs")
+                nsc = load_object(start_path + "/all_nums_scaled_trajs")
+                npp = load_object(start_path + "/all_nums_preprocessed_trajs")
+                n = load_object(start_path + "/all_nums_trajs")
 
-            turn_angles = mean_vect_turning_angles(longitudes_tmp_transform, latitudes_tmp_transform)  
-            sp_len = mean_speed_len(longitudes_tmp_transform, latitudes_tmp_transform, times_tmp_transform)  
-            sp_offset = mean_speed_offset(longitudes_tmp_transform, latitudes_tmp_transform, times_tmp_transform)   
-            surfarea = total_surf(longitudes_tmp_transform, latitudes_tmp_transform) 
-            surf_trapz_x, surf_trapz_y = get_surf_xt_yt(longitudes_tmp_transform, latitudes_tmp_transform, times_tmp_transform, "trapz")
-            surf_simpson_x, surf_simpson_y = get_surf_xt_yt(longitudes_tmp_transform, latitudes_tmp_transform, times_tmp_transform, "simpson")
-              
-            turn_angles_scaled = mean_vect_turning_angles(longitudes_scaled, latitudes_scaled)  
-            sp_len_scaled = mean_speed_len(longitudes_scaled, latitudes_scaled, times_tmp_transform)  
-            sp_offset_scaled = mean_speed_offset(longitudes_scaled, latitudes_scaled, times_tmp_transform)   
-            surfarea_scaled = total_surf(longitudes_scaled, latitudes_scaled)  
-            surf_trapz_x_scaled, surf_trapz_y_scaled = get_surf_xt_yt(longitudes_scaled, latitudes_scaled, times_tmp_transform, "trapz")
-            surf_simpson_x_scaled, surf_simpson_y_scaled = get_surf_xt_yt(longitudes_scaled, latitudes_scaled, times_tmp_transform, "simpson") 
-        
-            turn_angles_scaled_to_max = mean_vect_turning_angles(longitudes_scaled_to_max, latitudes_scaled_to_max)  
-            sp_len_scaled_to_max = mean_speed_len(longitudes_scaled_to_max, latitudes_scaled_to_max, times_tmp_transform)  
-            sp_offset_scaled_to_max = mean_speed_offset(longitudes_scaled_to_max, latitudes_scaled_to_max, times_tmp_transform)   
-            surfarea_scaled_to_max = total_surf(longitudes_scaled_to_max, latitudes_scaled_to_max)   
-            surf_trapz_x_scaled_to_max, surf_trapz_y_scaled_to_max = get_surf_xt_yt(longitudes_scaled_to_max, latitudes_scaled_to_max, times_tmp_transform, "trapz")
-            surf_simpson_x_scaled_to_max, surf_simpson_y_scaled_to_max = get_surf_xt_yt(longitudes_scaled_to_max, latitudes_scaled_to_max, times_tmp_transform, "simpson") 
+                for key_name in nsmax[x]:
+                    dict_for_clustering[subdir_name][some_file][x][str(size) + "all_nums_scaled_to_max_trajs_num_intersections_" + key_name] = nsmax[x][key_name]
+                    dict_for_clustering[subdir_name][some_file][x][str(size) + "all_nums_scaled_trajs_num_intersections_" + key_name] = nsc[x][key_name]
+                    dict_for_clustering[subdir_name][some_file][x][str(size) + "all_nums_trajs_num_intersections_" + key_name] = n[x][key_name]
+                    dict_for_clustering[subdir_name][some_file][x][str(size) + "all_nums_preprocesssed_trajs_num_intersections_" + key_name] = npp[x][key_name]
 
-            long_sgn = set()
-            for long_ind in range(len(longitudes_tmp_transform) - 1):
-                long_sgn.add(longitudes_tmp_transform[long_ind + 1] > longitudes_tmp_transform[long_ind])
-                if len(long_sgn) > 1:
-                    break
-
-            lat_sgn = set()
-            for lat_ind in range(len(latitudes_tmp_transform) - 1):
-                lat_sgn.add(latitudes_tmp_transform[lat_ind + 1] > latitudes_tmp_transform[lat_ind])
-                if len(lat_sgn) > 1:
-                    break
-
-            x_poly, y_poly = get_poly_xt_yt(longitudes_tmp_transform, latitudes_tmp_transform, times_tmp_transform, deg)
-            xy_poly = []
-            if len(lat_sgn) == 1 and len(long_sgn) == 1:
-                xy_poly = np.polyfit(longitudes_tmp_transform, latitudes_tmp_transform, deg)
-                
-            x_poly_scaled, y_poly_scaled = get_poly_xt_yt(longitudes_scaled, latitudes_scaled, times_tmp_transform, deg)
-            xy_poly_scaled = []
-            if len(lat_sgn) == 1 and len(long_sgn) == 1:
-                xy_poly_scaled = np.polyfit(longitudes_scaled, latitudes_scaled, deg)
-
-            x_poly_scaled_to_max, y_poly_scaled_to_max = get_poly_xt_yt(longitudes_scaled_to_max, latitudes_scaled_to_max, times_tmp_transform, deg)
-            xy_poly_scaled_to_max = []
-            if len(lat_sgn) == 1 and len(long_sgn) == 1:
-                xy_poly_scaled_to_max = np.polyfit(longitudes_scaled_to_max, latitudes_scaled_to_max, deg)
-
-            all_feats_trajs[window_size][subdir_name][only_num_ride][x] = {"mean_vect_turning_angles": turn_angles / np.pi * 180, 
-                                                                           "max_x": max(longitudes_tmp_transform),
-                                                                           "max_y": max(latitudes_tmp_transform),
-                                                                           "surf_trapz_x": surf_trapz_x, 
-                                                                           "surf_trapz_y": surf_trapz_y, 
-                                                                           "surf_simpson_x": surf_simpson_x, 
-                                                                           "surf_simpson_y": surf_simpson_y, 
-                                                                           "x_poly": x_poly, 
-                                                                           "y_poly": y_poly, 
-                                                                           "xy_poly": xy_poly, 
-                                                                           "duration": times_tmp_transform[-1],
-                                                                           "len": sp_len * times_tmp_transform[-1], 
-                                                                           "offset": sp_offset * times_tmp_transform[-1],
-                                                                           "mean_speed_len": sp_len, 
-                                                                           "mean_speed_offset": sp_offset,
-                                                                           "len_vs_offset": sp_len / sp_offset,
-                                                                           "total_surf": surfarea}
-
-            for sample_name in sample_names:
-                 for metric_name in metric_names: 
-                    oldx = [valx for valx in sample_names[sample_name]["long"]]
-                    oldy = [valy for valy in sample_names[sample_name]["lat"]]
-                    newx = [valx * max(max(longitudes_tmp_transform), max(latitudes_tmp_transform)) for valx in sample_names[sample_name]["long"]]
-                    newy = [valy * max(max(longitudes_tmp_transform), max(latitudes_tmp_transform)) for valy in sample_names[sample_name]["lat"]]
-                    all_feats_trajs[window_size][subdir_name][only_num_ride][x][sample_name + "_same_" + metric_name] = compare_traj_and_sample(newx, newy, range(len(newx)), {"long": longitudes_tmp_transform, "lat": latitudes_tmp_transform, "time": times_tmp_transform}, metric_name, False, False, True, True, dotsx_original, dotsy_original)
-                    all_feats_trajs[window_size][subdir_name][only_num_ride][x][sample_name + "_diff_" + metric_name] = compare_traj_and_sample(oldx, oldy, range(len(oldx)), {"long": longitudes_tmp_transform, "lat": latitudes_tmp_transform, "time": times_tmp_transform}, metric_name, False, False, True, True, dotsx_original, dotsy_original)
-
-            all_feats_scaled_trajs[window_size][subdir_name][only_num_ride][x] = {"mean_vect_turning_angles": turn_angles_scaled / np.pi * 180, 
-                                                                           "max_x": max(longitudes_scaled),
-                                                                           "max_y": max(latitudes_scaled),
-                                                                           "surf_trapz_x": surf_trapz_x_scaled, 
-                                                                           "surf_trapz_y": surf_trapz_y_scaled, 
-                                                                           "surf_simpson_x": surf_simpson_x_scaled, 
-                                                                           "surf_simpson_y": surf_simpson_y_scaled, 
-                                                                           "x_poly": x_poly_scaled, 
-                                                                           "y_poly": y_poly_scaled, 
-                                                                           "xy_poly": xy_poly_scaled, 
-                                                                           "duration": times_tmp_transform[-1],
-                                                                           "len": sp_len_scaled * times_tmp_transform[-1], 
-                                                                           "offset": sp_offset_scaled * times_tmp_transform[-1],
-                                                                           "mean_speed_len": sp_len_scaled, 
-                                                                           "mean_speed_offset": sp_offset_scaled,
-                                                                           "len_vs_offset": sp_len_scaled / sp_offset_scaled,
-                                                                           "total_surf": surfarea_scaled} 
-            
-            for sample_name in sample_names:
-                 for metric_name in metric_names: 
-                    oldx = [valx for valx in sample_names[sample_name]["long"]]
-                    oldy = [valy for valy in sample_names[sample_name]["lat"]]
-                    newx = [valx * max(max(longitudes_scaled), max(latitudes_scaled)) for valx in sample_names[sample_name]["long"]]
-                    newy = [valy * max(max(longitudes_scaled), max(latitudes_scaled)) for valy in sample_names[sample_name]["lat"]]
-                    all_feats_scaled_trajs[window_size][subdir_name][only_num_ride][x][sample_name + "_same_" + metric_name] = compare_traj_and_sample(newx, newy, range(len(newx)), {"long": longitudes_scaled, "lat": latitudes_scaled, "time": times_tmp_transform}, metric_name)
-                    all_feats_scaled_trajs[window_size][subdir_name][only_num_ride][x][sample_name + "_diff_" + metric_name] = compare_traj_and_sample(oldx, oldy, range(len(oldx)), {"long": longitudes_scaled, "lat": latitudes_scaled, "time": times_tmp_transform}, metric_name)
-
-            all_feats_scaled_to_max_trajs[window_size][subdir_name][only_num_ride][x] = {"mean_vect_turning_angles": turn_angles_scaled_to_max / np.pi * 180, 
-                                                                           "max_x": max(longitudes_scaled_to_max),
-                                                                           "max_y": max(latitudes_scaled_to_max),
-                                                                           "surf_trapz_x": surf_trapz_x_scaled_to_max, 
-                                                                           "surf_trapz_y": surf_trapz_y_scaled_to_max, 
-                                                                           "surf_simpson_x": surf_simpson_x_scaled_to_max, 
-                                                                           "surf_simpson_y": surf_simpson_y_scaled_to_max, 
-                                                                           "x_poly": x_poly_scaled_to_max, 
-                                                                           "y_poly": y_poly_scaled_to_max, 
-                                                                           "xy_poly": xy_poly_scaled_to_max, 
-                                                                           "duration": times_tmp_transform[-1],
-                                                                           "len": sp_len_scaled_to_max * times_tmp_transform[-1], 
-                                                                           "offset": sp_offset_scaled_to_max * times_tmp_transform[-1],
-                                                                           "mean_speed_len": sp_len_scaled_to_max, 
-                                                                           "mean_speed_offset": sp_offset_scaled_to_max,
-                                                                           "len_vs_offset": sp_len_scaled_to_max / sp_offset_scaled_to_max,
-                                                                           "total_surf": surfarea_scaled_to_max}
-            
-            for sample_name in sample_names:
-                 for metric_name in metric_names: 
-                    oldx = [valx for valx in sample_names[sample_name]["long"]]
-                    oldy = [valy for valy in sample_names[sample_name]["lat"]]
-                    newx = [valx * max(max(longitudes_scaled_to_max), max(latitudes_scaled_to_max)) for valx in sample_names[sample_name]["long"]]
-                    newy = [valy * max(max(longitudes_scaled_to_max), max(latitudes_scaled_to_max)) for valy in sample_names[sample_name]["lat"]]
-                    all_feats_scaled_to_max_trajs[window_size][subdir_name][only_num_ride][x][sample_name + "_same_" + metric_name] = compare_traj_and_sample(newx, newy, range(len(newx)), {"long": longitudes_scaled_to_max, "lat": latitudes_scaled_to_max, "time": times_tmp_transform}, metric_name)
-                    all_feats_scaled_to_max_trajs[window_size][subdir_name][only_num_ride][x][sample_name + "_diff_" + metric_name] = compare_traj_and_sample(oldx, oldy, range(len(oldx)), {"long": longitudes_scaled_to_max, "lat": latitudes_scaled_to_max, "time": times_tmp_transform}, metric_name)
-            
-            if len(lat_sgn) > 1 and len(long_sgn) > 1:
-                trajectory_monotonous[window_size][subdir_name][only_num_ride][x] = "NF"
-                label_NF += 1
-            if (len(lat_sgn) == 1 and len(long_sgn) > 1) or (len(lat_sgn) > 1 and len(long_sgn) == 1):
-                trajectory_monotonous[window_size][subdir_name][only_num_ride][x] = "NM"
-                label_NM += 1
-            if len(lat_sgn) == 1 and len(long_sgn) == 1:
-                if (True in lat_sgn and True in long_sgn) or (False in lat_sgn and False in long_sgn):
-                    trajectory_monotonous[window_size][subdir_name][only_num_ride][x] = "I"
-                    label_I += 1
-                else:
-                    trajectory_monotonous[window_size][subdir_name][only_num_ride][x] = "D"
-                    label_D += 1
-                 
-        #print(only_num_ride, trajs_in_ride)
-    print(subdir_name, trajs_in_dir)
-print(total_possible_trajs)
-print("NF", label_NF, "NM", label_NM, "D", label_D, "I", label_I) 
-
-if not os.path.isdir("all_feats"):
-    os.makedirs("all_feats")
-
-process_csv(trajectory_flags, trajectory_monotonous, window_size, all_possible_trajs, sample_names, metric_names, deg, flag_list, all_feats_trajs, "all_feats/all_feats.csv")
-process_csv(trajectory_flags, trajectory_monotonous, window_size, all_possible_trajs, sample_names, metric_names, deg, flag_list, all_feats_scaled_trajs, "all_feats/all_feats_scaled.csv")
-process_csv(trajectory_flags, trajectory_monotonous, window_size, all_possible_trajs, sample_names, metric_names, deg, flag_list, all_feats_scaled_to_max_trajs, "all_feats/all_feats_scaled_to_max.csv")
+                print(len(dict_for_clustering[subdir_name][some_file][x]))

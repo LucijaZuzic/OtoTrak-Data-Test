@@ -2,7 +2,7 @@ from utilities import *
     
 window_size = 20
  
-size = 8
+size = 12
 dotsx_original, dotsy_original = make_rays(size)
 
 deg = 5
@@ -52,10 +52,7 @@ for subdir_name in all_subdirs:
         all_distances_trajs_other = dict()
         all_distances_preprocessed_trajs_other = dict()
         all_distances_scaled_trajs_other = dict()
-        all_distances_scaled_to_max_trajs_other = dict() 
-
-        if os.path.isfile(start_path + "/all_nums_trajs"):
-            continue
+        all_distances_scaled_to_max_trajs_other = dict()  
 
         if os.path.isfile(start_path + "/all_distances_trajs_other"):
             all_distances_trajs_other = load_object(start_path + "/all_distances_trajs_other")  
@@ -124,6 +121,7 @@ for subdir_name in all_subdirs:
             
             for value_for_dict in range(len(name_val)):  
                 if name_val[value_for_dict] in all_distances_trajs_other[x]: 
+                    print("Skipping")
                     continue
 
                 all_distances, all_distancesx, all_distancesy, intersections, distances, distancesx, distancesy, ni = compare_traj_ray(dotsx_original, dotsy_original, longitudes_tmp, latitudes_tmp, scale_val[value_for_dict], offset_val[value_for_dict]) 
@@ -144,8 +142,7 @@ for subdir_name in all_subdirs:
                 all_scaled_to_max_distances, all_scaled_to_max_distancesx, all_scaled_to_max_distancesy, intersections_scaled_to_max, distances_scaled_to_max, distancesx_scaled_to_max, distancesy_scaled_to_max, ni_scale_max = compare_traj_ray(dotsx_original, dotsy_original, longitudes_scaled_to_max, latitudes_scaled_to_max, scale_val[value_for_dict], offset_val[value_for_dict]) 
                 all_distances_scaled_to_max_trajs[x][name_val[value_for_dict]] = (all_scaled_to_max_distances, all_scaled_to_max_distancesx, all_scaled_to_max_distancesy)
                 all_distances_scaled_to_max_trajs_other[x][name_val[value_for_dict]] = (intersections_scaled_to_max, distances_scaled_to_max, distancesx_scaled_to_max, distancesy_scaled_to_max)
-                all_nums_scaled_trajs[x][name_val[value_for_dict]] = ni_scale_max
-
+                all_nums_scaled_to_max_trajs[x][name_val[value_for_dict]] = ni_scale_max
         if not os.path.isdir(start_path):
             os.makedirs(start_path)
              

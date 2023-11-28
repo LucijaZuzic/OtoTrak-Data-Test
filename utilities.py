@@ -8,6 +8,12 @@ import scipy.fft
 from datetime import datetime, timedelta
 from scipy.spatial import ConvexHull, convex_hull_plot_2d
 from sklearn.model_selection import train_test_split
+#from sympy import Matrix 
+from sklearn.cluster import KMeans
+from kneed import KneeLocator
+from sklearn.metrics import silhouette_score
+from sklearn.cluster import DBSCAN
+from sklearn.neighbors import NearestNeighbors
 
 def dtw(longitudes1, latitudes1, longitudes2, latitudes2): 
     if len(longitudes1) == 0 and len(latitudes1) == 0 and len(longitudes2) == 0 and len(latitudes2) == 0:
@@ -870,3 +876,29 @@ def predict_prob_with_array(probability, probability_in_next_step, probability_i
     #plt.hist(delta_series)
     #plt.show() 
     return x, n, match_score, no_empty, delta_series
+
+def kneefind(NN, X_embedded):
+	nbrs = NearestNeighbors(n_neighbors = NN).fit(X_embedded)
+	distances, indices = nbrs.kneighbors(X_embedded)
+	distance_desc = sorted(distances[:,NN-1], reverse=True)
+	#plt.plot(list(range(1,len(distance_desc)+1)), distance_desc)
+	#plt.show()
+	#plt.close()
+	kl = KneeLocator(list(range(1,len(distance_desc )+1)), distance_desc, curve = "convex", direction = "decreasing") 
+	return kl.knee_y 
+ 
+def random_sample_of_cluster(files_in_cluster, num_to_sample):
+	for cluster in files_in_cluster:
+		if len(files_in_cluster[cluster]) > 0:
+			indexes = np.random.randint(0, len(files_in_cluster[cluster]), size = num_to_sample)
+			for index in indexes:
+				name_file = list(files_in_cluster[cluster].keys())[index]
+				print(len(files_in_cluster[cluster].keys()))
+				print(name_file)
+				long, lat, time = load_traj_window_name(name_file, files_in_cluster[cluster][name_file]["start"], files_in_cluster[cluster][name_file]["window"])
+				long, lat = preprocess_long_lat(long, lat)
+				long, lat = scale_long_lat(long, lat, 1, 1, True) 
+				plt.title("Cluster " + str(cluster) + " " + str(name_file))
+				plt.plot(long, lat)
+				plt.show()
+				plt.close()

@@ -1,27 +1,5 @@
 from utilities import *
-#from sympy import Matrix 
-from sklearn.cluster import KMeans
-from kneed import KneeLocator
-from sklearn.metrics import silhouette_score
-from sklearn.cluster import DBSCAN
-from sklearn.neighbors import NearestNeighbors
-
-def random_sample_of_cluster(files_in_cluster, num_to_sample):
-	for cluster in files_in_cluster:
-		if len(files_in_cluster[cluster]) > 0:
-			indexes = np.random.randint(0, len(files_in_cluster[cluster]), size = num_to_sample)
-			for index in indexes:
-				name_file = list(files_in_cluster[cluster].keys())[index]
-				print(len(files_in_cluster[cluster].keys()))
-				print(name_file)
-				long, lat, time = load_traj_window_name(name_file, files_in_cluster[cluster][name_file]["start"], files_in_cluster[cluster][name_file]["window"])
-				long, lat = preprocess_long_lat(long, lat)
-				long, lat = scale_long_lat(long, lat, 1, 1, True) 
-				plt.title("Cluster " + str(cluster) + " " + str(name_file))
-				plt.plot(long, lat)
-				plt.show()
-				plt.close()
-
+  
 def class_sample_of_cluster(files_in_cluster): 
 	flag_list = ["key", "flip", "zone", "engine", "in_zone", "ignition", "sleep_mode", "staff_mode", "buzzer_active", 
 				"in_primary_zone", "in_restricted_zone", "onboard_geofencing", "speed_limit_active"]
@@ -87,16 +65,7 @@ def class_sample_of_cluster(files_in_cluster):
 		for cluster in dict_all_monot[mono]:
 			if sum(list(dict_all_monot[mono].values())) > 0:
 				print(cluster, mono, dict_all_monot[mono][cluster], np.round(dict_all_monot[mono][cluster] / sum(list(dict_all_monot[mono].values())) * 100, 2), "%")
-def kneefind(NN, X_embedded):
-	nbrs = NearestNeighbors(n_neighbors = NN).fit(X_embedded)
-	distances, indices = nbrs.kneighbors(X_embedded)
-	distance_desc = sorted(distances[:,NN-1], reverse=True)
-	#plt.plot(list(range(1,len(distance_desc)+1)), distance_desc)
-	#plt.show()
-	#plt.close()
-	kl = KneeLocator(list(range(1,len(distance_desc )+1)), distance_desc, curve = "convex", direction = "decreasing") 
-	return kl.knee_y
-
+ 
 def scatter_me(sd_x, sd_y):
 	for size in sd_x:
 		for variable_name in sd_x[size]: 

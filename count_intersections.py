@@ -54,10 +54,7 @@ for subdir_name in all_subdirs:
         only_number = some_file.replace(".csv", "").replace("events_", "")
          
         start_path = "rays/" + str(size) + "/" + subdir_name + "/" + only_number
-   
-        if os.path.isfile(start_path + "/all_nums_trajs"):
-            continue
-
+    
         all_distances_trajs_other = dict()
         all_distances_preprocessed_trajs_other = dict()
         all_distances_scaled_trajs_other = dict()
