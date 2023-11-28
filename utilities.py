@@ -376,8 +376,8 @@ def compare_traj_and_sample(sample_x, sample_y, sample_time, t1, metric_used, no
             dotsx_original, dotsy_original = make_rays(size)
         else:
             size = len(dotsx_original)
-        a1, x1, y1, i1, d1, dx1, dy1 = compare_traj_ray(dotsx_original, dotsy_original, t1["long"], t1["lat"], scale, offset)
-        a2, x2, y2, i2, d2, dx2, dy2 = compare_traj_ray(dotsx_original, dotsy_original, sample_x, sample_y, scale, offset)
+        a1, x1, y1, i1, d1, dx1, dy1, ni1 = compare_traj_ray(dotsx_original, dotsy_original, t1["long"], t1["lat"], scale, offset)
+        a2, x2, y2, i2, d2, dx2, dy2, ni2 = compare_traj_ray(dotsx_original, dotsy_original, sample_x, sample_y, scale, offset)
         return abs(a1 - a2)
     
 def get_sides_from_angle(longest, angle):
@@ -403,29 +403,30 @@ def make_ray(radius, angle, sx, sy):
     return sx + np.cos(angle / 180 * np.pi) * radius, sy + np.sin(angle / 180 * np.pi) * radius
  
 def compare_traj_ray(dotsx_original, dotsy_original, test_x, test_y, scale = False, offset = False):
-	window_size = len(test_x)
-	size = len(dotsx_original)
+    window_size = len(test_x)
+    size = len(dotsx_original)
+    num_of_intersection = 0
 	
-	dotsx = []
-	dotsy = []
-	for x in range(size):
-		dotsx.append(dotsx_original[x])
-		dotsy.append(dotsy_original[x])
-	scaling_factor = 1
-	if scale:
-		x_range = max(test_x) - min(test_x)
-		y_range = max(test_y) - min(test_y)
-		scaling_factor = max(x_range, y_range)
+    dotsx = []
+    dotsy = []
+    for x in range(size):
+        dotsx.append(dotsx_original[x])
+        dotsy.append(dotsy_original[x])
+    scaling_factor = 1
+    if scale:
+        x_range = max(test_x) - min(test_x)
+        y_range = max(test_y) - min(test_y)
+        scaling_factor = max(x_range, y_range)
 		
-	for x1 in range(size): 
-		if offset:
-			dotsx[x1] = (min(test_x) + max(test_x)) / 2 - scaling_factor / 2 + dotsx[x1] * scaling_factor
-			dotsy[x1] = (min(test_y) + max(test_y)) / 2 - scaling_factor / 2 + dotsy[x1] * scaling_factor 
-		else:
-			dotsx[x1] = min(test_x) + dotsx[x1] * scaling_factor
-			dotsy[x1] = min(test_y) + dotsy[x1] * scaling_factor 
+    for x1 in range(size): 
+        if offset:
+            dotsx[x1] = (min(test_x) + max(test_x)) / 2 - scaling_factor / 2 + dotsx[x1] * scaling_factor
+            dotsy[x1] = (min(test_y) + max(test_y)) / 2 - scaling_factor / 2 + dotsy[x1] * scaling_factor 
+        else:
+            dotsx[x1] = min(test_x) + dotsx[x1] * scaling_factor
+            dotsy[x1] = min(test_y) + dotsy[x1] * scaling_factor 
 			
-	'''
+    '''
 	for x1 in range(size):  
 		for x2 in range(x1 + 1, size): 
 			plt.plot([dotsx[x1], dotsx[x2]], [dotsy[x1], dotsy[x2]], 'g-')	 
@@ -442,29 +443,29 @@ def compare_traj_ray(dotsx_original, dotsy_original, test_x, test_y, scale = Fal
 	test_y = np.random.rand(window_size) 
 	plt.plot(test_x, test_y, 'y-o')
 	'''
-	vectors_from_point = []
-	intersections = []
-	distances = []
-	distancesx = []
-	distancesy = []
-	for x1 in range(size):
-		vectors_from_point.append([])
-		intersections.append([])
-		distances.append([])
-		distancesx.append([])
-		distancesy.append([])
-		for x2 in range(size):
-			vectors_from_point[-1].append(0)
-			intersections[-1].append([])
-			distances[-1].append([])
-			distancesx[-1].append([])
-			distancesy[-1].append([])
-			for t in range(window_size - 1):
-				intersections[-1][-1].append(("Nan", "Nan"))
-				distances[-1][-1].append(0)
-				distancesx[-1][-1].append(0)
-				distancesy[-1][-1].append(0) 
-	'''
+    vectors_from_point = []
+    intersections = []
+    distances = []
+    distancesx = []
+    distancesy = []
+    for x1 in range(size):
+        vectors_from_point.append([])
+        intersections.append([])
+        distances.append([])
+        distancesx.append([])
+        distancesy.append([])
+        for x2 in range(size):
+            vectors_from_point[-1].append(0)
+            intersections[-1].append([])
+            distances[-1].append([])
+            distancesx[-1].append([])
+            distancesy[-1].append([])
+            for t in range(window_size - 1):
+                intersections[-1][-1].append(("Nan", "Nan"))
+                distances[-1][-1].append(0)
+                distancesx[-1][-1].append(0)
+                distancesy[-1][-1].append(0) 
+    '''
 	vectors_all = []
 	for x1 in range(size): 
 		for x2 in range(x1 + 1, size):
@@ -474,69 +475,71 @@ def compare_traj_ray(dotsx_original, dotsy_original, test_x, test_y, scale = Fal
 			vectors_all.append(vector_new)
 			plt.plot([dotsx[x1], dotsx[x2]], [dotsy[x1], dotsy[x2]], 'g-')	
 	''' 
-	for x1 in range(size): 
-		for x2 in range(x1 + 1, size): 
-			sgnx12 = dotsx[x2] > dotsx[x1] 
-			sgny12 = dotsy[x2] > dotsy[x1]  
-			for t in range(window_size - 1): 
-				xs, ys = get_intersection(test_x[t], test_x[t + 1], test_y[t], test_y[t + 1], dotsx[x1], dotsx[x2], dotsy[x1], dotsy[x2])
-				if xs != "Nan":
-					present = point_on_line(xs, ys, test_x[t], test_x[t + 1], test_y[t], test_y[t + 1])
-					if present:
+    for x1 in range(size): 
+        for x2 in range(x1 + 1, size): 
+            sgnx12 = dotsx[x2] > dotsx[x1] 
+            sgny12 = dotsy[x2] > dotsy[x1]  
+            for t in range(window_size - 1): 
+                xs, ys = get_intersection(test_x[t], test_x[t + 1], test_y[t], test_y[t + 1], dotsx[x1], dotsx[x2], dotsy[x1], dotsy[x2])
+                if xs != "Nan":
+                    present = point_on_line(xs, ys, test_x[t], test_x[t + 1], test_y[t], test_y[t + 1])
+                    if present:
 						#plt.plot(xs, ys, 'mo')
 						
-						d1x = abs(dotsx[x1] - xs)
-						d1y = abs(dotsy[x1] - ys)
+                        d1x = abs(dotsx[x1] - xs)
+                        d1y = abs(dotsy[x1] - ys)
 						
-						d2x = abs(dotsx[x2] - xs)
-						d2y = abs(dotsy[x2] - ys)
+                        d2x = abs(dotsx[x2] - xs)
+                        d2y = abs(dotsy[x2] - ys)
 						
-						d1 = np.sqrt(d1x ** 2 + d1y ** 2)
-						d2 = np.sqrt(d2x ** 2 + d2y ** 2)
+                        d1 = np.sqrt(d1x ** 2 + d1y ** 2)
+                        d2 = np.sqrt(d2x ** 2 + d2y ** 2)
 						
-						sgnxs1 = dotsx[x1] > xs
-						sgnys1 = dotsy[x1] > ys
+                        sgnxs1 = dotsx[x1] > xs
+                        sgnys1 = dotsy[x1] > ys
 						
-						sgnxs2 = dotsx[x2] > xs 
-						sgnys2 = dotsy[x2] > ys
+                        sgnxs2 = dotsx[x2] > xs 
+                        sgnys2 = dotsy[x2] > ys
 						
-						if sgnxs1 != sgnx12 and sgnys1 != sgny12:
-							intersections[x1][x2][t] = (xs, ys) 
-							distances[x1][x2][t] = d1 
-							distancesx[x1][x2][t] = d1x
-							distancesy[x1][x2][t] = d1y
+                        if sgnxs1 != sgnx12 and sgnys1 != sgny12:
+                            num_of_intersection += 1
+                            intersections[x1][x2][t] = (xs, ys) 
+                            distances[x1][x2][t] = d1 
+                            distancesx[x1][x2][t] = d1x
+                            distancesy[x1][x2][t] = d1y
 							
-						if sgnxs2 == sgnx12 and sgnys2 == sgny12:
-							intersections[x2][x1][t] = (xs, ys) 
-							distances[x2][x1][t] = d2 
-							distancesx[x2][x1][t] = d2x
-							distancesy[x2][x1][t] = d2y 
-	'''
+                        if sgnxs2 == sgnx12 and sgnys2 == sgny12:
+                            num_of_intersection += 1
+                            intersections[x2][x1][t] = (xs, ys) 
+                            distances[x2][x1][t] = d2 
+                            distancesx[x2][x1][t] = d2x
+                            distancesy[x2][x1][t] = d2y 
+    '''
 	for t in range(window_size - 1): 			
 		for x1 in range(size):
 			for x2 in range(size):
 				print(intersections[x1][x2][t], distances[x1][x2][t])
 			print()
 	'''
-	all_distances = 0	
-	all_distancesx = 0	
-	all_distancesy = 0		
-	for t in range(window_size - 1): 	
-		for x1 in range(size): 
-			for x2 in range(size):
-				all_distances += distances[x1][x2][t]
-				all_distancesx += distancesx[x1][x2][t]
-				all_distancesy += distancesy[x1][x2][t]
-	all_distances /= (size ** 2) * window_size 
-	all_distancesx /= (size ** 2) * window_size 
-	all_distancesy /= (size ** 2) * window_size 
-	if scale:
-		all_distances /= scaling_factor	
-		all_distancesx /= scaling_factor	
-		all_distancesy /= scaling_factor	
+    all_distances = 0	
+    all_distancesx = 0	
+    all_distancesy = 0		
+    for t in range(window_size - 1): 	
+        for x1 in range(size): 
+            for x2 in range(size):
+                all_distances += distances[x1][x2][t]
+                all_distancesx += distancesx[x1][x2][t]
+                all_distancesy += distancesy[x1][x2][t]
+    all_distances /= (size ** 2) * window_size 
+    all_distancesx /= (size ** 2) * window_size 
+    all_distancesy /= (size ** 2) * window_size 
+    if scale:
+        all_distances /= scaling_factor	
+        all_distancesx /= scaling_factor	
+        all_distancesy /= scaling_factor	
 	#print(all_distances, all_distancesx, all_distancesy)
 	#plt.show()
-	return all_distances, all_distancesx, all_distancesy, intersections, distances, distancesx, distancesy
+    return all_distances, all_distancesx, all_distancesy, intersections, distances, distancesx, distancesy, num_of_intersection / size / size / window_size
 
 def process_csv_ray(window_size, vehicle1, r1, some_dict, save_name): 
     if not os.path.isfile(save_name):

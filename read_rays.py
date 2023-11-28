@@ -466,10 +466,10 @@ for size in ["4", "8", "12", "16", "20", "24", "28", "36"]:
 #scatter_me(stuff_to_plot_x, stuff_to_plot_y)
 #scatter_train_test(stuff_to_plot_x, stuff_to_plot_y, stuff_to_plot_common, stuff_to_plot_names, train_names, test_names)
 
-for size in ["4", "8", "12", "16", "20", "24", "28", "36"]:
+for size in ["8"]:
 	for filename_clus in os.listdir("rays/" + size + "/clustering"):
-		if "DBSCAN" in filename_clus:
+		if "KMeans" in filename_clus and "14" in filename_clus:
 			object_clus = load_object("rays/" + size + "/clustering/" + filename_clus)
 			print(filename_clus, len(object_clus))
-			#random_sample_of_cluster(object_clus, 1)
-			class_sample_of_cluster(object_clus)
+			random_sample_of_cluster(object_clus, 10)
+			#class_sample_of_cluster(object_clus)

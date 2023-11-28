@@ -91,12 +91,7 @@ for size in [4, 8, 12, 16]:
                 longitudes_scaled, latitudes_scaled = scale_long_lat(longitudes_tmp_transform, latitudes_tmp_transform)
                 
                 longitudes_scaled_to_max, latitudes_scaled_to_max = scale_long_lat(longitudes_tmp_transform, latitudes_tmp_transform, xmax = maxoffset, ymax = maxoffset, keep_aspect_ratio = True)
-            
-                all_distances_trajs[x] = dict()
-                all_distances_preprocessed_trajs[x] = dict()
-                all_distances_scaled_trajs[x] = dict()
-                all_distances_scaled_to_max_trajs[x] = dict()
-                    
+             
                 if x not in all_distances_trajs_other:
                     all_distances_trajs_other[x] = dict()
                     all_distances_preprocessed_trajs_other[x] = dict()
@@ -110,19 +105,19 @@ for size in [4, 8, 12, 16]:
                     timeonlyoffset = 0
 
                     start_time = time()
-                    all_distances, all_distancesx, all_distancesy, intersections, distances, distancesx, distancesy = compare_traj_ray(dotsx_original, dotsy_original, longitudes_tmp, latitudes_tmp, scale_val[value_for_dict], offset_val[value_for_dict]) 
+                    all_distances, all_distancesx, all_distancesy, intersections, distances, distancesx, distancesy, ni = compare_traj_ray(dotsx_original, dotsy_original, longitudes_tmp, latitudes_tmp, scale_val[value_for_dict], offset_val[value_for_dict]) 
                     all_distances_trajs[x][name_val[value_for_dict]] = (all_distances, all_distancesx, all_distancesy)
                     all_distances_trajs_other[x][name_val[value_for_dict]] = (intersections, distances, distancesx, distancesy)
                     
-                    all_preprocessed_trajs_distances, all_preprocessed_trajs_distancesx, all_preprocessed_trajs_distancesy, intersections_preprocessed_trajs, distances_preprocessed_trajs, distancesx_preprocessed_trajs, distancesy_preprocessed_trajs = compare_traj_ray(dotsx_original, dotsy_original, longitudes_tmp_transform, latitudes_tmp_transform, scale_val[value_for_dict], offset_val[value_for_dict]) 
+                    all_preprocessed_trajs_distances, all_preprocessed_trajs_distancesx, all_preprocessed_trajs_distancesy, intersections_preprocessed_trajs, distances_preprocessed_trajs, distancesx_preprocessed_trajs, distancesy_preprocessed_trajs, ni_pre = compare_traj_ray(dotsx_original, dotsy_original, longitudes_tmp_transform, latitudes_tmp_transform, scale_val[value_for_dict], offset_val[value_for_dict]) 
                     all_distances_preprocessed_trajs[x][name_val[value_for_dict]] = (all_preprocessed_trajs_distances, all_preprocessed_trajs_distancesx, all_preprocessed_trajs_distancesy)
                     all_distances_preprocessed_trajs_other[x][name_val[value_for_dict]] = (intersections_preprocessed_trajs, distances_preprocessed_trajs, distancesx_preprocessed_trajs, distancesy_preprocessed_trajs)
                     
-                    all_scaled_trajs_distances, all_scaled_trajs_distancesx, all_scaled_trajs_distancesy, intersections_scaled_trajs, distances_scaled_trajs, distancesx_scaled_trajs, distancesy_scaled_trajs = compare_traj_ray(dotsx_original, dotsy_original, longitudes_scaled, latitudes_scaled, scale_val[value_for_dict], offset_val[value_for_dict]) 
+                    all_scaled_trajs_distances, all_scaled_trajs_distancesx, all_scaled_trajs_distancesy, intersections_scaled_trajs, distances_scaled_trajs, distancesx_scaled_trajs, distancesy_scaled_trajs, ni_scale = compare_traj_ray(dotsx_original, dotsy_original, longitudes_scaled, latitudes_scaled, scale_val[value_for_dict], offset_val[value_for_dict]) 
                     all_distances_scaled_trajs[x][name_val[value_for_dict]] = (all_scaled_trajs_distances, all_scaled_trajs_distancesx, all_scaled_trajs_distancesy)
                     all_distances_scaled_trajs_other[x][name_val[value_for_dict]] = (intersections_scaled_trajs, distances_scaled_trajs, distancesx_scaled_trajs, distancesy_scaled_trajs)
                     
-                    all_scaled_to_max_distances, all_scaled_to_max_distancesx, all_scaled_to_max_distancesy, intersections_scaled_to_max, distances_scaled_to_max, distancesx_scaled_to_max, distancesy_scaled_to_max = compare_traj_ray(dotsx_original, dotsy_original, longitudes_scaled_to_max, latitudes_scaled_to_max, scale_val[value_for_dict], offset_val[value_for_dict]) 
+                    all_scaled_to_max_distances, all_scaled_to_max_distancesx, all_scaled_to_max_distancesy, intersections_scaled_to_max, distances_scaled_to_max, distancesx_scaled_to_max, distancesy_scaled_to_max, ni_scale_max = compare_traj_ray(dotsx_original, dotsy_original, longitudes_scaled_to_max, latitudes_scaled_to_max, scale_val[value_for_dict], offset_val[value_for_dict]) 
                     all_distances_scaled_to_max_trajs[x][name_val[value_for_dict]] = (all_scaled_to_max_distances, all_scaled_to_max_distancesx, all_scaled_to_max_distancesy)
                     all_distances_scaled_to_max_trajs_other[x][name_val[value_for_dict]] = (intersections_scaled_to_max, distances_scaled_to_max, distancesx_scaled_to_max, distancesy_scaled_to_max)
                     end_time = time()

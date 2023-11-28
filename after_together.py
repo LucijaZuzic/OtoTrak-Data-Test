@@ -166,8 +166,8 @@ for metric_name in best_match_name_for_metric:
     longlats = set()
     for long in best_match_name_for_metric_long[metric_name].keys():  
         for lat in best_match_name_for_metric_lat[metric_name].keys():
-            if "ones" in long or "ones" in lat:
-                continue
+            #if "ones" in long or "ones" in lat:
+                #continue
             if "actual" in long or "actual" in lat:
                 continue
             long_lat_file_name = best_match_name_for_metric_long_lat[metric_name][long + "-" + lat]
