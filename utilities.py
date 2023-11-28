@@ -5,7 +5,7 @@ import numpy as np
 import pickle
 from scipy.integrate import simpson
 import scipy.fft 
-from datetime import datetime     
+from datetime import datetime, timedelta
 from scipy.spatial import ConvexHull, convex_hull_plot_2d
 from sklearn.model_selection import train_test_split
 
@@ -682,7 +682,7 @@ def plot_long_lat_pairs(title, long_dict, lat_dict, longer_file_name, long_lat_p
     plt.show()
   
 def fix_prob_max(num_occurences, num_occurences_in_next_step, num_occurences_in_next_next_step, minval, maxval, stepv):
-    possible_values = (maxval - minval) / stepv + 1  
+    possible_values = (maxval - minval) // stepv + 1  
 
     probability = dict()
     for distance in num_occurences:
@@ -786,7 +786,7 @@ def fix_prob(num_occurences, num_occurences_in_next_step, num_occurences_in_next
  
 def predict_prob(probability, probability_in_next_step, probability_in_next_next_step, minval, maxval, stepv):
     roundingval = int(-np.log10(stepv))
-    possible_values = (maxval - minval) / stepv + 1 
+    possible_values = (maxval - minval) // stepv + 1 
     x = []
     n = 10000
     prev_distance = 0
@@ -811,7 +811,7 @@ def predict_prob(probability, probability_in_next_step, probability_in_next_next
                     else:
                         distance = np.random.choice(list(probability_in_next_next_step["undefined"]["undefined"].keys()),p=list(probability_in_next_next_step["undefined"]["undefined"].values()))
         if distance == "undefined": 
-            distance = np.round(np.random.randint(possible_values) * stepv, roundingval) 
+            distance = np.round(minval + np.random.randint(possible_values) * stepv, roundingval) 
         prev_prev_distance = prev_distance
         prev_distance = distance
         x.append(distance)
@@ -819,7 +819,7 @@ def predict_prob(probability, probability_in_next_step, probability_in_next_next
 
 def predict_prob_with_array(probability, probability_in_next_step, probability_in_next_next_step, array_vals, minval, maxval, stepv, isangle = False):
     roundingval = int(-np.log10(stepv))
-    possible_values = (maxval - minval) / stepv + 1 
+    possible_values = (maxval - minval) // stepv + 1 
     x = []
     n = len(array_vals)
     prev_distance = 0
@@ -852,7 +852,7 @@ def predict_prob_with_array(probability, probability_in_next_step, probability_i
                     else:
                         distance = np.random.choice(list(probability_in_next_next_step["undefined"]["undefined"].keys()),p=list(probability_in_next_next_step["undefined"]["undefined"].values()))
         if distance == "undefined": 
-            distance = np.round(np.random.randint(possible_values) * stepv, roundingval)
+            distance = np.round(minval + np.random.randint(possible_values) * stepv, roundingval)
         else:
             no_empty += 1
         x.append(float(distance)) 
