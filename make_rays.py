@@ -2,7 +2,7 @@ from utilities import *
     
 window_size = 20
  
-size = 12
+size = 16
 dotsx_original, dotsy_original = make_rays(size)
 
 deg = 5
