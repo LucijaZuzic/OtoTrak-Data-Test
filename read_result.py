@@ -641,7 +641,7 @@ def end_read(title, all_x, all_mine, isangle = False):
             match_score = 0 
             no_empty = 0
             delta_series = [] 
-            for i in range(2, n):
+            for i in range(3, n):
                 if x[i] == other[i]:
                     match_score += 1
                 if x[i] != "undefined":
@@ -654,7 +654,7 @@ def end_read(title, all_x, all_mine, isangle = False):
                     delta_series_total.append(delta_x)
                     data_series_total.append(x[i]) 
 
-    total_guesses += n - 2
+    total_guesses += n - 3
     total_guesses_no_empty += no_empty
     total_match_score += match_score  
     no_extension = title.replace(".png", "").replace("markov_hist/", "").capitalize()

@@ -153,8 +153,8 @@ worst_worst_ride = dict()
 best_best_score = dict()
 worst_worst_score = dict()
 for metric_name in best_match_name_for_metric:   
-    #if "ray" in metric_name or "custom" in metric_name:
-        #continue
+    if "ray" in metric_name or "custom" in metric_name:
+        continue
     if "no time" in metric_name or "custom" in metric_name:
         continue
     best_best[metric_name] = dict()
@@ -166,10 +166,10 @@ for metric_name in best_match_name_for_metric:
     longlats = set()
     for long in best_match_name_for_metric_long[metric_name].keys():  
         for lat in best_match_name_for_metric_lat[metric_name].keys():
-            #if "ones" in long or "ones" in lat:
-                #continue
-            #if "actual" in long or "actual" in lat:
-                #continue
+            if "ones" in long or "ones" in lat:
+                continue
+            if "actual" in long or "actual" in lat:
+                continue
             long_lat_file_name = best_match_name_for_metric_long_lat[metric_name][long + "-" + lat]
             long_index = list(long_dict[long_lat_file_name].keys()).index(long)
             lat_index = list(lat_dict[long_lat_file_name].keys()).index(lat)
