@@ -62,9 +62,9 @@ def class_sample_of_cluster(files_in_cluster):
 				dict_all_monot["NM"][cluster] += 1    
 			if len(lat_sgn) == 1 and len(long_sgn) == 1:
 				if (True in lat_sgn and True in long_sgn) or (False in lat_sgn and False in long_sgn):
-					dict_all_monot["D"][cluster] += 1  
-				else: 
 					dict_all_monot["I"][cluster] += 1  
+				else: 
+					dict_all_monot["D"][cluster] += 1  
 
 			for fl in dict_all_flag:
 				appears = 0
@@ -74,9 +74,19 @@ def class_sample_of_cluster(files_in_cluster):
 						break
 				if appears: 
 					dict_all_flag[fl][cluster] += 1
-	print(dict_all_monot)		
 	print(dict_all_flag)		
-
+	for cluster in dict_all_monot["I"]: 
+		sum_mono = dict_all_monot["NF"][cluster] + dict_all_monot["D"][cluster] + dict_all_monot["I"][cluster] + dict_all_monot["NM"][cluster]
+		if sum_mono > 0:
+			print("Cluster", cluster, 
+			"NF", dict_all_monot["NF"][cluster], np.round(dict_all_monot["NF"][cluster] / sum_mono * 100, 2), "%", 
+			"NM", dict_all_monot["NM"][cluster], np.round(dict_all_monot["NM"][cluster] / sum_mono * 100, 2), "%", 
+			"I", dict_all_monot["I"][cluster], np.round(dict_all_monot["I"][cluster] / sum_mono * 100, 2), "%",
+			"D", dict_all_monot["D"][cluster], np.round(dict_all_monot["D"][cluster] / sum_mono * 100, 2), "%")
+	for mono in dict_all_monot: 
+		for cluster in dict_all_monot[mono]:
+			if sum(list(dict_all_monot[mono].values())) > 0:
+				print(cluster, mono, dict_all_monot[mono][cluster], np.round(dict_all_monot[mono][cluster] / sum(list(dict_all_monot[mono].values())) * 100, 2), "%")
 def kneefind(NN, X_embedded):
 	nbrs = NearestNeighbors(n_neighbors = NN).fit(X_embedded)
 	distances, indices = nbrs.kneighbors(X_embedded)

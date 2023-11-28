@@ -345,10 +345,10 @@ for subdir_name in all_subdirs:
             if len(lat_sgn) == 1 and len(long_sgn) == 1:
                 if (True in lat_sgn and True in long_sgn) or (False in lat_sgn and False in long_sgn):
                     trajectory_monotonous[window_size][subdir_name][only_num_ride][x] = "I"
-                    label_D += 1
+                    label_I += 1
                 else:
                     trajectory_monotonous[window_size][subdir_name][only_num_ride][x] = "D"
-                    label_I += 1
+                    label_D += 1
                  
         #print(only_num_ride, trajs_in_ride)
     print(subdir_name, trajs_in_dir)
