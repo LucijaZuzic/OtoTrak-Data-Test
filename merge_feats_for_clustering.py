@@ -1,89 +1,93 @@
 from utilities import * 
+from sklearn.manifold import TSNE
  
 def one_clusters(type_clus, attempt, train_arr, test_arr, clus_params, sd_subdir_train, sd_ride_train, sd_start_train, sd_window_train, sd_subdir_test, sd_ride_test, sd_start_test, sd_window_test):
-	clus_train = attempt.fit(train_arr)
-	train_labels = clus_train.labels_ 
+    clus_train = attempt.fit(train_arr)
+    train_labels = clus_train.labels_ 
+       
+    train_embedded = TSNE(n_components=2).fit_transform(train_arr)
+    test_embedded = TSNE(n_components=2).fit_transform(test_arr)
 
-	dict_train_by_label = dict()
-	for label in train_labels:
-		dict_train_by_label[label] = {"x": [], "y": []}
+    dict_train_by_label = dict()
+    for label in train_labels:
+        dict_train_by_label[label] = {"x": [], "y": []}
 	
-	filenames_in_cluster_train = dict()
-	for label_index in range(len(train_labels)):
-		label = train_labels[label_index]
-		dict_train_by_label[label]["x"].append(float(train_arr[label_index][0]))
-		dict_train_by_label[label]["y"].append(float(train_arr[label_index][1]))
-		if label not in filenames_in_cluster_train:
-			filenames_in_cluster_train[label] = dict()
-		filenames_in_cluster_train[label][sd_subdir_train[label_index] + sd_ride_train[label_index]] = {"window": sd_window_train[label_index], "start": sd_start_train[label_index]}
+    filenames_in_cluster_train = dict()
+    for label_index in range(len(train_labels)):
+        label = train_labels[label_index]
+        dict_train_by_label[label]["x"].append(float(train_embedded[label_index][0]))
+        dict_train_by_label[label]["y"].append(float(train_embedded[label_index][1]))
+        if label not in filenames_in_cluster_train:
+            filenames_in_cluster_train[label] = dict()
+        filenames_in_cluster_train[label][sd_subdir_train[label_index] + "/" + sd_ride_train[label_index]] = {"window": sd_window_train[label_index], "start": sd_start_train[label_index]}
 	
-	if type_clus == "KMeans":
-		clus_test = attempt.predict(test_arr) 
-		test_labels = clus_test
-	if type_clus == "DBSCAN":
-		clus_test = attempt.fit_predict(test_arr) 
-		test_labels = clus_test
+    if type_clus == "KMeans":
+        clus_test = attempt.predict(test_arr) 
+        test_labels = clus_test
+    if type_clus == "DBSCAN":
+        clus_test = attempt.fit_predict(test_arr) 
+        test_labels = clus_test
 
-	dict_test_by_label = dict()
-	for label in clus_test:
-		dict_test_by_label[label] = {"x": [], "y": []}
+    dict_test_by_label = dict()
+    for label in clus_test:
+        dict_test_by_label[label] = {"x": [], "y": []}
 	
-	filenames_in_cluster_test = dict()
-	for label_index in range(len(clus_test)):
-		label = clus_test[label_index]
-		dict_test_by_label[label]["x"].append(test_arr[label_index][0])
-		dict_test_by_label[label]["y"].append(test_arr[label_index][1])
-		if label not in filenames_in_cluster_test:
-			filenames_in_cluster_test[label] = dict()
-		filenames_in_cluster_test[label][sd_subdir_test[label_index] + sd_ride_test[label_index]] = {"window": sd_window_test[label_index], "start": sd_start_test[label_index]}
+    filenames_in_cluster_test = dict()
+    for label_index in range(len(clus_test)):
+        label = clus_test[label_index]
+        dict_test_by_label[label]["x"].append(test_embedded[label_index][0])
+        dict_test_by_label[label]["y"].append(test_embedded[label_index][1])
+        if label not in filenames_in_cluster_test:
+            filenames_in_cluster_test[label] = dict()
+        filenames_in_cluster_test[label][sd_subdir_test[label_index] + "/" + sd_ride_test[label_index]] = {"window": sd_window_test[label_index], "start": sd_start_test[label_index]}
 	
-	random_colors_set = random_colors(len(set(dict_train_by_label.keys()).union(set(dict_test_by_label.keys()))))
-	random_colors_dict = dict()
-	index_num = 0
-	for label in set(dict_train_by_label.keys()).union(set(dict_test_by_label.keys())):
-		random_colors_dict[label] = random_colors_set[index_num]
-		index_num += 1
+    random_colors_set = random_colors(len(set(dict_train_by_label.keys()).union(set(dict_test_by_label.keys()))))
+    random_colors_dict = dict()
+    index_num = 0
+    for label in set(dict_train_by_label.keys()).union(set(dict_test_by_label.keys())):
+        random_colors_dict[label] = random_colors_set[index_num]
+        index_num += 1
  
-	plt.rcParams.update({'font.size': 22})
-	plt.figure(figsize=(20, 10))
-	plt.subplot(1, 2, 1)
-	label_index = 0 
-	for label in dict_train_by_label:  
-		plt.title(type_clus + " train " + str(clus_params))  
-		plt.scatter(dict_train_by_label[label]["x"], dict_train_by_label[label]["y"], color = random_colors_dict[label], label = str(label) + " train")   
-		label_index += 1 
-	plt.legend()
-	plt.subplot(1, 2, 2) 
-	label_index = 0
-	for label in dict_test_by_label:  
-		plt.title(type_clus + " test " + str(clus_params))    
-		plt.scatter(dict_test_by_label[label]["x"], dict_test_by_label[label]["y"], color = random_colors_dict[label], label = str(label) + " test")  
-		label_index += 1
-	plt.legend()
-	if not os.path.isdir("all_clus/"):
-		os.makedirs("all_clus/")
-	#plt.savefig("all_clus/" + type_clus + " test " + str(clus_params) + ".png")
-	plt.close()
+    plt.rcParams.update({'font.size': 22})
+    plt.figure(figsize=(20, 10))
+    plt.subplot(1, 2, 1)
+    label_index = 0 
+    for label in dict_train_by_label:  
+        plt.title(type_clus + " train " + str(clus_params))  
+        plt.scatter(dict_train_by_label[label]["x"], dict_train_by_label[label]["y"], color = random_colors_dict[label], label = str(label) + " train")   
+        label_index += 1 
+    plt.legend()
+    plt.subplot(1, 2, 2) 
+    label_index = 0
+    for label in dict_test_by_label:  
+        plt.title(type_clus + " test " + str(clus_params))    
+        plt.scatter(dict_test_by_label[label]["x"], dict_test_by_label[label]["y"], color = random_colors_dict[label], label = str(label) + " test")  
+        label_index += 1
+    plt.legend()
+    if not os.path.isdir("all_clus/plots/"):
+        os.makedirs("all_clus/plots/")
+    plt.savefig("all_clus/plots/" + type_clus + " test " + str(clus_params) + ".png") 
+    plt.close()
 
-	score_train = "undefined"
-	if len(dict_train_by_label) > 1:
-		score_train = silhouette_score(train_arr, train_labels)
+    score_train = "undefined"
+    if len(dict_train_by_label) > 1:
+        score_train = silhouette_score(train_arr, train_labels)
 		
-	score_test = "undefined"
-	if len(dict_test_by_label) > 1:
-		score_test = silhouette_score(test_arr, test_labels) 
+    score_test = "undefined"
+    if len(dict_test_by_label) > 1:
+        score_test = silhouette_score(test_arr, test_labels) 
  
-	if not os.path.isdir("rays/" + size + "/clustering/"):
-		os.makedirs("rays/" + size + "/clustering/")
+    if not os.path.isdir("all_clus/filenames/"):
+        os.makedirs("all_clus/filenames/")
 	
-	save_object("all_clus/filenames_in_cluster_train " + type_clus + " test  " + str(clus_params), filenames_in_cluster_train)
-	save_object("all_clus/filenames_in_cluster_test " + type_clus + " test " + str(clus_params), filenames_in_cluster_test)
-	#random_sample_of_cluster(filenames_in_cluster_train, 3)
-	#random_sample_of_cluster(filenames_in_cluster_test, 3)
-	if type_clus == "KMeans":
-		return attempt.inertia_, score_train, score_test 
-	if type_clus == "DBSCAN":
-		return score_train, score_test 
+    save_object("all_clus/filenames/filenames_in_cluster_train " + type_clus + " test  " + str(clus_params), filenames_in_cluster_train)
+    save_object("all_clus/filenames/filenames_in_cluster_test " + type_clus + " test " + str(clus_params), filenames_in_cluster_test)
+    #random_sample_of_cluster(filenames_in_cluster_train, 3)
+    #random_sample_of_cluster(filenames_in_cluster_test, 3)
+    if type_clus == "KMeans":
+        return attempt.inertia_, score_train, score_test 
+    if type_clus == "DBSCAN":
+        return score_train, score_test 
 
 def make_clusters(type_clus, sd_window_train, sd_subdir_train, sd_ride_train, sd_start_train, sd_x_train, sd_window_test, sd_subdir_test, sd_ride_test, sd_start_test, sd_x_test):
 	 
@@ -208,28 +212,27 @@ def divide_train_test(properties, train_set, test_set):
     for window_size in properties:
         for subdir_name in properties[window_size]:
             for some_file in properties[window_size][subdir_name]:
-                for start in properties[window_size][subdir_name][some_file]:
-                    full_name = subdir_name + "/" + some_file 
+                for start in properties[window_size][subdir_name][some_file]: 
                     if some_file in train_set:
                         sd_window_train.append(window_size)
                         sd_subdir_train.append(subdir_name)
                         sd_ride_train.append(some_file)
                         sd_start_train.append(start)
                         sd_x_train.append([])
-                        for variable_name in properties[window_size][subdir_name][some_file][x]: 
+                        for variable_name in properties[window_size][subdir_name][some_file][start]: 
                             if "monoto" not in variable_name:
-                                if math.isnan(properties[window_size][subdir_name][some_file][x][variable_name]):
+                                if math.isnan(properties[window_size][subdir_name][some_file][start][variable_name]):
                                     sd_x_train[-1].append(0)
                                 else:
-                                    sd_x_train[-1].append(properties[window_size][subdir_name][some_file][x][variable_name]) 
+                                    sd_x_train[-1].append(properties[window_size][subdir_name][some_file][start][variable_name]) 
                             else:
-                                if properties[window_size][subdir_name][some_file][x] == "I":
+                                if properties[window_size][subdir_name][some_file][start] == "I":
                                     sd_x_train[-1].append(3)
-                                if properties[window_size][subdir_name][some_file][x] == "D":
+                                if properties[window_size][subdir_name][some_file][start] == "D":
                                     sd_x_train[-1].append(2)
-                                if properties[window_size][subdir_name][some_file][x] == "NM":
+                                if properties[window_size][subdir_name][some_file][start] == "NM":
                                     sd_x_train[-1].append(1)
-                                if properties[window_size][subdir_name][some_file][x] == "NF":
+                                if properties[window_size][subdir_name][some_file][start] == "NF":
                                     sd_x_train[-1].append(0)
                     if some_file in test_set:
                         sd_window_test.append(window_size)
@@ -237,29 +240,41 @@ def divide_train_test(properties, train_set, test_set):
                         sd_ride_test.append(some_file)
                         sd_start_test.append(start)
                         sd_x_test.append([])
-                        for variable_name in properties[window_size][subdir_name][some_file][x]: 
+                        for variable_name in properties[window_size][subdir_name][some_file][start]: 
                             if "monoto" not in variable_name:
-                                if math.isnan(properties[window_size][subdir_name][some_file][x][variable_name]):
+                                if math.isnan(properties[window_size][subdir_name][some_file][start][variable_name]):
                                     sd_x_test[-1].append(0)
                                 else:
-                                    sd_x_test[-1].append(properties[window_size][subdir_name][some_file][x][variable_name]) 
+                                    sd_x_test[-1].append(properties[window_size][subdir_name][some_file][start][variable_name]) 
                             else:
-                                if properties[window_size][subdir_name][some_file][x] == "I":
+                                if properties[window_size][subdir_name][some_file][start] == "I":
                                     sd_x_test[-1].append(3)
-                                if properties[window_size][subdir_name][some_file][x] == "D":
+                                if properties[window_size][subdir_name][some_file][start] == "D":
                                     sd_x_test[-1].append(2)
-                                if properties[window_size][subdir_name][some_file][x] == "NM":
+                                if properties[window_size][subdir_name][some_file][start] == "NM":
                                     sd_x_test[-1].append(1)
-                                if properties[window_size][subdir_name][some_file][x] == "NF":
+                                if properties[window_size][subdir_name][some_file][start] == "NF":
                                     sd_x_test[-1].append(0)
+    
+    for rn in range(len(sd_x_train)):
+        for cn in range(len(sd_x_train[rn])):
+            sd_x_train[rn][cn] = float(sd_x_train[rn][cn])
+     
+    for rn in range(len(sd_x_test)):
+        for cn in range(len(sd_x_test[rn])):
+            sd_x_test[rn][cn] = float(sd_x_test[rn][cn])
+
+    sd_x_train = np.array(sd_x_train)
+    sd_x_test = np.array(sd_x_test)
+
+    print(np.shape(sd_x_train), np.shape(sd_x_test))
     return sd_window_train, sd_subdir_train, sd_ride_train, sd_start_train, sd_x_train, sd_window_test, sd_subdir_test, sd_ride_test, sd_start_test, sd_x_test 
     
 window_size = 20
 deg = 5
 maxoffset = 0.005
 step_size = window_size
-#step_size = 1
-max_trajs = 100
+#step_size = 1 
 
 header = ["start", "window_size", "vehicle", "ride"]
 all_subdirs = os.listdir() 
@@ -267,8 +282,7 @@ all_subdirs = os.listdir()
 dict_for_clustering= dict()
 dict_for_clustering[window_size] = dict()
 train_names = set()
-test_names = set()
-num_files = 0
+test_names = set() 
 for subdir_name in all_subdirs:
     if not os.path.isdir(subdir_name) or "Vehicle" not in subdir_name:
         continue
@@ -361,7 +375,7 @@ for subdir_name in all_subdirs:
             #print(len(dict_for_clustering[window_size][subdir_name][some_file][x]))
 
             #for size in os.listdir("rays"):
-            for size in ["4", "8", "12"]:
+            for size in ["4", "8", "12", "16", "20", "24", "28", "36"]:
                 start_path = "rays/" + str(size) + "/" + subdir_name + "/" + only_number
                 dsmax = pd.read_csv(start_path + "/all_distances_scaled_to_max_trajs.csv", index_col = False)
                 dsc = pd.read_csv(start_path + "/all_distances_scaled_trajs.csv", index_col = False)
@@ -392,25 +406,18 @@ for subdir_name in all_subdirs:
                 nsmax = load_object(start_path + "/all_nums_scaled_to_max_trajs")
                 nsc = load_object(start_path + "/all_nums_scaled_trajs")
                 npp = load_object(start_path + "/all_nums_preprocessed_trajs")
-                n = load_object(start_path + "/all_nums_trajs")
-
-                for key_name in nsmax[x]:
-                    dict_for_clustering[window_size][subdir_name][some_file][x][str(size) + "all_nums_scaled_to_max_trajs_num_intersections_" + key_name] = nsmax[x][key_name]
-                    dict_for_clustering[window_size][subdir_name][some_file][x][str(size) + "all_nums_scaled_trajs_num_intersections_" + key_name] = nsc[x][key_name]
-                    dict_for_clustering[window_size][subdir_name][some_file][x][str(size) + "all_nums_trajs_num_intersections_" + key_name] = n[x][key_name]
-                    dict_for_clustering[window_size][subdir_name][some_file][x][str(size) + "all_nums_preprocesssed_trajs_num_intersections_" + key_name] = npp[x][key_name]
+                n = load_object(start_path + "/all_nums_trajs") 
+                if x in nsmax:
+                    for key_name in nsmax[x]:
+                        dict_for_clustering[window_size][subdir_name][some_file][x][str(size) + "all_nums_scaled_to_max_trajs_num_intersections_" + key_name] = nsmax[x][key_name]
+                        dict_for_clustering[window_size][subdir_name][some_file][x][str(size) + "all_nums_scaled_trajs_num_intersections_" + key_name] = nsc[x][key_name]
+                        dict_for_clustering[window_size][subdir_name][some_file][x][str(size) + "all_nums_trajs_num_intersections_" + key_name] = n[x][key_name]
+                        dict_for_clustering[window_size][subdir_name][some_file][x][str(size) + "all_nums_preprocesssed_trajs_num_intersections_" + key_name] = npp[x][key_name]
 
                 #print(len(dict_for_clustering[window_size][subdir_name][some_file][x]))
-            num_files += 1
-            if num_files == max_trajs:
-                  break
-        if num_files == max_trajs:
-                  break
-    if num_files == max_trajs:
-                  break
-
+ 
 sd_window_train, sd_subdir_train, sd_ride_train, sd_start_train, sd_x_train, sd_window_test, sd_subdir_test, sd_ride_test, sd_start_test, sd_x_test  = divide_train_test(dict_for_clustering, train_rides, test_rides)
-print("Made cluster")
 print(len(sd_x_train), len(sd_x_train[0]), sd_x_train[0][:10])
 print(len(sd_x_test))
 make_clusters("KMeans", sd_window_train, sd_subdir_train, sd_ride_train, sd_start_train, sd_x_train, sd_window_test, sd_subdir_test, sd_ride_test, sd_start_test, sd_x_test)
+make_clusters("DBSCAN", sd_window_train, sd_subdir_train, sd_ride_train, sd_start_train, sd_x_train, sd_window_test, sd_subdir_test, sd_ride_test, sd_start_test, sd_x_test)

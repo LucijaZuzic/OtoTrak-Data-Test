@@ -537,19 +537,19 @@ def compare_traj_ray(dotsx_original, dotsy_original, test_x, test_y, scale = Fal
                 all_distances += distances[x1][x2][t]
                 all_distancesx += distancesx[x1][x2][t]
                 all_distancesy += distancesy[x1][x2][t]
-    all_distances /= (size ** 2) * window_size 
-    all_distancesx /= (size ** 2) * window_size 
-    all_distancesy /= (size ** 2) * window_size 
+    all_distances /= (size ** 2) * (window_size - 1) 
+    all_distancesx /= (size ** 2) * (window_size - 1) 
+    all_distancesy /= (size ** 2) * (window_size - 1) 
     if scale:
         all_distances /= scaling_factor	
         all_distancesx /= scaling_factor	
         all_distancesy /= scaling_factor	
 	#print(all_distances, all_distancesx, all_distancesy)
 	#plt.show()
-    return all_distances, all_distancesx, all_distancesy, intersections, distances, distancesx, distancesy, num_of_intersection / size / size / window_size
+    return all_distances, all_distancesx, all_distancesy, intersections, distances, distancesx, distancesy, num_of_intersection / size / size / (window_size - 1)
 
-def process_csv_ray(window_size, vehicle1, r1, some_dict, save_name): 
-    if not os.path.isfile(save_name):
+def process_csv_ray(window_size, vehicle1, r1, some_dict, save_name, flag_overwrite = False): 
+    if not os.path.isfile(save_name) or flag_overwrite:
         new_csv_content = "window_size,vehicle,ride,start,"
         for key in some_dict[0].keys():
             new_csv_content += key + "," + key + " x," + key + " y,"  
