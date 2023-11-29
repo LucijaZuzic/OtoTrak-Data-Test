@@ -641,7 +641,7 @@ def end_read(title, all_x, all_mine, isangle = False):
             match_score = 0 
             no_empty = 0
             delta_series = [] 
-            for i in range(2, n):
+            for i in range(n):
                 if x[i] == other[i]:
                     match_score += 1
                 if x[i] != "undefined":
@@ -654,12 +654,11 @@ def end_read(title, all_x, all_mine, isangle = False):
                     delta_series_total.append(delta_x)
                     data_series_total.append(x[i]) 
 
-    total_guesses += n - 2
+    total_guesses += n
     total_guesses_no_empty += no_empty
     total_match_score += match_score  
     no_extension = title.replace(".png", "").replace("markov_hist/", "").capitalize()
     plt.rcParams.update({'font.size': 22})
-    plt.figure(figsize=(25, 10))
     print(no_extension)
     #print(minval, maxval, (total_guesses - total_guesses_no_empty) / total_guesses, total_match_score / total_guesses, total_match_score / total_guesses_no_empty, min(delta_series_total), np.quantile(delta_series_total, 0.25), np.quantile(delta_series_total, 0.5), np.quantile(delta_series_total, 0.75), max(delta_series_total), np.average(delta_series_total), np.std(delta_series_total), np.var(delta_series_total))
     #print(np.quantile(delta_series_total, 0.80), np.quantile(delta_series_total, 0.85), np.quantile(delta_series_total, 0.90), np.quantile(delta_series_total, 0.95))
@@ -668,6 +667,8 @@ def end_read(title, all_x, all_mine, isangle = False):
     print(format_e(np.average(delta_series_total)), format_e(np.std(delta_series_total)), format_e(np.var(delta_series_total))) 
     print(format_e(np.quantile(delta_series_total, 0.25)), format_e(np.quantile(delta_series_total, 0.50)), format_e(np.quantile(delta_series_total, 0.75)), format_e(max(delta_series_total)))
     print(format_e(np.quantile(delta_series_total, 0.80)),format_e(np.quantile(delta_series_total, 0.85)), format_e(np.quantile(delta_series_total, 0.90)), format_e(np.quantile(delta_series_total, 0.95)))
+    
+    plt.figure(figsize=(25, 10))
     plt.subplot(1, 2, 1)
     plt.title(no_extension + " data")  
     plt.hist(data_series_total)
@@ -681,8 +682,60 @@ def end_read(title, all_x, all_mine, isangle = False):
     plt.savefig(title, bbox_inches = "tight")
     plt.close()
 
+    plt.figure(figsize=(30, 10))
+    plt.subplot(1, 2, 1)
+    plt.title(translate[no_extension] + " - Procjena")  
+    plt.hist(data_series_total)
+    plt.xlabel("Procjena (" + unit[no_extension] + ")")
+    plt.ylabel("Broj pojavljivanja")
+    plt.subplot(1, 2, 2) 
+    plt.title(translate[no_extension] + " - Razlika")  
+    plt.hist(delta_series_total)
+    plt.xlabel("Razlika (" + unit[no_extension] + ")")
+    plt.ylabel("Broj pojavljivanja")
+    plt.savefig(title.replace(".png", "_hr.png"), bbox_inches = "tight")
+    plt.close()
+
 if not os.path.isdir("markov_hist"):
     os.makedirs("markov_hist")
+
+translate = {"Distance": "Udaljenost",
+             "Direction": "Odmak od sjevera", 
+             "Direction abs alt": "Kut s osi x",
+             "Direction alt": "Odmak od osi x",
+             "Latitude": "Apsolutna vrijednost pomaka u y smjeru", 
+             "Latitude no abs": "Pomak u y smjeru", 
+             "Latitude sgn": "Predznak pomaka u y smjeru", 
+             "Longitude": "Apsolutna vrijednost pomaka u x smjeru",
+             "Longitude no abs": "Pomak u x smjeru",  
+             "Longitude sgn": "Predznak pomaka u x smjeru",
+             "Time": "Vrijeme",
+             "Speed": "Brzina u točki",
+             "Speed alt": "Brzina na segmentu",
+             "X speed": "Apsolutna vrijednost brzine u x smjeru",
+             "X speed no abs": "Brzina u x smjeru",
+             "Y speed": "Apsolutna vrijednost brzine u y smjeru",
+             "Y speed no abs": "Brzina u y smjeru",
+             }
+
+unit = {"Distance": "desetinke stupnja",
+             "Direction": "stupnjevi", 
+             "Direction abs alt": "stupnjevi",
+             "Direction alt": "stupnjevi",
+             "Latitude": "desetinke stupnja", 
+             "Latitude no abs": "desetinke stupnja", 
+             "Latitude sgn": "0 jug, 1 sjever", 
+             "Longitude": "desetinke stupnja", 
+             "Longitude no abs": "desetinke stupnja",  
+             "Longitude sgn": "0 zapad, 1 istok", 
+             "Time": "sekunde",
+             "Speed": "km / h",
+             "Speed alt": "desetinke stupnja / s", 
+             "X speed": "desetinke stupnja / s", 
+             "X speed no abs": "desetinke stupnja / s",
+             "Y speed": "desetinke stupnja / s", 
+             "Y speed no abs": "desetinke stupnja / s", 
+             }
 
 read_distance("markov_hist/distance.png")
 read_heading("markov_hist/direction.png")

@@ -888,18 +888,65 @@ def kneefind(NN, X_embedded):
 	kl = KneeLocator(list(range(1,len(distance_desc )+1)), distance_desc, curve = "convex", direction = "decreasing") 
 	return kl.knee_y 
  
-def random_sample_of_cluster(files_in_cluster, num_to_sample):
-	for cluster in files_in_cluster:
-		if len(files_in_cluster[cluster]) > 0:
-			indexes = np.random.randint(0, len(files_in_cluster[cluster]), size = num_to_sample)
-			for index in indexes:
-				name_file = list(files_in_cluster[cluster].keys())[index]
-				print(len(files_in_cluster[cluster].keys()))
-				print(name_file)
-				long, lat, time = load_traj_window_name(name_file, files_in_cluster[cluster][name_file]["start"], files_in_cluster[cluster][name_file]["window"])
-				long, lat = preprocess_long_lat(long, lat)
-				long, lat = scale_long_lat(long, lat, 1, 1, True) 
-				plt.title("Cluster " + str(cluster) + " " + str(name_file))
-				plt.plot(long, lat)
-				plt.show()
-				plt.close()
+def random_sample_of_cluster(files_in_cluster, nrow, ncol, filename):
+    print(filename)
+    for cluster in files_in_cluster:
+        if len(files_in_cluster[cluster]) > 0:
+            print(cluster, len(files_in_cluster[cluster]))
+            if nrow * ncol > len(files_in_cluster[cluster]):
+                ncol = int(np.sqrt(len(files_in_cluster[cluster])))
+                nrow = ncol
+            appeared = set()
+            long1 = []
+            lat1 = []
+            titles = []
+            for x in range(nrow * ncol):
+                index = np.random.randint(0, len(files_in_cluster[cluster]))
+                while index in appeared:
+                    index = np.random.randint(0, len(files_in_cluster[cluster]))
+                appeared.add(index)
+                name_file = files_in_cluster[cluster][index]["short_name"]
+                name_file_long = name_file.replace("/", "/cleaned_csv/") 
+                long, lat, time = load_traj_window_name(name_file_long, files_in_cluster[cluster][index]["start"], files_in_cluster[cluster][index]["window"])
+                long, lat = preprocess_long_lat(long, lat) 
+                long, lat = scale_long_lat(long, lat, 0.005, 0.005, True) 
+                long1.append(long)
+                lat1.append(lat)
+                titles.append(filename + "_cluster_" + str(cluster) + name_file)
+            if not os.path.isdir("all_clus/samples"):
+                os.makedirs("all_clus/samples")
+            composite_image_random_cluster(long1, lat1, titles, nrow, ncol, "all_clus/samples/" + filename + "_cluster_" + str(cluster))
+
+def composite_image_random_cluster(long1, lat1, titles, nrow, ncol, filename): 
+    plt.rcParams.update({'font.size': 6})
+    plt.figure(figsize=(ncol, nrow))
+    for row in range(nrow):
+        for col in range(ncol):
+            ix = row * ncol + col
+            plt.subplot(nrow, ncol, ix + 1) 
+            plt.axis('off')
+            #plt.title(titles[ix])   
+            plt.plot(long1[ix], lat1[ix], color = "k")      
+    plt.savefig(filename, bbox_inches = "tight")  
+    plt.close() 
+        
+def composite_image(filename, long1, lat1, nrow, ncol, long_other = [], lat_other = [], legends = [], mark_start = False, subtitles = []):  
+    random_colors_legend = random_colors(len(legends) + 2) 
+    plt.rcParams.update({'font.size': 22})
+    plt.figure(figsize=(15 * ncol, 15 * nrow))
+    for row in range(nrow):
+        for col in range(ncol):
+            ix = row * ncol + col
+            plt.subplot(nrow, ncol, ix + 1) 
+            if ix < len(subtitles):
+                plt.title(subtitles[ix])
+                if len(long_other) >= ix:
+                    for i in range(len(long_other[ix])): 
+                        plt.plot(long_other[ix][i], lat_other[ix][i], label = legends[i], color = random_colors_legend[i + 2], linewidth = 10)  
+                plt.plot(long1[ix], lat1[ix], label = "Original", color = random_colors_legend[0], linewidth = 10)     
+                if mark_start:
+                    plt.plot(long1[ix][0], lat1[ix][0], marker = "o", label = "Start", color = random_colors_legend[0], mec = random_colors_legend[0], mfc = random_colors_legend[1], ms = 20, mew = 10, linewidth = 10) 
+                if len(legends) > 0:
+                    plt.legend()
+    plt.savefig(filename, bbox_inches = "tight")
+    plt.close() 

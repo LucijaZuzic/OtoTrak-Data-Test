@@ -18,7 +18,7 @@ scale_val = [True, True, False, False]
 offset_val = [False, True, False, True]
 name_val = ["scale", "offset", "no scale", "only offset"]  
  
-for size in range(12, 40, 4):
+for size in range(4, 40, 4):
     print(size)
     for subdir_name in all_subdirs:
     
@@ -55,24 +55,12 @@ for size in range(12, 40, 4):
             all_distances_preprocessed_trajs_other = dict()
             all_distances_scaled_trajs_other = dict()
             all_distances_scaled_to_max_trajs_other = dict()  
-
-            if os.path.isfile(start_path + "/all_distances_trajs_other"):
-                all_distances_trajs_other = load_object(start_path + "/all_distances_trajs_other")  
-                all_distances_preprocessed_trajs_other = load_object(start_path + "/all_distances_preprocessed_trajs_other")  
-                all_distances_scaled_trajs_other = load_object(start_path + "/all_distances_scaled_trajs_other")  
-                all_distances_scaled_to_max_trajs_other = load_object(start_path + "/all_distances_scaled_to_max_trajs_other")   
-
+ 
             all_nums_trajs = dict()
             all_nums_preprocessed_trajs = dict()
             all_nums_scaled_trajs = dict()
             all_nums_scaled_to_max_trajs = dict() 
-
-            if os.path.isfile(start_path + "/all_nums_trajs"):
-                all_nums_trajs = load_object(start_path + "/all_nums_trajs")  
-                all_nums_preprocessed_trajs = load_object(start_path + "/all_nums_preprocessed_trajs")  
-                all_nums_scaled_trajs = load_object(start_path + "/all_nums_scaled_trajs")  
-                all_nums_scaled_to_max_trajs = load_object(start_path + "/all_nums_scaled_to_max_trajs")  
-            
+ 
             file_with_ride = pd.read_csv(subdir_name + "/cleaned_csv/" + some_file)
             longitudes = list(file_with_ride["fields_longitude"])
             latitudes = list(file_with_ride["fields_latitude"]) 
@@ -93,9 +81,9 @@ for size in range(12, 40, 4):
                 for some_index in range(len(latitudes_tmp)):
                     set_points.add((latitudes_tmp[some_index], longitudes_tmp[some_index]))
                     
-                if len(set_lats) == 1 or len(set_longs) == 1:                
+                if len(set_lats) == 1 or len(set_longs) == 1:    
                     continue
-                if len(set_points) < 3:
+                if len(set_points) < 3: 
                     continue
                 
                 longitudes_tmp_transform, latitudes_tmp_transform = preprocess_long_lat(longitudes_tmp, latitudes_tmp)
@@ -108,18 +96,16 @@ for size in range(12, 40, 4):
                 all_distances_preprocessed_trajs[x] = dict()
                 all_distances_scaled_trajs[x] = dict()
                 all_distances_scaled_to_max_trajs[x] = dict() 
-
-                if x not in all_distances_trajs_other:
-                    all_distances_trajs_other[x] = dict()
-                    all_distances_preprocessed_trajs_other[x] = dict()
-                    all_distances_scaled_trajs_other[x] = dict()
-                    all_distances_scaled_to_max_trajs_other[x] = dict()
-
-                if x not in all_nums_trajs:
-                    all_nums_trajs[x] = dict()
-                    all_nums_preprocessed_trajs[x] = dict()
-                    all_nums_scaled_trajs[x] = dict()
-                    all_nums_scaled_to_max_trajs[x] = dict()
+ 
+                all_distances_trajs_other[x] = dict()
+                all_distances_preprocessed_trajs_other[x] = dict()
+                all_distances_scaled_trajs_other[x] = dict()
+                all_distances_scaled_to_max_trajs_other[x] = dict()
+ 
+                all_nums_trajs[x] = dict()
+                all_nums_preprocessed_trajs[x] = dict()
+                all_nums_scaled_trajs[x] = dict()
+                all_nums_scaled_to_max_trajs[x] = dict()
                 
                 for value_for_dict in range(len(name_val)):   
 
