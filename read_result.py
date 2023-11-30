@@ -30,7 +30,7 @@ def read_distance(title):
             longitudes, latitudes = scale_long_lat(longitudes, latitudes, 0.1, 0.1, True)
             distance_int = [np.round(np.sqrt((longitudes[distance_index + 1] - longitudes[distance_index]) ** 2 + (latitudes[distance_index + 1] - latitudes[distance_index]) ** 2), 5) for distance_index in range(len(longitudes) - 1)]
             all_mine[subdir_name + "/cleaned_csv/" + some_file] = distance_int
-    end_read(title, all_x, all_mine)
+    return end_read(title, all_x, all_mine)
 
 def read_heading_abs_alternative(title): 
     all_x = load_object("predicted/predicted_direction_abs_alternative")
@@ -81,7 +81,7 @@ def read_heading_abs_alternative(title):
                                 direction_abs_alternative_int[heading_alternative_index] = direction_abs_alternative_int[heading_alternative_index2]
                                 break
             all_mine[subdir_name + "/cleaned_csv/" + some_file] = direction_abs_alternative_int
-    end_read(title, all_x, all_mine, True)
+    return end_read(title, all_x, all_mine, True)
 
 def read_heading_alternative(title):
     all_x = load_object("predicted/predicted_direction_alternative")
@@ -134,7 +134,7 @@ def read_heading_alternative(title):
                                 direction_alternative_int[heading_alternative_index] = direction_alternative_int[heading_alternative_index2]
                                 break
             all_mine[subdir_name + "/cleaned_csv/" + some_file] = direction_alternative_int
-    end_read(title, all_x, all_mine, True)
+    return end_read(title, all_x, all_mine, True)
 
 def read_heading(title): 
     all_x = load_object("predicted/predicted_direction")
@@ -162,7 +162,7 @@ def read_heading(title):
             directions = list(file_with_ride["fields_direction"]) 
             direction_int = [np.round(direction, 0) for direction in directions]
             all_mine[subdir_name + "/cleaned_csv/" + some_file] = direction_int
-    end_read(title, all_x, all_mine, True)
+    return end_read(title, all_x, all_mine, True)
 
 def read_latitude(title): 
     all_x = load_object("predicted/predicted_latitude")
@@ -193,7 +193,7 @@ def read_latitude(title):
             longitudes, latitudes = scale_long_lat(longitudes, latitudes, 0.1, 0.1, True)
             latitude_int = [np.round(abs(latitudes[latitude_index + 1] - latitudes[latitude_index]), 10) for latitude_index in range(len(latitudes) - 1)]
             all_mine[subdir_name + "/cleaned_csv/" + some_file] = latitude_int
-    end_read(title, all_x, all_mine)
+    return end_read(title, all_x, all_mine)
 
 def read_latitude_no_abs(title): 
     all_x = load_object("predicted/predicted_latitude_no_abs")
@@ -224,7 +224,7 @@ def read_latitude_no_abs(title):
             longitudes, latitudes = scale_long_lat(longitudes, latitudes, 0.1, 0.1, True)
             latitude_int = [np.round(latitudes[latitude_index + 1] - latitudes[latitude_index], 10) for latitude_index in range(len(latitudes) - 1)]
             all_mine[subdir_name + "/cleaned_csv/" + some_file] = latitude_int
-    end_read(title, all_x, all_mine)
+    return end_read(title, all_x, all_mine)
 
 def read_latitude_sgn(title): 
     all_x = load_object("predicted/predicted_latitude_sgn")
@@ -255,7 +255,7 @@ def read_latitude_sgn(title):
             longitudes, latitudes = scale_long_lat(longitudes, latitudes, 0.1, 0.1, True)
             latitude_int = [latitudes[latitude_index + 1] > latitudes[latitude_index] for latitude_index in range(len(latitudes) - 1)]
             all_mine[subdir_name + "/cleaned_csv/" + some_file] = latitude_int
-    end_read(title, all_x, all_mine)
+    return end_read(title, all_x, all_mine)
 
 def read_longitude(title): 
     all_x = load_object("predicted/predicted_longitude")
@@ -286,7 +286,7 @@ def read_longitude(title):
             longitudes, latitudes = scale_long_lat(longitudes, latitudes, 0.1, 0.1, True)
             longitude_int = [np.round(abs(longitudes[longitude_index + 1] - longitudes[longitude_index]), 10) for longitude_index in range(len(longitudes) - 1)]
             all_mine[subdir_name + "/cleaned_csv/" + some_file] = longitude_int
-    end_read(title, all_x, all_mine)
+    return end_read(title, all_x, all_mine)
 
 def read_longitude_no_abs(title): 
     all_x = load_object("predicted/predicted_longitude_no_abs")
@@ -317,7 +317,7 @@ def read_longitude_no_abs(title):
             longitudes, latitudes = scale_long_lat(longitudes, latitudes, 0.1, 0.1, True)
             longitude_int = [np.round(longitudes[longitude_index + 1] - longitudes[longitude_index], 10) for longitude_index in range(len(longitudes) - 1)]
             all_mine[subdir_name + "/cleaned_csv/" + some_file] = longitude_int
-    end_read(title, all_x, all_mine)
+    return end_read(title, all_x, all_mine)
 
 def read_longitude_sgn(title): 
     all_x = load_object("predicted/predicted_longitude_sgn")
@@ -348,7 +348,7 @@ def read_longitude_sgn(title):
             longitudes, latitudes = scale_long_lat(longitudes, latitudes, 0.1, 0.1, True)
             longitude_int = [longitudes[longitude_index + 1] > longitudes[longitude_index] for longitude_index in range(len(longitudes) - 1)] 
             all_mine[subdir_name + "/cleaned_csv/" + some_file] = longitude_int
-    end_read(title, all_x, all_mine)
+    return end_read(title, all_x, all_mine)
 
 def read_speed_alternative(title): 
     all_x = load_object("predicted/predicted_speed_alternative")
@@ -386,7 +386,7 @@ def read_speed_alternative(title):
             distance_int = [np.sqrt((longitudes[distance_index + 1] - longitudes[distance_index]) ** 2 + (latitudes[distance_index + 1] - latitudes[distance_index]) ** 2) for distance_index in range(len(longitudes) - 1)]
             speed_alternative_int = [np.round(distance_int[speed_alternative_index] / times_delays[speed_alternative_index], 5) for speed_alternative_index in range(len(times_delays))]
             all_mine[subdir_name + "/cleaned_csv/" + some_file] = speed_alternative_int
-    end_read(title, all_x, all_mine)
+    return end_read(title, all_x, all_mine)
 
 def read_speed(title): 
     all_x = load_object("predicted/predicted_speed")
@@ -414,7 +414,7 @@ def read_speed(title):
             speeds = list(file_with_ride["fields_speed"]) 
             speed_int = [np.round(speed, 0) for speed in speeds] 
             all_mine[subdir_name + "/cleaned_csv/" + some_file] = speed_int
-    end_read(title, all_x, all_mine)
+    return end_read(title, all_x, all_mine)
 
 def read_time(title): 
     all_x = load_object("predicted/predicted_time")
@@ -446,7 +446,7 @@ def read_time(title):
                     if time_int[time_index] == 0: 
                         time_int[time_index] = 10 ** -20 
             all_mine[subdir_name + "/cleaned_csv/" + some_file] = time_int
-    end_read(title, all_x, all_mine)
+    return end_read(title, all_x, all_mine)
  
 def read_x_speed(title): 
     all_x = load_object("predicted/predicted_x_speed_alternative")
@@ -484,7 +484,7 @@ def read_x_speed(title):
             distance_int = [abs(longitudes[distance_index + 1] - longitudes[distance_index]) for distance_index in range(len(longitudes) - 1)]
             x_speed_alternative_int = [np.round(distance_int[x_speed_alternative_index] / times_delays[x_speed_alternative_index], 5) for x_speed_alternative_index in range(len(times_delays))]
             all_mine[subdir_name + "/cleaned_csv/" + some_file] = x_speed_alternative_int
-    end_read(title, all_x, all_mine)
+    return end_read(title, all_x, all_mine)
  
 def read_x_speed_no_abs(title): 
     all_x = load_object("predicted/predicted_x_speed_no_abs_alternative")
@@ -522,7 +522,7 @@ def read_x_speed_no_abs(title):
             distance_int = [longitudes[distance_index + 1] - longitudes[distance_index] for distance_index in range(len(longitudes) - 1)]
             x_speed_no_abs_alternative_int = [np.round(distance_int[x_speed_no_abs_alternative_index] / times_delays[x_speed_no_abs_alternative_index], 5) for x_speed_no_abs_alternative_index in range(len(times_delays))]
             all_mine[subdir_name + "/cleaned_csv/" + some_file] = x_speed_no_abs_alternative_int
-    end_read(title, all_x, all_mine)
+    return end_read(title, all_x, all_mine)
 
 def read_y_speed(title): 
     all_x = load_object("predicted/predicted_y_speed_alternative")
@@ -560,7 +560,7 @@ def read_y_speed(title):
             distance_int = [abs(latitudes[distance_index + 1] - latitudes[distance_index]) for distance_index in range(len(latitudes) - 1)]
             y_speed_alternative_int = [np.round(distance_int[y_speed_alternative_index] / times_delays[y_speed_alternative_index], 5) for y_speed_alternative_index in range(len(times_delays))]
             all_mine[subdir_name + "/cleaned_csv/" + some_file] = y_speed_alternative_int
-    end_read(title, all_x, all_mine)
+    return end_read(title, all_x, all_mine)
 
 def read_y_speed_no_abs(title):
     all_x = load_object("predicted/predicted_y_speed_no_abs_alternative")
@@ -598,13 +598,13 @@ def read_y_speed_no_abs(title):
             distance_int = [latitudes[distance_index + 1] - latitudes[distance_index] for distance_index in range(len(latitudes) - 1)]
             y_speed_no_abs_alternative_int = [np.round(distance_int[y_speed_no_abs_alternative_index] / times_delays[y_speed_no_abs_alternative_index], 5) for y_speed_no_abs_alternative_index in range(len(times_delays))]
             all_mine[subdir_name + "/cleaned_csv/" + some_file] = y_speed_no_abs_alternative_int
-    end_read(title, all_x, all_mine)
+    return end_read(title, all_x, all_mine)
 
 def format_e(n):
-    if n >= 10 ** -2 or n == 0:
-        return "$" + str(np.round(n, 2)).replace(".00", "") + "$ &"
+    if abs(n) >= 10 ** -2 or n == 0:
+        return "$" + str(np.round(n, 2)).replace(".0", "") + "$"
     a = '%.2E' % n
-    return "$" + str(str(a.split('E')[0].rstrip('0').rstrip('.') + 'E' + a.split('E')[1]) + "}$ &").replace("E-0", "*10^{-").replace("E+0", "*10^{")
+    return "$" + str(str(a.split('E')[0].rstrip('0').rstrip('.') + 'E' + a.split('E')[1]) + "}$").replace("E-0", "*10^{-").replace("E+0", "*10^{").replace("$1*", "$")
 
 def end_read(title, all_x, all_mine, isangle = False):
     total_match_score = 0
@@ -659,14 +659,14 @@ def end_read(title, all_x, all_mine, isangle = False):
     total_match_score += match_score  
     no_extension = title.replace(".png", "").replace("markov_hist/", "").capitalize()
     plt.rcParams.update({'font.size': 22})
-    print(no_extension)
+    #print(no_extension)
     #print(minval, maxval, (total_guesses - total_guesses_no_empty) / total_guesses, total_match_score / total_guesses, total_match_score / total_guesses_no_empty, min(delta_series_total), np.quantile(delta_series_total, 0.25), np.quantile(delta_series_total, 0.5), np.quantile(delta_series_total, 0.75), max(delta_series_total), np.average(delta_series_total), np.std(delta_series_total), np.var(delta_series_total))
     #print(np.quantile(delta_series_total, 0.80), np.quantile(delta_series_total, 0.85), np.quantile(delta_series_total, 0.90), np.quantile(delta_series_total, 0.95))
-    print(str(np.round((total_guesses - total_guesses_no_empty) / total_guesses * 100, 2))) 
-    print(format_e(minval), format_e(maxval), "$" + str(np.round(total_match_score / total_guesses * 100, 2)) + "\\%$ &") 
-    print(format_e(np.average(delta_series_total)), format_e(np.std(delta_series_total)), format_e(np.var(delta_series_total))) 
-    print(format_e(np.quantile(delta_series_total, 0.25)), format_e(np.quantile(delta_series_total, 0.50)), format_e(np.quantile(delta_series_total, 0.75)), format_e(max(delta_series_total)))
-    print(format_e(np.quantile(delta_series_total, 0.80)),format_e(np.quantile(delta_series_total, 0.85)), format_e(np.quantile(delta_series_total, 0.90)), format_e(np.quantile(delta_series_total, 0.95)))
+    lines_ret = [
+    [translate[no_extension], format_e(minval), format_e(maxval), "$" + str(np.round(total_match_score / total_guesses * 100, 2)) + "\\%$"],
+    [translate[no_extension], format_e(np.average(delta_series_total)), format_e(np.std(delta_series_total)), format_e(np.var(delta_series_total))],
+    [translate[no_extension], format_e(np.quantile(delta_series_total, 0.25)), format_e(np.quantile(delta_series_total, 0.50)), format_e(np.quantile(delta_series_total, 0.75)), format_e(max(delta_series_total))],
+    [translate[no_extension], format_e(np.quantile(delta_series_total, 0.80)),format_e(np.quantile(delta_series_total, 0.85)), format_e(np.quantile(delta_series_total, 0.90)), format_e(np.quantile(delta_series_total, 0.95))]]
     
     plt.figure(figsize=(25, 10))
     plt.subplot(1, 2, 1)
@@ -696,10 +696,12 @@ def end_read(title, all_x, all_mine, isangle = False):
     plt.savefig(title.replace(".png", "_hr.png"), bbox_inches = "tight")
     plt.close()
 
+    return lines_ret
+
 if not os.path.isdir("markov_hist"):
     os.makedirs("markov_hist")
 
-translate = {"Distance": "Udaljenost",
+translate = {"Distance": "Euklidska udaljenost",
              "Direction": "Odmak od sjevera", 
              "Direction abs alt": "Kut s osi x",
              "Direction alt": "Odmak od osi x",
@@ -736,21 +738,31 @@ unit = {"Distance": "desetinke stupnja",
              "Y speed": "desetinke stupnja / s", 
              "Y speed no abs": "desetinke stupnja / s", 
              }
+all_lines_ret = []
+all_lines_ret.append(read_distance("markov_hist/distance.png"))
+all_lines_ret.append(read_heading("markov_hist/direction.png"))
+all_lines_ret.append(read_heading_abs_alternative("markov_hist/direction abs alt.png"))
+all_lines_ret.append(read_heading_alternative("markov_hist/direction alt.png"))
+all_lines_ret.append(read_latitude("markov_hist/latitude.png"))
+all_lines_ret.append(read_latitude_no_abs("markov_hist/latitude no abs.png"))
+all_lines_ret.append(read_latitude_sgn("markov_hist/latitude sgn.png"))
+all_lines_ret.append(read_longitude("markov_hist/longitude.png"))
+all_lines_ret.append(read_longitude_no_abs("markov_hist/longitude no abs.png"))
+all_lines_ret.append(read_longitude_sgn("markov_hist/longitude sgn.png"))
+all_lines_ret.append(read_time("markov_hist/time.png"))
+all_lines_ret.append(read_speed("markov_hist/speed.png"))
+all_lines_ret.append(read_speed_alternative("markov_hist/speed alt.png"))
+all_lines_ret.append(read_x_speed("markov_hist/x speed.png"))
+all_lines_ret.append(read_x_speed_no_abs("markov_hist/x speed no abs.png"))
+all_lines_ret.append(read_y_speed("markov_hist/y speed.png"))
+all_lines_ret.append(read_y_speed_no_abs("markov_hist/y speed no abs.png"))
 
-read_distance("markov_hist/distance.png")
-read_heading("markov_hist/direction.png")
-read_heading_abs_alternative("markov_hist/direction abs alt.png")
-read_heading_alternative("markov_hist/direction alt.png")
-read_latitude("markov_hist/latitude.png")
-read_latitude_no_abs("markov_hist/latitude no abs.png")
-read_latitude_sgn("markov_hist/latitude sgn.png")
-read_longitude("markov_hist/longitude.png")
-read_longitude_no_abs("markov_hist/longitude no abs.png")
-read_longitude_sgn("markov_hist/longitude sgn.png")
-read_time("markov_hist/time.png")
-read_speed("markov_hist/speed.png")
-read_speed_alternative("markov_hist/speed alt.png")
-read_x_speed("markov_hist/x speed.png")
-read_x_speed_no_abs("markov_hist/x speed no abs.png")
-read_y_speed("markov_hist/y speed.png")
-read_y_speed_no_abs("markov_hist/y speed no abs.png")
+for table_number in range(len(all_lines_ret[0])):
+    strpr = ""
+    for var_index in range(len(all_lines_ret)):
+        for val_index in range(len(all_lines_ret[var_index][table_number])):
+            if val_index != len(all_lines_ret[var_index][table_number]) - 1:
+                strpr += all_lines_ret[var_index][table_number][val_index] + " & "
+            else:
+                strpr += all_lines_ret[var_index][table_number][val_index] + " \\\\ \\hline\n"
+    print(strpr)
