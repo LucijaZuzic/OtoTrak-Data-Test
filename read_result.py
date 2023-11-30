@@ -600,12 +600,6 @@ def read_y_speed_no_abs(title):
             all_mine[subdir_name + "/cleaned_csv/" + some_file] = y_speed_no_abs_alternative_int
     return end_read(title, all_x, all_mine)
 
-def format_e(n):
-    if abs(n) >= 10 ** -2 or n == 0:
-        return "$" + str(np.round(n, 2)).replace(".0", "") + "$"
-    a = '%.2E' % n
-    return "$" + str(str(a.split('E')[0].rstrip('0').rstrip('.') + 'E' + a.split('E')[1]) + "}$").replace("E-0", "*10^{-").replace("E+0", "*10^{").replace("$1*", "$")
-
 def end_read(title, all_x, all_mine, isangle = False):
     total_match_score = 0
     total_guesses = 0 
@@ -663,11 +657,11 @@ def end_read(title, all_x, all_mine, isangle = False):
     #print(minval, maxval, (total_guesses - total_guesses_no_empty) / total_guesses, total_match_score / total_guesses, total_match_score / total_guesses_no_empty, min(delta_series_total), np.quantile(delta_series_total, 0.25), np.quantile(delta_series_total, 0.5), np.quantile(delta_series_total, 0.75), max(delta_series_total), np.average(delta_series_total), np.std(delta_series_total), np.var(delta_series_total))
     #print(np.quantile(delta_series_total, 0.80), np.quantile(delta_series_total, 0.85), np.quantile(delta_series_total, 0.90), np.quantile(delta_series_total, 0.95))
     lines_ret = [
-    [translate[no_extension], format_e(minval), format_e(maxval), "$" + str(np.round(total_match_score / total_guesses * 100, 2)) + "\\%$"],
-    [translate[no_extension], format_e(np.average(delta_series_total)), format_e(np.std(delta_series_total)), format_e(np.var(delta_series_total))],
-    [translate[no_extension], format_e(np.quantile(delta_series_total, 0.25)), format_e(np.quantile(delta_series_total, 0.50)), format_e(np.quantile(delta_series_total, 0.75)), format_e(max(delta_series_total))],
-    [translate[no_extension], format_e(np.quantile(delta_series_total, 0.80)),format_e(np.quantile(delta_series_total, 0.85)), format_e(np.quantile(delta_series_total, 0.90)), format_e(np.quantile(delta_series_total, 0.95))]]
-    
+    [translate_var[no_extension], format_e(minval), format_e(maxval), "$" + str(np.round(total_match_score / total_guesses * 100, 2)) + "\\%$"],
+    [translate_var[no_extension], format_e(np.average(delta_series_total)), format_e(np.std(delta_series_total)), format_e(np.var(delta_series_total))],
+    [translate_var[no_extension], format_e(np.quantile(delta_series_total, 0.25)), format_e(np.quantile(delta_series_total, 0.50)), format_e(np.quantile(delta_series_total, 0.75)), format_e(max(delta_series_total))],
+    [translate_var[no_extension], format_e(np.average(delta_series_total)), format_e(np.std(delta_series_total)), format_e(np.var(delta_series_total)), format_e(minval), format_e(np.quantile(delta_series_total, 0.25)), format_e(np.quantile(delta_series_total, 0.50)), format_e(np.quantile(delta_series_total, 0.75)), format_e(np.quantile(delta_series_total, 0.80)),format_e(np.quantile(delta_series_total, 0.85)), format_e(np.quantile(delta_series_total, 0.90)), format_e(np.quantile(delta_series_total, 0.95)), format_e(max(delta_series_total))],
+[translate_var[no_extension], format_e(np.average(delta_series_total)), format_e(np.std(delta_series_total)), format_e(np.var(delta_series_total)), format_e(minval), format_e(np.quantile(delta_series_total, 0.25)), format_e(np.quantile(delta_series_total, 0.50)), format_e(np.quantile(delta_series_total, 0.75)), format_e(max(delta_series_total))]]    
     plt.figure(figsize=(25, 10))
     plt.subplot(1, 2, 1)
     plt.title(no_extension + " data")  
@@ -684,12 +678,12 @@ def end_read(title, all_x, all_mine, isangle = False):
 
     plt.figure(figsize=(30, 10))
     plt.subplot(1, 2, 1)
-    plt.title(translate[no_extension] + " - Procjena")  
+    plt.title(translate_var[no_extension] + " - Procjena")  
     plt.hist(data_series_total)
     plt.xlabel("Procjena (" + unit[no_extension] + ")")
     plt.ylabel("Broj pojavljivanja")
     plt.subplot(1, 2, 2) 
-    plt.title(translate[no_extension] + " - Razlika")  
+    plt.title(translate_var[no_extension] + " - Razlika")  
     plt.hist(delta_series_total)
     plt.xlabel("Razlika (" + unit[no_extension] + ")")
     plt.ylabel("Broj pojavljivanja")
@@ -700,26 +694,7 @@ def end_read(title, all_x, all_mine, isangle = False):
 
 if not os.path.isdir("markov_hist"):
     os.makedirs("markov_hist")
-
-translate = {"Distance": "Euklidska udaljenost",
-             "Direction": "Odmak od sjevera", 
-             "Direction abs alt": "Kut s osi x",
-             "Direction alt": "Odmak od osi x",
-             "Latitude": "Apsolutna vrijednost pomaka u y smjeru", 
-             "Latitude no abs": "Pomak u y smjeru", 
-             "Latitude sgn": "Predznak pomaka u y smjeru", 
-             "Longitude": "Apsolutna vrijednost pomaka u x smjeru",
-             "Longitude no abs": "Pomak u x smjeru",  
-             "Longitude sgn": "Predznak pomaka u x smjeru",
-             "Time": "Vrijeme",
-             "Speed": "Brzina u točki",
-             "Speed alt": "Brzina na segmentu",
-             "X speed": "Apsolutna vrijednost brzine u x smjeru",
-             "X speed no abs": "Brzina u x smjeru",
-             "Y speed": "Apsolutna vrijednost brzine u y smjeru",
-             "Y speed no abs": "Brzina u y smjeru",
-             }
-
+ 
 unit = {"Distance": "desetinke stupnja",
              "Direction": "stupnjevi", 
              "Direction abs alt": "stupnjevi",
@@ -738,6 +713,7 @@ unit = {"Distance": "desetinke stupnja",
              "Y speed": "desetinke stupnja / s", 
              "Y speed no abs": "desetinke stupnja / s", 
              }
+
 all_lines_ret = []
 all_lines_ret.append(read_distance("markov_hist/distance.png"))
 all_lines_ret.append(read_heading("markov_hist/direction.png"))

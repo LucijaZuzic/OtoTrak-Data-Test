@@ -933,7 +933,7 @@ def composite_image_random_cluster(long1, lat1, titles, nrow, ncol, filename):
 def composite_image(filename, long1, lat1, nrow, ncol, long_other = [], lat_other = [], legends = [], mark_start = False, subtitles = []):  
     random_colors_legend = random_colors(len(legends) + 2) 
     plt.rcParams.update({'font.size': 22})
-    plt.figure(figsize=(15 * ncol, 15 * nrow))
+    plt.figure(figsize=(15 * ncol, 10 * nrow))
     for row in range(nrow):
         for col in range(ncol):
             ix = row * ncol + col
@@ -950,3 +950,72 @@ def composite_image(filename, long1, lat1, nrow, ncol, long_other = [], lat_othe
                     plt.legend()
     plt.savefig(filename, bbox_inches = "tight")
     plt.close() 
+    
+def format_e(n):
+    if abs(n) >= 10 ** -2 or n == 0:
+        return ("$" + str(np.round(n, 2)) + "$").replace(".0$", "$").replace(".00$", "$")
+    a = '%.2E' % n
+    return "$" + str(str(a.split('E')[0].rstrip('0').rstrip('.') + 'E' + a.split('E')[1]) + "}$").replace("E-0", "*10^{-").replace("E+0", "*10^{").replace("$1*", "$")
+
+def format_e2(n):
+    if abs(n) >= 10 ** -2 or n == 0:
+        return str(np.round(n, 2))  
+    else:
+        return str(np.round(n, 5))
+    
+def new_metric(metric_name):
+    new_metric_name = {"simpson x": "Simpson x", "trapz x": "Trapez x", 
+              "simpson y": "Simpson y", "trapz y": "Trapez y",
+              "euclidean": "Euklidska"}
+    if metric_name in new_metric_name:
+        return new_metric_name[metric_name]
+    else:
+        return metric_name
+
+def translate_method(longlat):
+    translate_name = {
+        "long no abs-lat no abs": "Pomak u x i y smjeru",
+        "long-lat": "Apsolutna vrijednost pomaka u x i y smjeru",
+        "long dist dir abs alt-lat dist dir abs alt": "Euklidska udaljenost i kut s osi x",
+        "long dist dir-lat dist dir": "Euklidska udaljenost i odmak od sjevera",
+        "long speed ones alt dir abs alt-lat speed ones alt dir abs alt": "Brzina na segmentu i kut s osi x, jedna sekunda",
+        "x speed-y speed": "Apsolutna vrijednost brzine u x i y smjeru",
+        "x speed no abs-y speed no abs": "Brzina u x i y smjeru",
+        "long speed dir-lat speed dir": "Brzina u točki i odmak od sjevera",
+        "long speed ones alt dir-lat speed ones alt dir": "Brzina na segmentu i odmak od sjevera, jedna sekunda",
+        "long speed alt dir abs alt-lat speed alt dir abs alt": "Brzina na segmentu i kut s osi x",
+        "long speed alt dir-lat speed alt dir": "Brzina na segmentu i odmak od sjevera",
+        "long speed dir abs alt-lat speed dir abs alt": "Brzina u točki i kut s osi x",
+        "x speed ones no abs-y speed ones no abs": "Brzina u x i y smjeru, jedna sekunda",
+        "long speed ones dir-lat speed ones dir": "Brzina u točki i odmak od sjevera, jedna sekunda",
+        "long speed ones dir abs alt-lat speed ones dir abs alt": "Brzina u točki i kut s osi x, jedna sekunda",
+        "x speed ones-y speed ones": "Apsolutna vrijednost brzine u x i y smjeru, jedna sekunda",
+        "long dist dir alt-lat dist dir alt": "Euklidska udaljenost i odmak od osi x",
+        "long speed ones alt dir alt-lat speed ones alt dir alt": "Brzina na segmentu i odmak od osi x, jedna sekunda",
+        "long speed ones dir alt-lat speed ones dir alt": "Brzina u točki i odmak od osi x, jedna sekunda",
+        "long speed alt dir alt-lat speed alt dir alt": "Brzina na segmentu i odmak od osi x",
+        "long speed dir alt-lat speed dir alt": "Brzina u točki i odmak od osi x",
+    }
+    if longlat in translate_name:
+        return translate_name[longlat]
+    else:
+        return longlat
+    
+translate_var = {"Distance": "Euklidska udaljenost",
+             "Direction": "Odmak od sjevera", 
+             "Direction abs alt": "Kut s osi x",
+             "Direction alt": "Odmak od osi x",
+             "Latitude": "Apsolutna vrijednost pomaka u y smjeru", 
+             "Latitude no abs": "Pomak u y smjeru", 
+             "Latitude sgn": "Predznak pomaka u y smjeru", 
+             "Longitude": "Apsolutna vrijednost pomaka u x smjeru",
+             "Longitude no abs": "Pomak u x smjeru",  
+             "Longitude sgn": "Predznak pomaka u x smjeru",
+             "Time": "Vrijeme",
+             "Speed": "Brzina u točki",
+             "Speed alt": "Brzina na segmentu",
+             "X speed": "Apsolutna vrijednost brzine u x smjeru",
+             "X speed no abs": "Brzina u x smjeru",
+             "Y speed": "Apsolutna vrijednost brzine u y smjeru",
+             "Y speed no abs": "Brzina u y smjeru",
+             }
