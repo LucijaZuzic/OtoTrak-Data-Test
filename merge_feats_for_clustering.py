@@ -1,6 +1,8 @@
 from utilities import * 
 from sklearn.manifold import TSNE
- 
+
+subdirname = "only_rays_size_36_"
+
 def one_clusters(type_clus, attempt, train_arr, test_arr, clus_params, sd_subdir_train, sd_ride_train, sd_start_train, sd_window_train, sd_subdir_test, sd_ride_test, sd_start_test, sd_window_test):
     clus_train = attempt.fit(train_arr)
     train_labels = clus_train.labels_ 
@@ -64,9 +66,9 @@ def one_clusters(type_clus, attempt, train_arr, test_arr, clus_params, sd_subdir
         plt.scatter(dict_test_by_label[label]["x"], dict_test_by_label[label]["y"], color = random_colors_dict[label], label = str(label) + " test")  
         label_index += 1
     plt.legend()
-    if not os.path.isdir("all_clus/plots/"):
-        os.makedirs("all_clus/plots/")
-    plt.savefig("all_clus/plots/" + type_clus + " test " + str(clus_params) + ".png") 
+    if not os.path.isdir("all_clus/" + subdirname + "/plots/"):
+        os.makedirs("all_clus/" + subdirname + "/plots/")
+    plt.savefig("all_clus/" + subdirname + "/plots/" + type_clus + " test " + str(clus_params) + ".png") 
     plt.close()
 
     score_train = "undefined"
@@ -77,11 +79,11 @@ def one_clusters(type_clus, attempt, train_arr, test_arr, clus_params, sd_subdir
     if len(dict_test_by_label) > 1:
         score_test = silhouette_score(test_arr, test_labels) 
  
-    if not os.path.isdir("all_clus/filenames/"):
-        os.makedirs("all_clus/filenames/")
+    if not os.path.isdir("all_clus/" + subdirname + "/filenames/"):
+        os.makedirs("all_clus/" + subdirname + "/filenames/")
 	
-    save_object("all_clus/filenames/filenames_in_cluster_train " + type_clus + " test  " + str(clus_params), filenames_in_cluster_train)
-    save_object("all_clus/filenames/filenames_in_cluster_test " + type_clus + " test " + str(clus_params), filenames_in_cluster_test) 
+    save_object("all_clus/" + subdirname + "/filenames/filenames_in_cluster_train " + type_clus + " test  " + str(clus_params), filenames_in_cluster_train)
+    save_object("all_clus/" + subdirname + "/filenames/filenames_in_cluster_test " + type_clus + " test " + str(clus_params), filenames_in_cluster_test) 
     if type_clus == "KMeans":
         return attempt.inertia_, score_train, score_test 
     if type_clus == "DBSCAN":
@@ -115,9 +117,12 @@ def make_clusters(type_clus, sd_window_train, sd_subdir_train, sd_ride_train, sd
         if siltest != "undefined":
             silhouette_list_test.append(siltest) 
             vals_clus_sil_test.append(val_clus)
-  
-    print(max(silhouette_list_train), vals_clus_sil_train[silhouette_list_train.index(max(silhouette_list_train))])
-    print(max(silhouette_list_test), vals_clus_sil_test[silhouette_list_test.index(max(silhouette_list_test))])	
+
+    if len(silhouette_list_train) > 0:
+        print(max(silhouette_list_train), vals_clus_sil_train[silhouette_list_train.index(max(silhouette_list_train))])
+   
+    if len(silhouette_list_test) > 0:
+        print(max(silhouette_list_test), vals_clus_sil_test[silhouette_list_test.index(max(silhouette_list_test))])	
      
 def divide_train_test(properties, train_set, test_set): 
     sd_window_train = []
@@ -251,26 +256,29 @@ def make_clusters_multi_feats():
             if some_file in test_rides:
                 test_names.add(some_file) 
  
-            dsmax = dict()
-            #dsc = dict()
-            #dpp = dict()
-            #d = dict()
-            nsmax = dict()
-            #nsc = dict()
-            #npp = dict()
-            #n = dict() 
-            for size in os.listdir("rays"):  
-                only_number = some_file.replace(".csv", "").replace("events_", "")
-                start_path = "rays/" + str(size) + "/" + subdir_name + "/" + only_number
-                dsmax[size] = pd.read_csv(start_path + "/all_distances_scaled_to_max_trajs.csv", index_col = False)
-                #dsc[size] = pd.read_csv(start_path + "/all_distances_scaled_trajs.csv", index_col = False)
-                #dpp[size] = pd.read_csv(start_path + "/all_distances_preprocessed_trajs.csv", index_col = False)
-                #d[size] = pd.read_csv(start_path + "/all_distances_trajs.csv", index_col = False)
-                nsmax[size] = load_object(start_path + "/all_nums_scaled_to_max_trajs")
-                #nsc[size] = load_object(start_path + "/all_nums_scaled_trajs")
-                #npp[size] = load_object(start_path + "/all_nums_preprocessed_trajs")
-                #n[size] = load_object(start_path + "/all_nums_trajs") 
- 
+            only_number = some_file.replace(".csv", "").replace("events_", "")
+            if "no_rays" not in subdirname:
+                dsmax = dict()
+                #dsc = dict()
+                #dpp = dict()
+                #d = dict()
+                nsmax = dict()
+                #nsc = dict()
+                #npp = dict()
+                #n = dict() 
+                for size in os.listdir("rays"):  
+                    if "size" in subdirname and "_" + str(size) + "_" not in subdirname:
+                        continue
+                    start_path = "rays/" + str(size) + "/" + subdir_name + "/" + only_number
+                    dsmax[size] = pd.read_csv(start_path + "/all_distances_scaled_to_max_trajs.csv", index_col = False)
+                    #dsc[size] = pd.read_csv(start_path + "/all_distances_scaled_trajs.csv", index_col = False)
+                    #dpp[size] = pd.read_csv(start_path + "/all_distances_preprocessed_trajs.csv", index_col = False)
+                    #d[size] = pd.read_csv(start_path + "/all_distances_trajs.csv", index_col = False)
+                    nsmax[size] = load_object(start_path + "/all_nums_scaled_to_max_trajs")
+                    #nsc[size] = load_object(start_path + "/all_nums_scaled_trajs")
+                    #npp[size] = load_object(start_path + "/all_nums_preprocessed_trajs")
+                    #n[size] = load_object(start_path + "/all_nums_trajs") 
+    
             for x in range(0, len(longitudes) - window_size + 1, step_size):
                 longitudes_tmp = longitudes[x:x + window_size]
                 latitudes_tmp = latitudes[x:x + window_size]
@@ -289,69 +297,76 @@ def make_clusters_multi_feats():
                     continue
                 if len(set_points) < 3: 
                     continue
-
+                
                 #print(x)
                 dict_for_clustering[window_size][subdir_name][some_file][x] = dict()
- 
-                for index in range(len(open_feats_scaled_max["start"])):
-                    if str(open_feats_scaled_max["start"][index]) != str(x):
-                        continue
-                    if str(open_feats_scaled_max["window_size"][index]) != str(window_size):
-                        continue
-                    if str(open_feats_scaled_max["vehicle"][index]) != str(subdir_name):
-                        continue
-                    if str(open_feats_scaled_max["ride"][index]) != str(only_number):
-                        continue  
-                    #print("Located feats")
-                    for key_name in open_feats_scaled_max.head(): 
-                        if key_name in header:
+
+                if "only_rays" not in subdirname:
+    
+                    for index in range(len(open_feats_scaled_max["start"])):
+                        if str(open_feats_scaled_max["start"][index]) != str(x):
                             continue
-                        if key_name in skip:
+                        if str(open_feats_scaled_max["window_size"][index]) != str(window_size):
                             continue
-                        if "poly" in key_name:
+                        if str(open_feats_scaled_max["vehicle"][index]) != str(subdir_name):
                             continue
-                        if "diff" in key_name:
-                            continue
-                        #dict_for_clustering[window_size][subdir_name][some_file][x]["all_feats_scaled_" + key_name] = open_feats_scaled[key_name][index]
-                        dict_for_clustering[window_size][subdir_name][some_file][x]["all_feats_scaled_to_max_" + key_name] = open_feats_scaled_max[key_name][index]
-                        #dict_for_clustering[window_size][subdir_name][some_file][x]["all_feats_" + key_name] = open_feats[key_name][index]
-                  
-                #print(len(dict_for_clustering[window_size][subdir_name][some_file][x]))
- 
-                for size in os.listdir("rays"):  
-                    for index in range(len(dsmax[size]["start"])):
-                        if str(dsmax[size]["start"][index]) != str(x):
-                            continue
-                        if str(dsmax[size]["window_size"][index]) != str(window_size):
-                            continue
-                        if str(dsmax[size]["vehicle"][index]) != str(subdir_name):
-                            continue
-                        if str(dsmax[size]["ride"][index]) != str(only_number):
+                        if str(open_feats_scaled_max["ride"][index]) != str(only_number):
                             continue  
-                        #print("Located dist", size)
-                        for key_name in dsmax[size].head(): 
+                        #print("Located feats")
+                        for key_name in open_feats_scaled_max.head(): 
                             if key_name in header:
                                 continue
-                            if key_name != "offset":
+                            if key_name in skip and "flags" not in subdirname:
                                 continue
-                            dict_for_clustering[window_size][subdir_name][some_file][x][str(size) + "all_distances_scaled_to_max_trajs_distances_" + key_name] = dsmax[size][key_name][index]
-                            #dict_for_clustering[window_size][subdir_name][some_file][x][str(size) + "all_distances_scaled_trajs_distances_" + key_name] = dsc[size][key_name][index]
-                            #dict_for_clustering[window_size][subdir_name][some_file][x][str(size) + "all_distances_trajs_distances_" + key_name] = d[size][key_name][index]
-                            #dict_for_clustering[window_size][subdir_name][some_file][x][str(size) + "all_distances_preprocesssed_trajs_distances_" + key_name] = dpp[size][key_name][index]
-
-                    #print(len(dict_for_clustering[window_size][subdir_name][some_file][x]))
-                    #print("Located num", size)
-
-                    if x in nsmax[size]:
-                        for key_name in nsmax[size][x]:
-                            if key_name != "offset":
+                            if "poly" in key_name and "poly" not in subdirname:
                                 continue
-                            dict_for_clustering[window_size][subdir_name][some_file][x][str(size) + "all_nums_scaled_to_max_trajs_num_intersections_" + key_name] = nsmax[size][x][key_name]
-                            #dict_for_clustering[window_size][subdir_name][some_file][x][str(size) + "all_nums_scaled_trajs_num_intersections_" + key_name] = nsc[size][x][key_name]
-                            #dict_for_clustering[window_size][subdir_name][some_file][x][str(size) + "all_nums_trajs_num_intersections_" + key_name] = n[size][x][key_name]
-                            #dict_for_clustering[window_size][subdir_name][some_file][x][str(size) + "all_nums_preprocesssed_trajs_num_intersections_" + key_name] = npp[size][x][key_name]
-
+                            if "diff" in key_name:
+                                continue
+                            #dict_for_clustering[window_size][subdir_name][some_file][x]["all_feats_scaled_" + key_name] = open_feats_scaled[key_name][index]
+                            dict_for_clustering[window_size][subdir_name][some_file][x]["all_feats_scaled_to_max_" + key_name] = open_feats_scaled_max[key_name][index]
+                            #dict_for_clustering[window_size][subdir_name][some_file][x]["all_feats_" + key_name] = open_feats[key_name][index]
+                    
                     #print(len(dict_for_clustering[window_size][subdir_name][some_file][x]))
+ 
+                if "no_rays" not in subdirname:
+                    for size in os.listdir("rays"):  
+                        if "size" in subdirname and "_" + str(size) + "_" not in subdirname:
+                            continue
+                        for index in range(len(dsmax[size]["start"])):
+                            if str(dsmax[size]["start"][index]) != str(x):
+                                continue
+                            if str(dsmax[size]["window_size"][index]) != str(window_size):
+                                continue
+                            if str(dsmax[size]["vehicle"][index]) != str(subdir_name):
+                                continue
+                            if str(dsmax[size]["ride"][index]) != str(only_number):
+                                continue  
+                            #print("Located dist", size)
+                            for key_name in dsmax[size].head(): 
+                                if key_name in header:
+                                    continue
+                                if "offset" not in key_name:
+                                    continue
+                                if "only offset" in key_name:
+                                    continue
+                                dict_for_clustering[window_size][subdir_name][some_file][x][str(size) + "all_distances_scaled_to_max_trajs_distances_" + key_name] = dsmax[size][key_name][index]
+                                #dict_for_clustering[window_size][subdir_name][some_file][x][str(size) + "all_distances_scaled_trajs_distances_" + key_name] = dsc[size][key_name][index]
+                                #dict_for_clustering[window_size][subdir_name][some_file][x][str(size) + "all_distances_trajs_distances_" + key_name] = d[size][key_name][index]
+                                #dict_for_clustering[window_size][subdir_name][some_file][x][str(size) + "all_distances_preprocesssed_trajs_distances_" + key_name] = dpp[size][key_name][index]
+
+                        #print(len(dict_for_clustering[window_size][subdir_name][some_file][x]))
+                        #print("Located num", size)
+
+                        if x in nsmax[size]:
+                            for key_name in nsmax[size][x]:
+                                if key_name != "offset":
+                                    continue
+                                dict_for_clustering[window_size][subdir_name][some_file][x][str(size) + "all_nums_scaled_to_max_trajs_num_intersections_" + key_name] = nsmax[size][x][key_name]
+                                #dict_for_clustering[window_size][subdir_name][some_file][x][str(size) + "all_nums_scaled_trajs_num_intersections_" + key_name] = nsc[size][x][key_name]
+                                #dict_for_clustering[window_size][subdir_name][some_file][x][str(size) + "all_nums_trajs_num_intersections_" + key_name] = n[size][x][key_name]
+                                #dict_for_clustering[window_size][subdir_name][some_file][x][str(size) + "all_nums_preprocesssed_trajs_num_intersections_" + key_name] = npp[size][x][key_name]
+
+                        #print(len(dict_for_clustering[window_size][subdir_name][some_file][x]))
     
     sd_window_train, sd_subdir_train, sd_ride_train, sd_start_train, sd_x_train, sd_window_test, sd_subdir_test, sd_ride_test, sd_start_test, sd_x_test  = divide_train_test(dict_for_clustering, train_rides, test_rides)
     print(len(sd_x_train), len(sd_x_train[0]), sd_x_train[0][:10])
@@ -362,7 +377,7 @@ def make_clusters_multi_feats():
 make_clusters_multi_feats()
 
 def read_clusters():
-    for filename in os.listdir("all_clus/filenames"):
-        random_sample_of_cluster(load_object("all_clus/filenames/" + filename), 100, 100, filename)
+    for filename in os.listdir("all_clus/" + subdirname + "/filenames"):
+        random_sample_of_cluster(subdirname, load_object("all_clus/" + subdirname + "/filenames/" + filename), 100, 100, filename)
 
 read_clusters()

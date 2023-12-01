@@ -888,7 +888,7 @@ def kneefind(NN, X_embedded):
 	kl = KneeLocator(list(range(1,len(distance_desc )+1)), distance_desc, curve = "convex", direction = "decreasing") 
 	return kl.knee_y 
  
-def random_sample_of_cluster(files_in_cluster, nrow, ncol, filename):
+def random_sample_of_cluster(subdirname, files_in_cluster, nrow, ncol, filename):
     print(filename)
     for cluster in files_in_cluster:
         if len(files_in_cluster[cluster]) > 0:
@@ -913,9 +913,9 @@ def random_sample_of_cluster(files_in_cluster, nrow, ncol, filename):
                 long1.append(long)
                 lat1.append(lat)
                 titles.append(filename + "_cluster_" + str(cluster) + name_file)
-            if not os.path.isdir("all_clus/samples"):
-                os.makedirs("all_clus/samples")
-            composite_image_random_cluster(long1, lat1, titles, nrow, ncol, "all_clus/samples/" + filename + "_cluster_" + str(cluster))
+            if not os.path.isdir("all_clus/" + subdirname + "/samples"):
+                os.makedirs("all_clus/" + subdirname + "/samples")
+            composite_image_random_cluster(long1, lat1, titles, nrow, ncol, "all_clus/" + subdirname + "/samples/" + filename + "_cluster_" + str(cluster))
 
 def composite_image_random_cluster(long1, lat1, titles, nrow, ncol, filename): 
     plt.rcParams.update({'font.size': 6})
