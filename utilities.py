@@ -930,24 +930,42 @@ def composite_image_random_cluster(long1, lat1, titles, nrow, ncol, filename):
     plt.savefig(filename, bbox_inches = "tight")  
     plt.close() 
         
-def composite_image(filename, long1, lat1, nrow, ncol, long_other = [], lat_other = [], legends = [], mark_start = False, subtitles = []):  
+def composite_image(filename, show, long1, lat1, nrow, ncol, long_other = [], lat_other = [], legends = [], mark_start = False, subtitles = []):  
     random_colors_legend = random_colors(len(legends) + 2) 
     plt.rcParams.update({'font.size': 22})
-    plt.figure(figsize=(15 * ncol, 10 * nrow))
-    for row in range(nrow):
-        for col in range(ncol):
-            ix = row * ncol + col
-            plt.subplot(nrow, ncol, ix + 1) 
-            if ix < len(subtitles):
-                plt.title(subtitles[ix])
-                if len(long_other) >= ix:
-                    for i in range(len(long_other[ix])): 
-                        plt.plot(long_other[ix][i], lat_other[ix][i], label = legends[i], color = random_colors_legend[i + 2], linewidth = 10)  
-                plt.plot(long1[ix], lat1[ix], label = "Original", color = random_colors_legend[0], linewidth = 10)     
-                if mark_start:
-                    plt.plot(long1[ix][0], lat1[ix][0], marker = "o", label = "Start", color = random_colors_legend[0], mec = random_colors_legend[0], mfc = random_colors_legend[1], ms = 20, mew = 10, linewidth = 10) 
-                if len(legends) > 0:
-                    plt.legend()
+    plt.figure(figsize=(15 * ncol, 15 * nrow)) 
+    numseen = 0
+    for ix in range(len(show)):  
+        if show[ix]:
+            numseen += 1
+            plt.subplot(nrow, ncol, numseen)  
+            new_subtitle = ""
+            new_subtitle_separated = subtitles[ix].split("\n")
+            segment = ""
+            for el in new_subtitle_separated:
+                if segment != "": 
+                    segment += " "
+                segment += el
+                if len(segment) > 40:
+                    if new_subtitle != "": 
+                        new_subtitle += "\n"
+                    new_subtitle += segment
+                    segment = ""
+            if segment != "":
+                if new_subtitle != "": 
+                    new_subtitle += "\n"
+                new_subtitle += segment
+                segment = ""
+            plt.title(new_subtitle) 
+            if len(long_other) >= ix:
+                for i in range(len(long_other[ix])): 
+                    plt.plot(long_other[ix][i], lat_other[ix][i], label = legends[i], color = random_colors_legend[i + 2], linewidth = 10)  
+            plt.plot(long1[ix], lat1[ix], label = "Original", color = random_colors_legend[0], linewidth = 10)     
+            if mark_start:
+                plt.plot(long1[ix][0], lat1[ix][0], marker = "o", label = "Start", color = random_colors_legend[0], mec = random_colors_legend[0], mfc = random_colors_legend[1], ms = 20, mew = 10, linewidth = 10) 
+            if len(legends) > 0:
+                plt.legend()  
+
     plt.savefig(filename, bbox_inches = "tight")
     plt.close() 
     
