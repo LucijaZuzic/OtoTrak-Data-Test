@@ -1,8 +1,6 @@
 from utilities import * 
 from sklearn.manifold import TSNE
 
-subdirname = "no_rays_flags"
-
 def one_clusters(type_clus, attempt, train_arr, test_arr, clus_params, sd_subdir_train, sd_ride_train, sd_start_train, sd_window_train, sd_subdir_test, sd_ride_test, sd_start_test, sd_window_test):
     clus_train = attempt.fit(train_arr)
     train_labels = clus_train.labels_ 
@@ -205,7 +203,7 @@ step_size = window_size
 #step_size = 1 
 
 header = ["start", "window_size", "vehicle", "ride"] 
-skip = ["key","flip","zone","engine","in_zone","ignition","sleep_mode","staff_mode","buzzer_active","in_primary_zone","in_restricted_zone","onboard_geofencing","speed_limit_active"]
+skip = ["key", "flip", "zone", "engine", "in_zone", "ignition", "sleep_mode", "staff_mode", "buzzer_active", "in_primary_zone", "in_restricted_zone", "onboard_geofencing", "speed_limit_active"]
 all_subdirs = os.listdir() 
 
 def make_clusters_multi_feats():
@@ -322,6 +320,8 @@ def make_clusters_multi_feats():
                                 continue
                             if "diff" in key_name:
                                 continue
+                            if "Unnamed" in key_name:
+                                continue
                             #dict_for_clustering[window_size][subdir_name][some_file][x]["all_feats_scaled_" + key_name] = open_feats_scaled[key_name][index]
                             dict_for_clustering[window_size][subdir_name][some_file][x]["all_feats_scaled_to_max_" + key_name] = open_feats_scaled_max[key_name][index]
                             #dict_for_clustering[window_size][subdir_name][some_file][x]["all_feats_" + key_name] = open_feats[key_name][index]
@@ -374,10 +374,14 @@ def make_clusters_multi_feats():
     make_clusters("KMeans", sd_window_train, sd_subdir_train, sd_ride_train, sd_start_train, sd_x_train, sd_window_test, sd_subdir_test, sd_ride_test, sd_start_test, sd_x_test)
     make_clusters("DBSCAN", sd_window_train, sd_subdir_train, sd_ride_train, sd_start_train, sd_x_train, sd_window_test, sd_subdir_test, sd_ride_test, sd_start_test, sd_x_test)
 
-make_clusters_multi_feats()
 
 def read_clusters():
     for filename in os.listdir("all_clus/" + subdirname + "/filenames"):
         random_sample_of_cluster(subdirname, load_object("all_clus/" + subdirname + "/filenames/" + filename), 100, 100, filename)
 
-read_clusters()
+for subdirname_p1 in ["all", "no_rays"]:
+    for subdirname_p2 in ["", "_poly", "_flags", "_poly_flags"]:
+        subdirname = subdirname_p1 + subdirname_p2
+        print(subdirname)
+        make_clusters_multi_feats()
+        read_clusters()
