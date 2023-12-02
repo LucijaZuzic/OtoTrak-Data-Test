@@ -1,7 +1,7 @@
 from utilities import * 
 from sklearn.manifold import TSNE
 
-subdirname = "only_rays_size_36_"
+subdirname = "no_rays_flags"
 
 def one_clusters(type_clus, attempt, train_arr, test_arr, clus_params, sd_subdir_train, sd_ride_train, sd_start_train, sd_window_train, sd_subdir_test, sd_ride_test, sd_start_test, sd_window_test):
     clus_train = attempt.fit(train_arr)

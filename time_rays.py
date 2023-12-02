@@ -91,7 +91,12 @@ for size in [4, 8, 12, 16]:
                 longitudes_scaled, latitudes_scaled = scale_long_lat(longitudes_tmp_transform, latitudes_tmp_transform)
                 
                 longitudes_scaled_to_max, latitudes_scaled_to_max = scale_long_lat(longitudes_tmp_transform, latitudes_tmp_transform, xmax = maxoffset, ymax = maxoffset, keep_aspect_ratio = True)
-             
+              
+                all_distances_trajs[x] = dict()
+                all_distances_preprocessed_trajs[x] = dict()
+                all_distances_scaled_trajs[x] = dict()
+                all_distances_scaled_to_max_trajs[x] = dict()
+
                 if x not in all_distances_trajs_other:
                     all_distances_trajs_other[x] = dict()
                     all_distances_preprocessed_trajs_other[x] = dict()
