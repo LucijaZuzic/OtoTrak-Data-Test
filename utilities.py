@@ -968,6 +968,48 @@ def composite_image(filename, show, long1, lat1, nrow, ncol, long_other = [], la
 
     plt.savefig(filename, bbox_inches = "tight")
     plt.close() 
+    composite_image_reverse(filename, show, long1, lat1, ncol, nrow, long_other, lat_other, legends, mark_start, subtitles)
+    
+def composite_image_reverse(filename, show, long1, lat1, nrow, ncol, long_other = [], lat_other = [], legends = [], mark_start = False, subtitles = []):  
+    random_colors_legend = random_colors(len(legends) + 2) 
+    plt.rcParams.update({'font.size': 22})
+    plt.figure(figsize=(15 * ncol, 15 * nrow)) 
+    numseen = 0 
+    for ix in range(len(show)):  
+        if show[ix]:
+            num_of_row = numseen % nrow
+            num_of_col = numseen // nrow
+            plt.subplot(nrow, ncol, num_of_row * ncol + num_of_col + 1)  
+            numseen += 1
+            new_subtitle = ""
+            new_subtitle_separated = subtitles[ix].split("\n")
+            segment = ""
+            for el in new_subtitle_separated:
+                if segment != "": 
+                    segment += " "
+                segment += el
+                if len(segment) > 40:
+                    if new_subtitle != "": 
+                        new_subtitle += "\n"
+                    new_subtitle += segment
+                    segment = ""
+            if segment != "":
+                if new_subtitle != "": 
+                    new_subtitle += "\n"
+                new_subtitle += segment
+                segment = ""
+            plt.title(new_subtitle) 
+            if len(long_other) >= ix:
+                for i in range(len(long_other[ix])): 
+                    plt.plot(long_other[ix][i], lat_other[ix][i], label = legends[i], color = random_colors_legend[i + 2], linewidth = 10)  
+            plt.plot(long1[ix], lat1[ix], label = "Original", color = random_colors_legend[0], linewidth = 10)     
+            if mark_start:
+                plt.plot(long1[ix][0], lat1[ix][0], marker = "o", label = "Start", color = random_colors_legend[0], mec = random_colors_legend[0], mfc = random_colors_legend[1], ms = 20, mew = 10, linewidth = 10) 
+            if len(legends) > 0:
+                plt.legend()  
+
+    plt.savefig(filename.replace(".png", "_reverse.png"), bbox_inches = "tight")
+    plt.close() 
     
 def format_e(n):
     if abs(n) >= 10 ** -2 or n == 0:
