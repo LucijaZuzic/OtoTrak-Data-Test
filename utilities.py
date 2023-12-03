@@ -946,7 +946,7 @@ def composite_image(filename, show, long1, lat1, nrow, ncol, long_other = [], la
                 if segment != "": 
                     segment += " "
                 segment += el
-                if len(segment) > 40:
+                if len(segment) > 30:
                     if new_subtitle != "": 
                         new_subtitle += "\n"
                     new_subtitle += segment
@@ -988,7 +988,7 @@ def composite_image_reverse(filename, show, long1, lat1, nrow, ncol, long_other 
                 if segment != "": 
                     segment += " "
                 segment += el
-                if len(segment) > 40:
+                if len(segment) > 30:
                     if new_subtitle != "": 
                         new_subtitle += "\n"
                     new_subtitle += segment
