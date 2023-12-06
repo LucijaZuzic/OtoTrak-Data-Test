@@ -80,7 +80,7 @@ def one_clusters(type_clus, attempt, train_arr, test_arr, clus_params, sd_subdir
     if not os.path.isdir("all_clus/" + subdirname + "/filenames/"):
         os.makedirs("all_clus/" + subdirname + "/filenames/")
 	
-    save_object("all_clus/" + subdirname + "/filenames/filenames_in_cluster_train " + type_clus + " test  " + str(clus_params), filenames_in_cluster_train)
+    save_object("all_clus/" + subdirname + "/filenames/filenames_in_cluster_train " + type_clus + " test " + str(clus_params), filenames_in_cluster_train)
     save_object("all_clus/" + subdirname + "/filenames/filenames_in_cluster_test " + type_clus + " test " + str(clus_params), filenames_in_cluster_test) 
     if type_clus == "KMeans":
         return attempt.inertia_, score_train, score_test 
@@ -410,38 +410,43 @@ def read_clusters():
 for subdirname_p1 in ["all", "no_rays"]:
     for subdirname_p2 in ["", "_poly", "_flags", "_poly_flags"]:
         subdirname = subdirname_p1 + subdirname_p2 + "_no_same_acceler"
-        print(subdirname)
-        make_clusters_multi_feats()
-        read_clusters() 
+        if not os.path.isdir(subdirname): 
+            print(subdirname)
+            make_clusters_multi_feats()
+            read_clusters() 
         subdirname = subdirname_p1 + subdirname_p2 + "_acceler"
-        print(subdirname)
-        make_clusters_multi_feats()
-        read_clusters()
+        if not os.path.isdir(subdirname): 
+            print(subdirname)
+            make_clusters_multi_feats()
+            read_clusters() 
            
 part2 = ["only_rays_acceler"]
 for size in os.listdir("rays"):
     part2.append("only_rays_acceler_size_" + str(size) + "_")
 for subdirname in part2:  
-    print(subdirname)
-    make_clusters_multi_feats()
-    read_clusters()
-'''
-for subdirname_p1 in ["all", "no_rays"]:
-    for subdirname_p2 in ["", "_poly", "_flags", "_poly_flags"]:
-        subdirname = subdirname_p1 + subdirname_p2 + "_no_same"
+    if not os.path.isdir(subdirname): 
         print(subdirname)
         make_clusters_multi_feats()
         read_clusters() 
+    
+for subdirname_p1 in ["all", "no_rays"]:
+    for subdirname_p2 in ["", "_poly", "_flags", "_poly_flags"]:
+        subdirname = subdirname_p1 + subdirname_p2 + "_no_same"
+        if not os.path.isdir(subdirname): 
+            print(subdirname)
+            make_clusters_multi_feats()
+            read_clusters() 
         subdirname = subdirname_p1 + subdirname_p2
-        print(subdirname)
-        make_clusters_multi_feats()
-        read_clusters()
+        if not os.path.isdir(subdirname): 
+            print(subdirname)
+            make_clusters_multi_feats()
+            read_clusters() 
            
 part2 = ["only_rays"]
 for size in os.listdir("rays"):
     part2.append("only_rays_size_" + str(size) + "_")
 for subdirname in part2:  
-    print(subdirname)
-    make_clusters_multi_feats()
-    read_clusters()
-'''
+    if not os.path.isdir(subdirname): 
+        print(subdirname)
+        make_clusters_multi_feats()
+        read_clusters() 
