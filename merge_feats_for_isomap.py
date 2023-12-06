@@ -318,6 +318,8 @@ def make_clusters_multi_feats():
                                 continue
                             if "poly" in key_name and "poly" not in subdirname:
                                 continue
+                            if "same" in key_name and "no_same" in subdirname:
+                                continue
                             if "diff" in key_name:
                                 continue
                             if "Unnamed" in key_name:
@@ -382,8 +384,20 @@ def read_clusters():
     for filename in os.listdir("all_isomap/" + subdirname + "/filenames"):
         random_sample_of_isomap(subdirname, load_object("all_isomap/" + subdirname + "/filenames/" + filename), 100, 100, filename)
 
-#for subdirname_p1 in ["all", "no_rays"]:
-    #for subdirname_p2 in ["", "_poly", "_flags", "_poly_flags"]:
+for subdirname_p1 in ["all", "no_rays"]:
+    for subdirname_p2 in ["", "_poly", "_flags", "_poly_flags"]:
+        subdirname = subdirname_p1 + subdirname_p2 + "_no_same"
+        print(subdirname)
+        make_clusters_multi_feats()
+        read_clusters()
+        '''
+        subdirname = subdirname_p1 + subdirname_p2
+        print(subdirname)
+        make_clusters_multi_feats()
+        read_clusters()
+        '''
+        
+'''
 part2 = ["only_rays"]
 for size in os.listdir("rays"):
     part2.append("only_rays_size_" + str(size) + "_")
@@ -391,3 +405,4 @@ for subdirname in part2:
     print(subdirname)
     make_clusters_multi_feats()
     read_clusters()
+'''

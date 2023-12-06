@@ -118,6 +118,50 @@ def traj_len_offset(longitudes, latitudes):
         sum_dist += np.sqrt((longitudes[i + 1] - longitudes[i]) ** 2 + (latitudes[i + 1] - latitudes[i]) ** 2)
     offset_total = np.sqrt((longitudes[len(longitudes) - 1] - longitudes[0]) ** 2 + (latitudes[len(latitudes) - 1] - latitudes[0]) ** 2)
     return sum_dist, offset_total
+ 
+def return_speeds_long_lat(longitudes, latitudes, times):
+    speeds = []
+    for i in range(len(longitudes) - 1):
+        if times[i + 1] != times[i]:
+            speeds.append(np.sqrt((longitudes[i + 1] - longitudes[i]) ** 2 + (latitudes[i + 1] - latitudes[i]) ** 2) / (times[i + 1] - times[i]))
+        else:
+            speeds.append(speeds[-1])
+    return speeds
+
+def avg_speed_long_lat(longitudes, latitudes, times):
+    speeds = return_speeds_long_lat(longitudes, latitudes, times)
+    return sum(speeds) / len(speeds)
+
+def return_acceler_long_lat(longitudes, latitudes, times):
+    speeds = return_speeds_long_lat(longitudes, latitudes, times)
+    accelers = []
+    for i in range(len(speeds) - 1):
+        accelers.append(speeds[i + 1] - speeds[i])
+    return accelers
+
+def avg_acceler_long_lat(longitudes, latitudes, times): 
+    accelers = return_acceler_long_lat(longitudes, latitudes, times) 
+    return sum(accelers) / len(accelers)
+ 
+def return_acceler_speeds(speeds):
+    accelers = []
+    for i in range(len(speeds) - 1):
+        accelers.append(speeds[i + 1] - speeds[i])
+    return accelers
+
+def avg_acceler_speeds(speeds):
+    accelers = return_acceler_speeds(speeds)
+    return sum(accelers) / len(accelers)
+
+def avg_ratio(s1, s2):
+    ratios = []
+    for i in range(min(len(s1), len(s2))):
+        if s2[i] != 0 and s1[i] != 0:
+            ratios.append(s1[i] / s2[i])
+    if len(ratios) > 0:
+        return sum(ratios) / len(ratios)
+    else:
+        return 0
 
 def get_vector(x1, x2, y1, y2):
     if x1 == x2:
@@ -548,6 +592,36 @@ def compare_traj_ray(dotsx_original, dotsy_original, test_x, test_y, scale = Fal
 	#plt.show()
     return all_distances, all_distancesx, all_distancesy, intersections, distances, distancesx, distancesy, num_of_intersection / size / size / (window_size - 1)
 
+def process_csv_generic(window_size, all_possible_trajs, save_name):
+    header = "window_size,vehicle,ride,start,"
+    found = False
+    for vehicle1 in all_possible_trajs[window_size].keys():  
+        for r1 in all_possible_trajs[window_size][vehicle1]:
+            for x1 in all_possible_trajs[window_size][vehicle1][r1]: 
+                for feat_name in all_possible_trajs[window_size][vehicle1][r1][x1]:
+                    header += feat_name + ","
+                    found = True
+                if found:
+                    break
+            if found:
+                break
+        if found:
+            break
+    header = header[:-1]
+    header += "\n" 
+    new_csv_content = header
+    for vehicle1 in all_possible_trajs[window_size].keys():  
+        for r1 in all_possible_trajs[window_size][vehicle1]:
+            for x1 in all_possible_trajs[window_size][vehicle1][r1]: 
+                new_csv_content += str(window_size) + "," + str(vehicle1) + "," + str(r1) + "," + str(x1) + ","  
+                for feat_name in all_possible_trajs[window_size][vehicle1][r1][x1]: 
+                    new_csv_content += str(all_possible_trajs[window_size][vehicle1][r1][x1][feat_name]) + ","
+                new_csv_content = new_csv_content[:-1]
+                new_csv_content += "\n"  
+    csv_file = open(save_name, "w")
+    csv_file.write(new_csv_content)
+    csv_file.close()
+ 
 def process_csv_ray(window_size, vehicle1, r1, some_dict, save_name, flag_overwrite = False): 
     if not os.path.isfile(save_name) or flag_overwrite:
         new_csv_content = "window_size,vehicle,ride,start,"
