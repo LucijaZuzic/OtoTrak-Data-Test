@@ -19,84 +19,105 @@ all_feats_scaled_trajs[window_size] = dict()
 all_feats_scaled_to_max_trajs = dict()   
 all_feats_scaled_to_max_trajs[window_size] = dict()
   
-xvals = np.arange(0, 2 * np.pi, 10 ** -1)
-yvals = [np.sin(xval) for xval in xvals]   
-fftyvals = np.fft.fft(yvals)
-ifftyvals = np.fft.ifft(fftyvals)
-plt.subplot(1, 3, 1)
-plt.title("original")
-plt.plot(xvals, yvals)
-plt.subplot(1, 3, 2)
-plt.title("fft")
-plt.plot(xvals, fftyvals)
-plt.subplot(1, 3, 3)
-plt.title("iftt")
-plt.plot(xvals, ifftyvals)
-plt.show()
-fftfreqs = np.fft.fftfreq(len(yvals))
-newfftyvals = [(fftyvals[i].real * np.cos(fftfreqs[i] * 2 * np.pi) - fftyvals[i].imag * np.sin(fftfreqs[i] * 2 * np.pi)) / len(yvals) for i in range(len(yvals))]
-plt.subplot(1, 4, 1)
-plt.title("fft")
-plt.plot(xvals, fftyvals)
-plt.subplot(1, 4, 2)
-plt.title("Reconstruct ftt")
-plt.plot(xvals, newfftyvals) 
-newfftyvalsreal = [fftyvals[i].real * np.cos(fftfreqs[i] * 2 * np.pi) / len(yvals) for i in range(len(yvals))]
-plt.subplot(1, 4, 3)
-plt.title("Real ftt")
-plt.plot(xvals, newfftyvalsreal) 
-newfftyvalsimag = [- fftyvals[i].imag * np.sin(fftfreqs[i] * 2 * np.pi) / len(yvals) for i in range(len(yvals))]
-plt.subplot(1, 4, 4)
-plt.title("Imaginary fft")
-plt.plot(xvals, newfftyvalsimag)
-plt.show() 
-plt.subplot(1, 3, 1)
-plt.title("Reconstruct real")
-sum_real = [0 for xval in xvals]
-for i in range(len(fftfreqs)):
-    ampl = fftyvals[i].real 
-    if ampl == 0:
-        continue
-    freq = fftfreqs[i] 
-    vals_plot = [ampl * np.cos(xval * freq * 2 * np.pi) / len(yvals) for xval in xvals]
-    for j in range(len(xvals)):
-        sum_real[j] += vals_plot[j]
-    #plt.title(str(freq))
-    plt.plot(xvals, vals_plot)
-plt.plot(xvals, sum_real, label = "all")
-plt.legend() 
-plt.subplot(1, 3, 2)
-plt.title("Reconstruct imaginary")
-sum_im = [0 for xval in xvals]
-for i in range(len(fftfreqs)):
-    ampl = fftyvals[i].imag 
-    if ampl == 0:
-        continue
-    freq = fftfreqs[i] 
-    vals_plot = [- ampl * np.sin(xval * freq * 2 * np.pi) / len(yvals) for xval in xvals]
-    for j in range(len(xvals)):
-        sum_im[j] += vals_plot[j]
-    #plt.title(str(freq))
-    plt.plot(xvals, vals_plot)
-plt.plot(xvals, sum_im, label = "all")
-plt.legend() 
-plt.subplot(1, 3, 3)
-plt.title("Reconstruct all")
-sum_all = [0 for xval in xvals]
-for i in range(len(fftfreqs)):
-    amplre = fftyvals[i].real 
-    amplim = fftyvals[i].imag 
-    freq = fftfreqs[i] 
-    vals_plot = [(amplre * np.cos(xval * freq * 2 * np.pi) - amplim * np.sin(xval * freq * 2 * np.pi)) / len(yvals) for xval in xvals] 
-    for j in range(len(xvals)):
-        sum_all[j] += vals_plot[j]
-    #plt.title(str(freq))
-    plt.plot(xvals, vals_plot)
-plt.plot(xvals, sum_all, label = "all")
-plt.legend()
-plt.show()  
+xvals = np.arange(0, 6 * np.pi, 10 ** -1)
+yvals = [np.sin(xval) + np.cos(xval * 2) + np.sin(xval * 4)for xval in xvals] 
+ 
+def prnt_fftshort(xvals, yvals, yvals2):
+    fftyvals = np.fft.fft(yvals) 
+    fftyvals2 = np.fft.fft(yvals2) 
+    plt.subplot(2, 2, 1)
+    plt.title("original long")
+    plt.plot(xvals, yvals)
+    plt.subplot(2, 2, 2)
+    plt.title("fft long")
+    plt.plot(xvals, fftyvals)  
+    plt.subplot(2, 2, 3)
+    plt.title("original lat")
+    plt.plot(xvals, yvals2)
+    plt.subplot(2, 2, 4)
+    plt.title("fft lat")
+    plt.plot(xvals, fftyvals2) 
+    plt.show()
 
-#decompose_fft(xnnnn) 
+def prnt_fft(xvals, yvals):
+    fftyvals = np.fft.fft(yvals)
+    ifftyvals = np.fft.ifft(fftyvals)
+    plt.subplot(1, 3, 1)
+    plt.title("original")
+    plt.plot(xvals, yvals)
+    plt.subplot(1, 3, 2)
+    plt.title("fft")
+    plt.plot(xvals, fftyvals)
+    plt.subplot(1, 3, 3)
+    plt.title("iftt")
+    plt.plot(xvals, ifftyvals)
+    plt.show()
+    fftfreqs = np.fft.fftfreq(len(yvals))
+    newfftyvals = [(fftyvals[i].real * np.cos(fftfreqs[i] * 2 * np.pi) - fftyvals[i].imag * np.sin(fftfreqs[i] * 2 * np.pi)) / len(yvals) for i in range(len(yvals))]
+    plt.subplot(1, 4, 1)
+    plt.title("fft")
+    plt.plot(xvals, fftyvals)
+    plt.subplot(1, 4, 2)
+    plt.title("Reconstruct ftt")
+    plt.plot(xvals, newfftyvals) 
+    newfftyvalsreal = [fftyvals[i].real * np.cos(fftfreqs[i] * 2 * np.pi) / len(yvals) for i in range(len(yvals))]
+    plt.subplot(1, 4, 3)
+    plt.title("Real ftt")
+    plt.plot(xvals, newfftyvalsreal) 
+    newfftyvalsimag = [- fftyvals[i].imag * np.sin(fftfreqs[i] * 2 * np.pi) / len(yvals) for i in range(len(yvals))]
+    plt.subplot(1, 4, 4)
+    plt.title("Imaginary fft")
+    plt.plot(xvals, newfftyvalsimag)
+    plt.show() 
+    plt.subplot(1, 3, 1)
+    plt.title("Reconstruct real")
+    sum_real = [0 for xval in xvals]
+    for i in range(len(fftfreqs)):
+        ampl = fftyvals[i].real 
+        if ampl == 0:
+            continue
+        freq = fftfreqs[i] 
+        vals_plot = [ampl * np.cos(yval * freq * 2 * np.pi) / len(yvals) for yval in yvals]
+        for j in range(len(xvals)):
+            sum_real[j] += vals_plot[j]
+        #plt.title(str(freq))
+        plt.plot(xvals, vals_plot)
+    plt.plot(xvals, sum_real, label = "all")
+    plt.legend() 
+    plt.subplot(1, 3, 2)
+    plt.title("Reconstruct imaginary")
+    sum_im = [0 for xval in xvals]
+    for i in range(len(fftfreqs)):
+        ampl = fftyvals[i].imag 
+        if ampl == 0:
+            continue
+        freq = fftfreqs[i] 
+        vals_plot = [- ampl * np.sin(yval * freq * 2 * np.pi) / len(yvals) for yval in yvals]
+        for j in range(len(xvals)):
+            sum_im[j] += vals_plot[j]
+        #plt.title(str(freq))
+        plt.plot(xvals, vals_plot)
+    plt.plot(xvals, sum_im, label = "all")
+    plt.legend() 
+    plt.subplot(1, 3, 3)
+    plt.title("Reconstruct all")
+    sum_all = [0 for xval in xvals]
+    for i in range(len(fftfreqs)):
+        amplre = fftyvals[i].real 
+        amplim = fftyvals[i].imag 
+        freq = fftfreqs[i] 
+        vals_plot = [(amplre * np.cos(yval * freq * 2 * np.pi) - amplim * np.sin(yval * freq * 2 * np.pi)) / len(yvals) for yval in yvals] 
+        for j in range(len(xvals)):
+            sum_all[j] += vals_plot[j]
+        #plt.title(str(freq))
+        plt.plot(xvals, vals_plot) 
+    plt.plot(xvals, sum_all, label = "all")
+    plt.legend()
+    plt.show()  
+#prnt_fft(xvals, yvals) 
+
+found_fft = False
+
 for subdir_name in all_subdirs:
 
     trajs_in_dir = 0
@@ -197,14 +218,17 @@ for subdir_name in all_subdirs:
             xt, yt, xn, yn, fftx, ffty = get_fft_xt_yt(longitudes_scaled_to_max, latitudes_scaled_to_max, times_tmp_transform, deg)
             #decompose_fft(xn)
             #decompose_fft(yn)
+            '''
             plt.plot(times_tmp_transform, longitudes_scaled_to_max)
             plt.show()
             plt.plot(times_tmp_transform, np.fft.fft(longitudes_scaled_to_max))
             plt.show()
             plt.plot(times_tmp_transform, np.fft.ifft(np.fft.fft(longitudes_scaled_to_max)))
             plt.show()
-            found_fft = True
-            break
+            '''
+            prnt_fftshort(times_tmp_transform, longitudes_scaled_to_max, latitudes_scaled_to_max) 
+            #found_fft = True
+            #break
         if found_fft:
             break
     if found_fft:
