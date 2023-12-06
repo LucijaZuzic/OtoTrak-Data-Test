@@ -917,6 +917,35 @@ def random_sample_of_cluster(subdirname, files_in_cluster, nrow, ncol, filename)
                 os.makedirs("all_clus/" + subdirname + "/samples")
             composite_image_random_cluster(long1, lat1, titles, nrow, ncol, "all_clus/" + subdirname + "/samples/" + filename + "_cluster_" + str(cluster))
 
+def random_sample_of_isomap(subdirname, files_in_cluster, nrow, ncol, filename):
+    print(filename)
+    for cluster in files_in_cluster:
+        if len(files_in_cluster[cluster]) > 0:
+            print(cluster, len(files_in_cluster[cluster]))
+            if nrow * ncol > len(files_in_cluster[cluster]):
+                ncol = int(np.sqrt(len(files_in_cluster[cluster])))
+                nrow = ncol
+            appeared = set()
+            long1 = []
+            lat1 = []
+            titles = []
+            for x in range(nrow * ncol):
+                index = np.random.randint(0, len(files_in_cluster[cluster]))
+                while index in appeared:
+                    index = np.random.randint(0, len(files_in_cluster[cluster]))
+                appeared.add(index)
+                name_file = files_in_cluster[cluster][index]["short_name"]
+                name_file_long = name_file.replace("/", "/cleaned_csv/") 
+                long, lat, time = load_traj_window_name(name_file_long, files_in_cluster[cluster][index]["start"], files_in_cluster[cluster][index]["window"])
+                long, lat = preprocess_long_lat(long, lat) 
+                long, lat = scale_long_lat(long, lat, 0.005, 0.005, True) 
+                long1.append(long)
+                lat1.append(lat)
+                titles.append(filename + "_cluster_" + str(cluster) + name_file)
+            if not os.path.isdir("all_isomap/" + subdirname + "/samples"):
+                os.makedirs("all_isomap/" + subdirname + "/samples")
+            composite_image_random_cluster(long1, lat1, titles, nrow, ncol, "all_isomap/" + subdirname + "/samples/" + filename + "_cluster_" + str(cluster))
+
 def composite_image_random_cluster(long1, lat1, titles, nrow, ncol, filename): 
     plt.rcParams.update({'font.size': 6})
     plt.figure(figsize=(ncol, nrow))
