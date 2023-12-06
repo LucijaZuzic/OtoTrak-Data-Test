@@ -383,21 +383,37 @@ def make_clusters_multi_feats():
 def read_clusters():
     for filename in os.listdir("all_isomap/" + subdirname + "/filenames"):
         random_sample_of_isomap(subdirname, load_object("all_isomap/" + subdirname + "/filenames/" + filename), 100, 100, filename)
-
+        
+for subdirname_p1 in ["all", "no_rays"]:
+    for subdirname_p2 in ["", "_poly", "_flags", "_poly_flags"]:
+        subdirname = subdirname_p1 + subdirname_p2 + "_no_same_acceler"
+        print(subdirname)
+        make_clusters_multi_feats()
+        read_clusters() 
+        subdirname = subdirname_p1 + subdirname_p2 + "_acceler"
+        print(subdirname)
+        make_clusters_multi_feats()
+        read_clusters()
+           
+part2 = ["only_rays_acceler"]
+for size in os.listdir("rays"):
+    part2.append("only_rays_acceler_size_" + str(size) + "_")
+for subdirname in part2:  
+    print(subdirname)
+    make_clusters_multi_feats()
+    read_clusters()
+'''
 for subdirname_p1 in ["all", "no_rays"]:
     for subdirname_p2 in ["", "_poly", "_flags", "_poly_flags"]:
         subdirname = subdirname_p1 + subdirname_p2 + "_no_same"
         print(subdirname)
         make_clusters_multi_feats()
-        read_clusters()
-        '''
+        read_clusters() 
         subdirname = subdirname_p1 + subdirname_p2
         print(subdirname)
         make_clusters_multi_feats()
         read_clusters()
-        '''
-        
-'''
+           
 part2 = ["only_rays"]
 for size in os.listdir("rays"):
     part2.append("only_rays_size_" + str(size) + "_")
