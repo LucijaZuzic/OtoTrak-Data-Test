@@ -206,6 +206,10 @@ header = ["start", "window_size", "vehicle", "ride"]
 skip = ["key", "flip", "zone", "engine", "in_zone", "ignition", "sleep_mode", "staff_mode", "buzzer_active", "in_primary_zone", "in_restricted_zone", "onboard_geofencing", "speed_limit_active"]
 all_subdirs = os.listdir() 
 
+#open_feats_acceler_scaled = pd.read_csv("all_feats_acceler/all_feats_acceler_scaled.csv", index_col = False)
+open_feats_acceler_scaled_max = pd.read_csv("all_feats_acceler/all_feats_acceler_scaled_to_max.csv", index_col = False)
+#open_feats_acceler = pd.read_csv("all_feats_acceler/all_feats_acceler.csv", index_col = False)
+
 def make_clusters_multi_feats():
     dict_for_clustering= dict()
     dict_for_clustering[window_size] = dict()
@@ -299,6 +303,29 @@ def make_clusters_multi_feats():
                 #print(x)
                 dict_for_clustering[window_size][subdir_name][some_file][x] = dict()
 
+                if "acceler" in subdirname:
+
+                    for index in range(len(open_feats_acceler_scaled_max["start"])):
+                        if str(open_feats_acceler_scaled_max["start"][index]) != str(x):
+                            continue
+                        if str(open_feats_acceler_scaled_max["window_size"][index]) != str(window_size):
+                            continue
+                        if str(open_feats_acceler_scaled_max["vehicle"][index]) != str(subdir_name):
+                            continue
+                        if str(open_feats_acceler_scaled_max["ride"][index]) != str(only_number):
+                            continue  
+                        #print("Located feats")
+                        for key_name in open_feats_acceler_scaled_max.head(): 
+                            if key_name in header:
+                                continue 
+                            if "Unnamed" in key_name:
+                                continue
+                            #dict_for_clustering[window_size][subdir_name][some_file][x]["all_feats_acceler_scaled_" + key_name] = open_feats_acceler_scaled[key_name][index]
+                            dict_for_clustering[window_size][subdir_name][some_file][x]["all_feats_acceler_scaled_to_max_" + key_name] = open_feats_acceler_scaled_max[key_name][index]
+                            #dict_for_clustering[window_size][subdir_name][some_file][x]["all_feats_acceler_" + key_name] = open_feats_acceler[key_name][index]
+                    
+                    #print(len(dict_for_clustering[window_size][subdir_name][some_file][x]))
+
                 if "only_rays" not in subdirname:
     
                     for index in range(len(open_feats_scaled_max["start"])):
@@ -386,26 +413,23 @@ def read_clusters():
 
 for subdirname_p1 in ["all", "no_rays"]:
     for subdirname_p2 in ["", "_poly", "_flags", "_poly_flags"]:
-        subdirname = subdirname_p1 + subdirname_p2 + "_no_same_acceler"
-        if not os.path.isdir("all_isomap/" + subdirname): 
-            print(subdirname)
-            make_clusters_multi_feats()
-            read_clusters() 
-        subdirname = subdirname_p1 + subdirname_p2 + "_acceler"
-        if not os.path.isdir("all_isomap/" + subdirname): 
-            print(subdirname)
-            make_clusters_multi_feats()
-            read_clusters() 
+        subdirname = subdirname_p1 + subdirname_p2 + "_no_same_acceler" 
+        print(subdirname)
+        make_clusters_multi_feats()
+        read_clusters() 
+        subdirname = subdirname_p1 + subdirname_p2 + "_acceler" 
+        print(subdirname)
+        make_clusters_multi_feats()
+        read_clusters() 
            
 part2 = ["only_rays_acceler"]
 for size in os.listdir("rays"):
     part2.append("only_rays_acceler_size_" + str(size) + "_")
-for subdirname in part2:  
-    if not os.path.isdir("all_isomap/" + subdirname): 
-        print(subdirname)
-        make_clusters_multi_feats()
-        read_clusters() 
-    
+for subdirname in part2:
+    print(subdirname)
+    make_clusters_multi_feats()
+    read_clusters() 
+'''   
 for subdirname_p1 in ["all", "no_rays"]:
     for subdirname_p2 in ["", "_poly", "_flags", "_poly_flags"]:
         subdirname = subdirname_p1 + subdirname_p2 + "_no_same"
@@ -427,3 +451,8 @@ for subdirname in part2:
         print(subdirname)
         make_clusters_multi_feats()
         read_clusters() 
+'''
+subdirname = "no_rays_poly_no_same"
+print(subdirname)
+make_clusters_multi_feats()
+read_clusters()  

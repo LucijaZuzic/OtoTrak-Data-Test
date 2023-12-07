@@ -406,7 +406,7 @@ def make_clusters_multi_feats():
 def read_clusters():
     for filename in os.listdir("all_clus/" + subdirname + "/filenames"):
         random_sample_of_cluster(subdirname, load_object("all_clus/" + subdirname + "/filenames/" + filename), 100, 100, filename)
-
+'''
 for subdirname_p1 in ["all", "no_rays"]:
     for subdirname_p2 in ["", "_poly", "_flags", "_poly_flags"]:
         subdirname = subdirname_p1 + subdirname_p2 + "_no_same_acceler"
@@ -450,3 +450,8 @@ for subdirname in part2:
         print(subdirname)
         make_clusters_multi_feats()
         read_clusters() 
+'''
+subdirname = "all_acceler"
+print(subdirname)
+make_clusters_multi_feats()
+read_clusters() 
