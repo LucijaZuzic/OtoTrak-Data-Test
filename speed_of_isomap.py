@@ -168,16 +168,16 @@ for key_name in open_feats_acceler_scaled_max.head():
         continue 
     headercsv += str(key_name) + ","
 headercsv = headercsv[:-1]
-headercsv += "\n" 
-print("all_clus")
-for subdirname in os.listdir("all_clus/"):
-    print("all_clus/" + subdirname)
-    for filename in os.listdir("all_clus/" + subdirname + "/filenames"):
-        print("all_clus/" + subdirname + "/filenames/" + filename)
-        output_clus = headercsv
-        output_clus = speed_cluster(load_object("all_clus/" + subdirname + "/filenames/" + filename), subdirname, filename, output_clus)
-        if not os.path.isdir("all_clus/" + subdirname + "/output_clus/"):
-            os.path.makedirs("all_clus/" + subdirname + "/output_clus/")
-        file_clus = open("all_clus/" + subdirname + "/output_clus/" + filename + ".csv")
-        file_clus.write(output_clus)
-        file_clus.close()
+headercsv += "\n"  
+print("all_isomap")
+for subdirname in os.listdir("all_isomap/"):
+    print("all_isomap/" + subdirname)
+    for filename in os.listdir("all_isomap/" + subdirname + "/filenames"):
+        print("all_isomap/" + subdirname + "/filenames/" + filename)
+        output_isomap = headercsv
+        output_isomap = speed_cluster(load_object("all_isomap/" + subdirname + "/filenames/" + filename), subdirname, filename, output_isomap)
+        if not os.path.isdir("all_isomap/" + subdirname + "/output_isomap/"):
+            os.path.makedirs("all_isomap/" + subdirname + "/output_isomap/")
+        file_isomap = open("all_isomap/" + subdirname + "/output_isomap/" + filename + ".csv")
+        file_isomap.write(output_isomap)
+        file_isomap.close()
