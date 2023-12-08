@@ -178,6 +178,6 @@ for subdirname in os.listdir("all_clus/"):
         print("all_clus/" + subdirname + "/filenames/" + filename)
         output_clus = headercsv
         output_clus = speed_cluster(load_object("all_clus/" + subdirname + "/filenames/" + filename), subdirname, filename, output_clus)
-        file_clus = open("all_clus/" + subdirname + "/output_clus/" + filename + ".csv")
+        file_clus = open("all_clus/" + subdirname + "/output_clus/" + filename + ".csv", "w")
         file_clus.write(output_clus)
         file_clus.close()
