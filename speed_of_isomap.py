@@ -175,6 +175,8 @@ for subdirname in os.listdir("all_isomap/"):
     for filename in os.listdir("all_isomap/" + subdirname + "/filenames"):
         if not os.path.isdir("all_isomap/" + subdirname + "/output_isomap/"):
             os.makedirs("all_isomap/" + subdirname + "/output_isomap/")
+        if os.path.isfile("all_isomap/" + subdirname + "/output_isomap/" + filename + ".csv"):
+            continue
         print("all_isomap/" + subdirname + "/filenames/" + filename)
         output_isomap = headercsv
         output_isomap = speed_cluster(load_object("all_isomap/" + subdirname + "/filenames/" + filename), subdirname, filename, output_isomap)
