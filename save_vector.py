@@ -37,7 +37,12 @@ def divide_train_test(properties, train_set, test_set):
                         sd_start_train.append(start)
                         sd_x_train.append([]) 
                         for variable_name in properties[window_size][subdir_name][some_file][start]: 
-                            
+                            '''
+                            if "fft" in variable_name:
+                                print("here")
+                                sd_x_train[-1].append(eval(properties[window_size][subdir_name][some_file][start][variable_name]))
+                            else:
+                            '''
                             if "monoto" not in variable_name:
                                 if math.isnan(properties[window_size][subdir_name][some_file][start][variable_name]):
                                     sd_x_train[-1].append(0)
@@ -112,6 +117,12 @@ open_feats_acceler_scaled_max = pd.read_csv("all_feats_acceler/all_feats_acceler
 #open_feats_heading_scaled = pd.read_csv("all_feats_heading/all_feats_heading_scaled.csv", index_col = False)
 open_feats_heading_scaled_max = pd.read_csv("all_feats_heading/all_feats_heading_scaled_to_max.csv", index_col = False)
 #open_feats_heading = pd.read_csv("all_feats_heading/all_feats_heading.csv", index_col = False)
+
+'''
+#open_feats_fourier_scaled = pd.read_csv("all_feats_fourier/all_feats_fourier_scaled.csv", index_col = False)
+open_feats_fourier_scaled_max = pd.read_csv("all_feats_fourier/all_feats_fourier_scaled_to_max.csv", index_col = False)
+#open_feats_fourier = pd.read_csv("all_feats_fourier/all_feats_fourier.csv", index_col = False)
+'''
 
 def make_clusters_multi_feats():
     dict_for_clustering= dict()
@@ -250,7 +261,30 @@ def make_clusters_multi_feats():
                             #dict_for_clustering[window_size][subdir_name][some_file][x]["all_feats_heading_" + key_name] = open_feats_heading[key_name][index]
                     
                     #print(len(dict_for_clustering[window_size][subdir_name][some_file][x]))
+                '''
+                if "fourier" in subdirname:
 
+                    for index in range(len(open_feats_fourier_scaled_max["start"])):
+                        if str(open_feats_fourier_scaled_max["start"][index]) != str(x):
+                            continue
+                        if str(open_feats_fourier_scaled_max["window_size"][index]) != str(window_size):
+                            continue
+                        if str(open_feats_fourier_scaled_max["vehicle"][index]) != str(subdir_name):
+                            continue
+                        if str(open_feats_fourier_scaled_max["ride"][index]) != str(only_number):
+                            continue  
+                        #print("Located feats")
+                        for key_name in open_feats_fourier_scaled_max.head(): 
+                            if key_name in header:
+                                continue 
+                            if "Unnamed" in key_name:
+                                continue
+                            #dict_for_clustering[window_size][subdir_name][some_file][x]["all_feats_fourier_scaled_" + key_name] = open_feats_fourier_scaled[key_name][index]
+                            dict_for_clustering[window_size][subdir_name][some_file][x]["all_feats_fourier_scaled_to_max_" + key_name] = open_feats_fourier_scaled_max[key_name][index]
+                            #dict_for_clustering[window_size][subdir_name][some_file][x]["all_feats_fourier_" + key_name] = open_feats_fourier[key_name][index]
+                    
+                    #print(len(dict_for_clustering[window_size][subdir_name][some_file][x]))
+                '''
                 if "only_rays" not in subdirname:
     
                     for index in range(len(open_feats_scaled_max["start"])):
@@ -271,7 +305,7 @@ def make_clusters_multi_feats():
                             if "turning" in key_name:
                                 continue
                             if "poly" in key_name and "poly" not in subdirname:
-                                continue
+                                continue 
                             if "same" in key_name and "no_same" in subdirname:
                                 continue
                             if "diff" in key_name:

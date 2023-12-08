@@ -206,7 +206,7 @@ def speed_cluster(files_in_cluster, sdn, filename, output):
             range_iso = range_iso[:-1]
             range_iso += "\n"
               
-    return var_iso, std_iso, varscaled_iso, stdscaled_iso, avg_iso, min_iso, max_iso, range_clus
+    return var_iso, std_iso, varscaled_iso, stdscaled_iso, avg_iso, min_iso, max_iso, range_iso
 headercsv = "subdir,file,cluster,size,"
 open_feats_scaled_maxtmp = pd.read_csv("all_feats/all_feats_scaled_to_max_Vehicle_11.csv", index_col = False)
 for key_name in open_feats_scaled_maxtmp.head(): 
