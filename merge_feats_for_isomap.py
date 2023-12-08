@@ -343,6 +343,8 @@ def make_clusters_multi_feats():
                                 continue
                             if key_name in skip and "flags" not in subdirname:
                                 continue
+                            if "turning" in key_name:
+                                continue
                             if "poly" in key_name and "poly" not in subdirname:
                                 continue
                             if "same" in key_name and "no_same" in subdirname:

@@ -346,15 +346,42 @@ def total_angle(long_list, lat_list):
     if long_list[0] != long_list[-1]: 
         return np.arctan((lat_list[0] - lat_list[-1]) / (long_list[0] - long_list[-1]))
     else:
-        return np.arctan(0)
- 
+        if lat_list[0] > lat_list[-1]:
+            return np.pi / 2
+        else:
+            return - np.pi / 2
+  
+def return_angles(long_list, lat_list):
+    total_angles = []
+    for index_coord in range(len(long_list) - 1):
+        if long_list[index_coord + 1] != long_list[index_coord]: 
+            total_angles.append((np.arctan((lat_list[index_coord + 1] - lat_list[index_coord]) / (long_list[index_coord + 1] - long_list[index_coord])) / np.pi * 180 + 360) % 360) 
+        else: 
+            if lat_list[index_coord + 1] > lat_list[index_coord]:
+                total_angles.append(90)
+            else:
+                total_angles.append(-90)
+    return total_angles
+
+def return_angles_abs(long_list, lat_list):
+    total_angles = []
+    for index_coord in range(len(long_list) - 1):
+        if long_list[index_coord + 1] != long_list[index_coord]: 
+            total_angles.append((np.arctan(abs(lat_list[index_coord + 1] - lat_list[index_coord]) / abs(long_list[index_coord + 1] - long_list[index_coord])) / np.pi * 180 + 360) % 360) 
+        else: 
+            total_angles.append(90) 
+    return total_angles
+
 def mean_vect_turning_angles(long_list, lat_list):
     total_angles = []
     for index_coord in range(len(long_list) - 1):
         if long_list[index_coord + 1] != long_list[index_coord]: 
             total_angles.append(np.arctan((lat_list[index_coord + 1] - lat_list[index_coord]) / (long_list[index_coord + 1] - long_list[index_coord]))) 
         else:
-            total_angles.append(np.arctan(0))
+            if lat_list[index_coord + 1] > lat_list[index_coord]:
+                total_angles.append(np.pi / 2)
+            else:
+                total_angles.append(- np.pi / 2)
     return np.average(total_angles)
 
 def mean_speed_len(long_list, lat_list, times_list):

@@ -241,6 +241,8 @@ def make_clusters_multi_feats():
                                 continue
                             if key_name in skip and "flags" not in subdirname:
                                 continue
+                            if "turning" in key_name:
+                                continue
                             if "poly" in key_name and "poly" not in subdirname:
                                 continue
                             if "same" in key_name and "no_same" in subdirname:
@@ -298,18 +300,29 @@ def make_clusters_multi_feats():
     
     return divide_train_test(dict_for_clustering, train_rides, test_rides)
 
-subdirname = "all_acceler"
-print(subdirname) 
+subdirname = "all_poly_acceler" 
 feat_names, feat_array, feat_array_train, feat_array_test, sd_window_train, sd_subdir_train, sd_ride_train, sd_start_train, sd_x_train, sd_window_test, sd_subdir_test, sd_ride_test, sd_start_test, sd_x_test = make_clusters_multi_feats()
-print(len(sd_x_train), len(sd_x_train[0]), sd_x_train[0][:10])
-print(len(sd_x_test))
-print(feat_names)
+ 
 feat_var = dict() 
 feat_var_scaled = dict() 
+feat_std = dict() 
+feat_std_scaled = dict() 
 for feat in feat_names:
-    varia = np.var(feat_array[feat])
-    feat_var[feat] = np.var(feat_array[feat])  
+    varia = np.var(feat_array[feat]) 
+    feat_var[feat] = varia
     if max(feat_array[feat]) != min(feat_array[feat]):
-        feat_var_scaled[feat] = np.var(feat_array[feat]) / (max(feat_array[feat]) - min(feat_array[feat]))
+        feat_var_scaled[feat] = varia / ((max(feat_array[feat]) - min(feat_array[feat])) ** 2)
+    stdevi = np.std(feat_array[feat])
+    feat_std[feat] = stdevi 
+    if max(feat_array[feat]) != min(feat_array[feat]):
+        feat_std_scaled[feat] = stdevi / (max(feat_array[feat]) - min(feat_array[feat]))
+for feat in dict(sorted(feat_std_scaled.items(), key=lambda item: item[1])):
+    if "same" in feat:
+        continue
+    print(feat, feat_std_scaled[feat], np.min(feat_array[feat]), np.max(feat_array[feat]), feat_std[feat], sum(feat_array[feat]) / len(feat_array[feat]), np.average(feat_array[feat]))
+
 for feat in dict(sorted(feat_var_scaled.items(), key=lambda item: item[1])):
-    print(feat, feat_var_scaled[feat], np.min(feat_array[feat]), np.max(feat_array[feat]), feat_var[feat])
+    if "same" in feat:
+        continue
+    print(feat, feat_var_scaled[feat], np.min(feat_array[feat]), np.max(feat_array[feat]), feat_var[feat], sum(feat_array[feat]) / len(feat_array[feat]), np.average(feat_array[feat]))
+    print(feat, feat_var_scaled[feat], np.std(feat_array[feat]))
