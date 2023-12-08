@@ -207,21 +207,21 @@ for subdir_name in all_subdirs:
 
             all_possible_trajs[window_size][subdir_name][only_num_ride][x] = {"long": longitudes_tmp_transform, "lat": latitudes_tmp_transform, "time": times_tmp_transform}
 
-            turn_angles = mean_vect_turning_angles(longitudes_tmp_transform, latitudes_tmp_transform)  
+            #turn_angles = mean_vect_turning_angles(longitudes_tmp_transform, latitudes_tmp_transform)  
             sp_len = mean_speed_len(longitudes_tmp_transform, latitudes_tmp_transform, times_tmp_transform)  
             sp_offset = mean_speed_offset(longitudes_tmp_transform, latitudes_tmp_transform, times_tmp_transform)   
             surfarea = total_surf(longitudes_tmp_transform, latitudes_tmp_transform) 
             surf_trapz_x, surf_trapz_y = get_surf_xt_yt(longitudes_tmp_transform, latitudes_tmp_transform, times_tmp_transform, "trapz")
             surf_simpson_x, surf_simpson_y = get_surf_xt_yt(longitudes_tmp_transform, latitudes_tmp_transform, times_tmp_transform, "simpson")
               
-            turn_angles_scaled = mean_vect_turning_angles(longitudes_scaled, latitudes_scaled)  
+            #turn_angles_scaled = mean_vect_turning_angles(longitudes_scaled, latitudes_scaled)  
             sp_len_scaled = mean_speed_len(longitudes_scaled, latitudes_scaled, times_tmp_transform)  
             sp_offset_scaled = mean_speed_offset(longitudes_scaled, latitudes_scaled, times_tmp_transform)   
             surfarea_scaled = total_surf(longitudes_scaled, latitudes_scaled)  
             surf_trapz_x_scaled, surf_trapz_y_scaled = get_surf_xt_yt(longitudes_scaled, latitudes_scaled, times_tmp_transform, "trapz")
             surf_simpson_x_scaled, surf_simpson_y_scaled = get_surf_xt_yt(longitudes_scaled, latitudes_scaled, times_tmp_transform, "simpson") 
         
-            turn_angles_scaled_to_max = mean_vect_turning_angles(longitudes_scaled_to_max, latitudes_scaled_to_max)  
+            #turn_angles_scaled_to_max = mean_vect_turning_angles(longitudes_scaled_to_max, latitudes_scaled_to_max)  
             sp_len_scaled_to_max = mean_speed_len(longitudes_scaled_to_max, latitudes_scaled_to_max, times_tmp_transform)  
             sp_offset_scaled_to_max = mean_speed_offset(longitudes_scaled_to_max, latitudes_scaled_to_max, times_tmp_transform)   
             surfarea_scaled_to_max = total_surf(longitudes_scaled_to_max, latitudes_scaled_to_max)   
@@ -255,7 +255,7 @@ for subdir_name in all_subdirs:
             if len(lat_sgn) == 1 and len(long_sgn) == 1:
                 xy_poly_scaled_to_max = np.polyfit(longitudes_scaled_to_max, latitudes_scaled_to_max, deg)
 
-            all_feats_trajs[window_size][subdir_name][only_num_ride][x] = {"mean_vect_turning_angles": turn_angles / np.pi * 180, 
+            all_feats_trajs[window_size][subdir_name][only_num_ride][x] = {#"mean_vect_turning_angles": turn_angles / np.pi * 180, 
                                                                            "max_x": max(longitudes_tmp_transform),
                                                                            "max_y": max(latitudes_tmp_transform),
                                                                            "surf_trapz_x": surf_trapz_x, 
@@ -282,7 +282,7 @@ for subdir_name in all_subdirs:
                     all_feats_trajs[window_size][subdir_name][only_num_ride][x][sample_name + "_same_" + metric_name] = compare_traj_and_sample(newx, newy, range(len(newx)), {"long": longitudes_tmp_transform, "lat": latitudes_tmp_transform, "time": times_tmp_transform}, metric_name, False, False, True, True, dotsx_original, dotsy_original)
                     all_feats_trajs[window_size][subdir_name][only_num_ride][x][sample_name + "_diff_" + metric_name] = compare_traj_and_sample(oldx, oldy, range(len(oldx)), {"long": longitudes_tmp_transform, "lat": latitudes_tmp_transform, "time": times_tmp_transform}, metric_name, False, False, True, True, dotsx_original, dotsy_original)
 
-            all_feats_scaled_trajs[window_size][subdir_name][only_num_ride][x] = {"mean_vect_turning_angles": turn_angles_scaled / np.pi * 180, 
+            all_feats_scaled_trajs[window_size][subdir_name][only_num_ride][x] = {#"mean_vect_turning_angles": turn_angles_scaled / np.pi * 180, 
                                                                            "max_x": max(longitudes_scaled),
                                                                            "max_y": max(latitudes_scaled),
                                                                            "surf_trapz_x": surf_trapz_x_scaled, 
@@ -309,7 +309,7 @@ for subdir_name in all_subdirs:
                     all_feats_scaled_trajs[window_size][subdir_name][only_num_ride][x][sample_name + "_same_" + metric_name] = compare_traj_and_sample(newx, newy, range(len(newx)), {"long": longitudes_scaled, "lat": latitudes_scaled, "time": times_tmp_transform}, metric_name)
                     all_feats_scaled_trajs[window_size][subdir_name][only_num_ride][x][sample_name + "_diff_" + metric_name] = compare_traj_and_sample(oldx, oldy, range(len(oldx)), {"long": longitudes_scaled, "lat": latitudes_scaled, "time": times_tmp_transform}, metric_name)
 
-            all_feats_scaled_to_max_trajs[window_size][subdir_name][only_num_ride][x] = {"mean_vect_turning_angles": turn_angles_scaled_to_max / np.pi * 180, 
+            all_feats_scaled_to_max_trajs[window_size][subdir_name][only_num_ride][x] = {#"mean_vect_turning_angles": turn_angles_scaled_to_max / np.pi * 180, 
                                                                            "max_x": max(longitudes_scaled_to_max),
                                                                            "max_y": max(latitudes_scaled_to_max),
                                                                            "surf_trapz_x": surf_trapz_x_scaled_to_max, 

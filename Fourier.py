@@ -93,16 +93,16 @@ for subdir_name in all_subdirs:
  
             trajs_in_dir += 1 
 
-            long_fft = np.fft.fft(longitudes_tmp) 
-            lat_fft = np.fft.fft(latitudes_tmp) 
+            long_fft = np.fft.fft(longitudes_tmp_transform)
+            lat_fft = np.fft.fft(latitudes_tmp_transform)
             all_feats_fourier_trajs[window_size][subdir_name][only_num_ride][x] = dict()
             for ind_fft in range(len(long_fft)):
                 all_feats_fourier_trajs[window_size][subdir_name][only_num_ride][x]["long_fft_" + str(ind_fft)] = long_fft[ind_fft]
             for ind_fft in range(len(lat_fft)):
                 all_feats_fourier_trajs[window_size][subdir_name][only_num_ride][x]["lat_fft_" + str(ind_fft)] = lat_fft[ind_fft]
 
-            long_fft_scaled = np.fft.fft(longitudes_tmp_transform) 
-            lat_fft_scaled = np.fft.fft(latitudes_tmp_transform) 
+            long_fft_scaled = np.fft.fft(longitudes_scaled)
+            lat_fft_scaled = np.fft.fft(latitudes_scaled)
             all_feats_fourier_scaled_trajs[window_size][subdir_name][only_num_ride][x] = dict()
             for ind_fft in range(len(long_fft_scaled)):
                 all_feats_fourier_scaled_trajs[window_size][subdir_name][only_num_ride][x]["long_fft_" + str(ind_fft)] = long_fft_scaled[ind_fft]

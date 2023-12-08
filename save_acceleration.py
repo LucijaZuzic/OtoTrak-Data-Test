@@ -92,19 +92,48 @@ for subdir_name in all_subdirs:
             avg_speed_trajs = sum(speeds_trajs) / len(speeds_trajs)
             avg_acceler_trajs = sum(accelers_trajs) / len(accelers_trajs)
             
+            accelers_abs_trajs = return_acceler_speeds(speeds_trajs, True) 
+            avg_acceler_abs_trajs = sum(accelers_abs_trajs) / len(accelers_abs_trajs)
+            
             accelers_ototrak_trajs = return_acceler_speeds(speeds_tmp) 
             avg_speed_ototrak_trajs = sum(speeds_tmp) / len(speeds_tmp)
             avg_acceler_ototrak_trajs = sum(accelers_ototrak_trajs) / len(accelers_ototrak_trajs)
+            
+            accelers_abs_ototrak_trajs = return_acceler_speeds(speeds_tmp, True) 
+            avg_acceler_abs_ototrak_trajs = sum(accelers_abs_ototrak_trajs) / len(accelers_abs_ototrak_trajs)
 
             avg_ratio_speed_trajs = avg_ratio(speeds_trajs, speeds_tmp)
             avg_ratio_acceler_trajs = avg_ratio(accelers_trajs, accelers_ototrak_trajs)
+            avg_ratio_acceler_abs_trajs = avg_ratio(accelers_abs_trajs, accelers_abs_ototrak_trajs)
+            x_speeds_trajs, y_speeds_trajs, abs_x_speeds_trajs, abs_y_speeds_trajs = return_speeds_by_axis(longitudes_tmp_transform, latitudes_tmp_transform, times_tmp_transform)
+            x_acceler_trajs = return_acceler_speeds(x_speeds_trajs)
+            y_acceler_trajs = return_acceler_speeds(y_speeds_trajs)
+            x_acceler_abs_trajs = return_acceler_speeds(abs_x_speeds_trajs, True)
+            y_acceler_abs_trajs = return_acceler_speeds(abs_y_speeds_trajs, True)
+
+            x_steps_trajs, y_steps_trajs, abs_x_steps_trajs, abs_y_steps_trajs = return_steps_by_axis(longitudes_tmp_transform, latitudes_tmp_transform, times_tmp_transform)
   
             all_feats_acceler_trajs[window_size][subdir_name][only_num_ride][x] = {"mean_speed": avg_speed_trajs, 
                                                                            "mean_acceler": avg_acceler_trajs,
+                                                                           "mean_abs_acceler": avg_acceler_abs_trajs,
                                                                            "mean_speed_ototrak": avg_speed_ototrak_trajs,
                                                                            "mean_acceler_ototrak": avg_acceler_ototrak_trajs, 
+                                                                           "mean_abs_acceler_ototrak": avg_acceler_abs_ototrak_trajs, 
                                                                            "avg_ratio_speed": avg_ratio_speed_trajs, 
                                                                            "avg_ratio_acceler": avg_ratio_acceler_trajs,
+                                                                           "avg_ratio_abs_acceler": avg_ratio_acceler_abs_trajs,
+                                                                           "x_speeds": np.average(x_speeds_trajs),
+                                                                           "y_speeds": np.average(y_speeds_trajs),
+                                                                           "abs_x_speeds": np.average(abs_x_speeds_trajs),
+                                                                           "abs_y_speeds": np.average(abs_y_speeds_trajs),
+                                                                           "x_acceler": np.average(x_acceler_trajs),
+                                                                           "y_acceler": np.average(y_acceler_trajs),
+                                                                           "x_acceler_abs": np.average(x_acceler_abs_trajs),
+                                                                           "y_acceler_abs": np.average(y_acceler_abs_trajs),
+                                                                           "x_steps": np.average(x_steps_trajs),
+                                                                           "y_steps": np.average(y_steps_trajs),
+                                                                           "abs_x_steps": np.average(abs_x_steps_trajs),
+                                                                           "abs_y_steps": np.average(abs_y_steps_trajs),
                                                                            }
             
             speeds_scaled_trajs = return_speeds_long_lat(longitudes_scaled, latitudes_scaled, times_tmp_transform)
@@ -112,40 +141,98 @@ for subdir_name in all_subdirs:
             avg_speed_scaled_trajs = sum(speeds_scaled_trajs) / len(speeds_scaled_trajs)
             avg_acceler_scaled_trajs = sum(accelers_scaled_trajs) / len(accelers_scaled_trajs)
             
+            accelers_abs_scaled_trajs = return_acceler_speeds(speeds_scaled_trajs, True) 
+            avg_acceler_abs_scaled_trajs = sum(accelers_abs_scaled_trajs) / len(accelers_abs_scaled_trajs)
+            
             accelers_ototrak_scaled_trajs = return_acceler_speeds(speeds_tmp) 
             avg_speed_ototrak_scaled_trajs = sum(speeds_tmp) / len(speeds_tmp)
             avg_acceler_ototrak_scaled_trajs = sum(accelers_ototrak_scaled_trajs) / len(accelers_ototrak_scaled_trajs)
+            
+            accelers_abs_ototrak_scaled_trajs = return_acceler_speeds(speeds_tmp, True) 
+            avg_acceler_abs_ototrak_scaled_trajs = sum(accelers_abs_ototrak_scaled_trajs) / len(accelers_abs_ototrak_scaled_trajs)
 
             avg_ratio_speed_scaled_trajs = avg_ratio(speeds_scaled_trajs, speeds_tmp)
             avg_ratio_acceler_scaled_trajs = avg_ratio(accelers_scaled_trajs, accelers_ototrak_scaled_trajs)
-  
+            avg_ratio_acceler_abs_scaled_trajs = avg_ratio(accelers_abs_scaled_trajs, accelers_abs_ototrak_scaled_trajs)
+            x_speeds_scaled_trajs, y_speeds_scaled_trajs, abs_x_speeds_scaled_trajs, abs_y_speeds_scaled_trajs = return_speeds_by_axis(longitudes_scaled, latitudes_scaled, times_tmp_transform)
+            x_acceler_scaled_trajs = return_acceler_speeds(x_speeds_scaled_trajs)
+            y_acceler_scaled_trajs = return_acceler_speeds(y_speeds_scaled_trajs)
+            x_acceler_abs_scaled_trajs = return_acceler_speeds(abs_x_speeds_scaled_trajs, True)
+            y_acceler_abs_scaled_trajs = return_acceler_speeds(abs_y_speeds_scaled_trajs, True)
+
+            x_steps_scaled_trajs, y_steps_scaled_trajs, abs_x_steps_scaled_trajs, abs_y_steps_scaled_trajs = return_steps_by_axis(longitudes_scaled, latitudes_scaled, times_tmp_transform)
+
             all_feats_acceler_scaled_trajs[window_size][subdir_name][only_num_ride][x] = {"mean_speed": avg_speed_scaled_trajs, 
-                                                                                  "mean_acceler": avg_acceler_scaled_trajs, 
-                                                                                  "mean_speed_ototrak": avg_speed_ototrak_scaled_trajs,
-                                                                                  "mean_acceler_ototrak": avg_acceler_ototrak_scaled_trajs,
-                                                                                  "avg_ratio_speed": avg_ratio_speed_scaled_trajs,
-                                                                                  "avg_ratio_acceler": avg_ratio_acceler_scaled_trajs,
-                                                                                  }
+                                                                           "mean_acceler": avg_acceler_scaled_trajs,
+                                                                           "mean_abs_acceler": avg_acceler_abs_scaled_trajs,
+                                                                           "mean_speed_ototrak": avg_speed_ototrak_scaled_trajs,
+                                                                           "mean_acceler_ototrak": avg_acceler_ototrak_scaled_trajs, 
+                                                                           "mean_abs_acceler_ototrak": avg_acceler_abs_ototrak_scaled_trajs, 
+                                                                           "avg_ratio_speed": avg_ratio_speed_scaled_trajs, 
+                                                                           "avg_ratio_acceler": avg_ratio_acceler_scaled_trajs,
+                                                                           "avg_ratio_abs_acceler": avg_ratio_acceler_abs_scaled_trajs,
+                                                                           "x_speeds": np.average(x_speeds_scaled_trajs),
+                                                                           "y_speeds": np.average(y_speeds_scaled_trajs),
+                                                                           "abs_x_speeds": np.average(abs_x_speeds_scaled_trajs),
+                                                                           "abs_y_speeds": np.average(abs_y_speeds_scaled_trajs),
+                                                                           "x_acceler": np.average(x_acceler_scaled_trajs),
+                                                                           "y_acceler": np.average(y_acceler_scaled_trajs),
+                                                                           "x_acceler_abs": np.average(x_acceler_abs_scaled_trajs),
+                                                                           "y_acceler_abs": np.average(y_acceler_abs_scaled_trajs),
+                                                                           "x_steps": np.average(x_steps_scaled_trajs),
+                                                                           "y_steps": np.average(y_steps_scaled_trajs),
+                                                                           "abs_x_steps": np.average(abs_x_steps_scaled_trajs),
+                                                                           "abs_y_steps": np.average(abs_y_steps_scaled_trajs),
+                                                                           }
 
             speeds_scaled_to_max_trajs = return_speeds_long_lat(longitudes_scaled_to_max, latitudes_scaled_to_max, times_tmp_transform)
             accelers_scaled_to_max_trajs = return_acceler_speeds(speeds_scaled_to_max_trajs)
             avg_speed_scaled_to_max_trajs = sum(speeds_scaled_to_max_trajs) / len(speeds_scaled_to_max_trajs)
             avg_acceler_scaled_to_max_trajs = sum(accelers_scaled_to_max_trajs) / len(accelers_scaled_to_max_trajs)
             
+            accelers_abs_scaled_to_max_trajs = return_acceler_speeds(speeds_scaled_to_max_trajs, True) 
+            avg_acceler_abs_scaled_to_max_trajs = sum(accelers_abs_scaled_to_max_trajs) / len(accelers_abs_scaled_to_max_trajs)
+            
             accelers_ototrak_scaled_to_max_trajs = return_acceler_speeds(speeds_tmp) 
             avg_speed_ototrak_scaled_to_max_trajs = sum(speeds_tmp) / len(speeds_tmp)
             avg_acceler_ototrak_scaled_to_max_trajs = sum(accelers_ototrak_scaled_to_max_trajs) / len(accelers_ototrak_scaled_to_max_trajs)
+            
+            accelers_abs_ototrak_scaled_to_max_trajs = return_acceler_speeds(speeds_tmp, True) 
+            avg_acceler_abs_ototrak_scaled_to_max_trajs = sum(accelers_abs_ototrak_scaled_to_max_trajs) / len(accelers_abs_ototrak_scaled_to_max_trajs)
 
             avg_ratio_speed_scaled_to_max_trajs = avg_ratio(speeds_scaled_to_max_trajs, speeds_tmp)
             avg_ratio_acceler_scaled_to_max_trajs = avg_ratio(accelers_scaled_to_max_trajs, accelers_ototrak_scaled_to_max_trajs)
-  
-            all_feats_acceler_scaled_to_max_trajs[window_size][subdir_name][only_num_ride][x] = {"mean_speed": avg_speed_scaled_to_max_trajs,
-                                                                                         "mean_acceler": avg_acceler_scaled_to_max_trajs,
-                                                                                         "mean_speed_ototrak": avg_speed_ototrak_scaled_to_max_trajs,
-                                                                                         "mean_acceler_ototrak": avg_acceler_ototrak_scaled_to_max_trajs,
-                                                                                         "avg_ratio_speed": avg_ratio_speed_scaled_to_max_trajs,
-                                                                                         "avg_ratio_acceler": avg_ratio_acceler_scaled_to_max_trajs,
-                                                                                        }
+            avg_ratio_acceler_abs_scaled_to_max_trajs = avg_ratio(accelers_abs_scaled_to_max_trajs, accelers_abs_ototrak_scaled_to_max_trajs)
+            x_speeds_scaled_to_max_trajs, y_speeds_scaled_to_max_trajs, abs_x_speeds_scaled_to_max_trajs, abs_y_speeds_scaled_to_max_trajs = return_speeds_by_axis(longitudes_scaled_to_max, latitudes_scaled_to_max, times_tmp_transform)
+            x_acceler_scaled_to_max_trajs = return_acceler_speeds(x_speeds_scaled_to_max_trajs)
+            y_acceler_scaled_to_max_trajs = return_acceler_speeds(y_speeds_scaled_to_max_trajs)
+            x_acceler_abs_scaled_to_max_trajs = return_acceler_speeds(abs_x_speeds_scaled_to_max_trajs, True)
+            y_acceler_abs_scaled_to_max_trajs = return_acceler_speeds(abs_y_speeds_scaled_to_max_trajs, True)
+
+            x_steps_scaled_to_max_trajs, y_steps_scaled_to_max_trajs, abs_x_steps_scaled_to_max_trajs, abs_y_steps_scaled_to_max_trajs = return_steps_by_axis(longitudes_scaled_to_max, latitudes_scaled_to_max, times_tmp_transform)
+ 
+            all_feats_acceler_scaled_to_max_trajs[window_size][subdir_name][only_num_ride][x] = {"mean_speed": avg_speed_scaled_to_max_trajs, 
+                                                                           "mean_acceler": avg_acceler_scaled_to_max_trajs,
+                                                                           "mean_abs_acceler": avg_acceler_abs_scaled_to_max_trajs,
+                                                                           "mean_speed_ototrak": avg_speed_ototrak_scaled_to_max_trajs,
+                                                                           "mean_acceler_ototrak": avg_acceler_ototrak_scaled_to_max_trajs, 
+                                                                           "mean_abs_acceler_ototrak": avg_acceler_abs_ototrak_scaled_to_max_trajs, 
+                                                                           "avg_ratio_speed": avg_ratio_speed_scaled_to_max_trajs, 
+                                                                           "avg_ratio_acceler": avg_ratio_acceler_scaled_to_max_trajs,
+                                                                           "avg_ratio_abs_acceler": avg_ratio_acceler_abs_scaled_to_max_trajs,
+                                                                           "x_speeds": np.average(x_speeds_scaled_to_max_trajs),
+                                                                           "y_speeds": np.average(y_speeds_scaled_to_max_trajs),
+                                                                           "abs_x_speeds": np.average(abs_x_speeds_scaled_to_max_trajs),
+                                                                           "abs_y_speeds": np.average(abs_y_speeds_scaled_to_max_trajs),
+                                                                           "x_acceler": np.average(x_acceler_scaled_to_max_trajs),
+                                                                           "y_acceler": np.average(y_acceler_scaled_to_max_trajs),
+                                                                           "x_acceler_abs": np.average(x_acceler_abs_scaled_to_max_trajs),
+                                                                           "y_acceler_abs": np.average(y_acceler_abs_scaled_to_max_trajs),
+                                                                           "x_steps": np.average(x_steps_scaled_to_max_trajs),
+                                                                           "y_steps": np.average(y_steps_scaled_to_max_trajs),
+                                                                           "abs_x_steps": np.average(abs_x_steps_scaled_to_max_trajs),
+                                                                           "abs_y_steps": np.average(abs_y_steps_scaled_to_max_trajs),
+                                                                           }
                 
         #print(only_num_ride, trajs_in_ride)
     print(subdir_name, trajs_in_dir) 

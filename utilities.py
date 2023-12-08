@@ -128,29 +128,61 @@ def return_speeds_long_lat(longitudes, latitudes, times):
             speeds.append(speeds[-1])
     return speeds
 
+def return_speeds_by_axis(longitudes, latitudes, times):
+    xspeeds = []
+    yspeeds = []
+    absxspeeds = []
+    absyspeeds = []
+    for i in range(len(longitudes) - 1):
+        if times[i + 1] != times[i]:
+            xspeeds.append((longitudes[i + 1] - longitudes[i]) / (times[i + 1] - times[i]))
+            yspeeds.append((latitudes[i + 1] - latitudes[i]) / (times[i + 1] - times[i]))
+            absxspeeds.append(abs(longitudes[i + 1] - longitudes[i]) / (times[i + 1] - times[i]))
+            absyspeeds.append(abs(latitudes[i + 1] - latitudes[i]) / (times[i + 1] - times[i]))
+    return xspeeds, yspeeds, absxspeeds, absyspeeds
+
+def return_steps_by_axis(longitudes, latitudes, times):
+    xsteps = []
+    ysteps = []
+    absxsteps = []
+    absysteps = []
+    for i in range(len(longitudes) - 1):
+        if times[i + 1] != times[i]:
+            xsteps.append((longitudes[i + 1] - longitudes[i])) 
+            ysteps.append((latitudes[i + 1] - latitudes[i]))
+            absxsteps.append(abs(longitudes[i + 1] - longitudes[i]))
+            absysteps.append(abs(latitudes[i + 1] - latitudes[i]))
+    return xsteps, ysteps, absxsteps, absysteps
+
 def avg_speed_long_lat(longitudes, latitudes, times):
     speeds = return_speeds_long_lat(longitudes, latitudes, times)
     return sum(speeds) / len(speeds)
 
-def return_acceler_long_lat(longitudes, latitudes, times):
+def return_acceler_long_lat(longitudes, latitudes, times, abs_use = False):
     speeds = return_speeds_long_lat(longitudes, latitudes, times)
     accelers = []
     for i in range(len(speeds) - 1):
-        accelers.append(speeds[i + 1] - speeds[i])
+        if abs_use:
+            accelers.append(speeds[i + 1] - speeds[i])
+        else:
+            accelers.append(abs(speeds[i + 1] - speeds[i]))
     return accelers
 
-def avg_acceler_long_lat(longitudes, latitudes, times): 
-    accelers = return_acceler_long_lat(longitudes, latitudes, times) 
+def avg_acceler_long_lat(longitudes, latitudes, times, abs_use = False): 
+    accelers = return_acceler_long_lat(longitudes, latitudes, times, abs_use) 
     return sum(accelers) / len(accelers)
  
-def return_acceler_speeds(speeds):
+def return_acceler_speeds(speeds, abs_use = False):
     accelers = []
     for i in range(len(speeds) - 1):
-        accelers.append(speeds[i + 1] - speeds[i])
+        if abs_use:
+            accelers.append(speeds[i + 1] - speeds[i])
+        else:
+            accelers.append(abs(speeds[i + 1] - speeds[i]))
     return accelers
 
-def avg_acceler_speeds(speeds):
-    accelers = return_acceler_speeds(speeds)
+def avg_acceler_speeds(speeds, abs_use = False):
+    accelers = return_acceler_speeds(speeds, abs_use)
     return sum(accelers) / len(accelers)
 
 def avg_ratio(s1, s2):
