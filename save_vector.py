@@ -109,6 +109,10 @@ all_subdirs = os.listdir()
 open_feats_acceler_scaled_max = pd.read_csv("all_feats_acceler/all_feats_acceler_scaled_to_max.csv", index_col = False)
 #open_feats_acceler = pd.read_csv("all_feats_acceler/all_feats_acceler.csv", index_col = False)
 
+#open_feats_heading_scaled = pd.read_csv("all_feats_heading/all_feats_heading_scaled.csv", index_col = False)
+open_feats_heading_scaled_max = pd.read_csv("all_feats_heading/all_feats_heading_scaled_to_max.csv", index_col = False)
+#open_feats_heading = pd.read_csv("all_feats_heading/all_feats_heading.csv", index_col = False)
+
 def make_clusters_multi_feats():
     dict_for_clustering= dict()
     dict_for_clustering[window_size] = dict()
@@ -223,6 +227,29 @@ def make_clusters_multi_feats():
                             #dict_for_clustering[window_size][subdir_name][some_file][x]["all_feats_acceler_" + key_name] = open_feats_acceler[key_name][index]
                     
                     #print(len(dict_for_clustering[window_size][subdir_name][some_file][x]))
+                
+                if "heading" in subdirname:
+
+                    for index in range(len(open_feats_heading_scaled_max["start"])):
+                        if str(open_feats_heading_scaled_max["start"][index]) != str(x):
+                            continue
+                        if str(open_feats_heading_scaled_max["window_size"][index]) != str(window_size):
+                            continue
+                        if str(open_feats_heading_scaled_max["vehicle"][index]) != str(subdir_name):
+                            continue
+                        if str(open_feats_heading_scaled_max["ride"][index]) != str(only_number):
+                            continue  
+                        #print("Located feats")
+                        for key_name in open_feats_heading_scaled_max.head(): 
+                            if key_name in header:
+                                continue 
+                            if "Unnamed" in key_name:
+                                continue
+                            #dict_for_clustering[window_size][subdir_name][some_file][x]["all_feats_heading_scaled_" + key_name] = open_feats_heading_scaled[key_name][index]
+                            dict_for_clustering[window_size][subdir_name][some_file][x]["all_feats_heading_scaled_to_max_" + key_name] = open_feats_heading_scaled_max[key_name][index]
+                            #dict_for_clustering[window_size][subdir_name][some_file][x]["all_feats_heading_" + key_name] = open_feats_heading[key_name][index]
+                    
+                    #print(len(dict_for_clustering[window_size][subdir_name][some_file][x]))
 
                 if "only_rays" not in subdirname:
     
@@ -300,7 +327,7 @@ def make_clusters_multi_feats():
     
     return divide_train_test(dict_for_clustering, train_rides, test_rides)
 
-subdirname = "all_poly_acceler" 
+subdirname = "all_poly_flags_acceler_heading" 
 feat_names, feat_array, feat_array_train, feat_array_test, sd_window_train, sd_subdir_train, sd_ride_train, sd_start_train, sd_x_train, sd_window_test, sd_subdir_test, sd_ride_test, sd_start_test, sd_x_test = make_clusters_multi_feats()
  
 feat_var = dict() 
@@ -309,20 +336,33 @@ feat_std = dict()
 feat_std_scaled = dict() 
 for feat in feat_names:
     varia = np.var(feat_array[feat]) 
-    feat_var[feat] = varia
-    if max(feat_array[feat]) != min(feat_array[feat]):
-        feat_var_scaled[feat] = varia / ((max(feat_array[feat]) - min(feat_array[feat])) ** 2)
-    stdevi = np.std(feat_array[feat])
-    feat_std[feat] = stdevi 
-    if max(feat_array[feat]) != min(feat_array[feat]):
-        feat_std_scaled[feat] = stdevi / (max(feat_array[feat]) - min(feat_array[feat]))
-for feat in dict(sorted(feat_std_scaled.items(), key=lambda item: item[1])):
-    if "same" in feat:
-        continue
-    print(feat, feat_std_scaled[feat], np.min(feat_array[feat]), np.max(feat_array[feat]), feat_std[feat], sum(feat_array[feat]) / len(feat_array[feat]), np.average(feat_array[feat]))
+    mini = min(feat_array[feat])
+    maxi = max(feat_array[feat])
+    if maxi == True:
+        maxi = 1
+    if mini == False:
+        mini = 0
+    stdevi = np.std(feat_array[feat]) 
+    rangev = maxi - mini 
 
-for feat in dict(sorted(feat_var_scaled.items(), key=lambda item: item[1])):
-    if "same" in feat:
-        continue
+    feat_var[feat] = varia
+    if rangev != 0:
+        feat_var_scaled[feat] = varia / (rangev ** 2)
+
+    feat_std[feat] = stdevi 
+    if rangev != 0:
+        feat_std_scaled[feat] = stdevi / rangev
+n = 10
+x = 0
+for feat in dict(sorted(feat_std_scaled.items(), key=lambda item: item[1], reverse = True)): 
+    if x == n:
+        break
+    x += 1
+    print(feat, feat_std_scaled[feat], np.min(feat_array[feat]), np.max(feat_array[feat]), feat_std[feat], sum(feat_array[feat]) / len(feat_array[feat]), np.average(feat_array[feat]))
+print("")
+x = 0
+for feat in dict(sorted(feat_var_scaled.items(), key=lambda item: item[1], reverse = True)): 
+    if x == n:
+        break
+    x += 1
     print(feat, feat_var_scaled[feat], np.min(feat_array[feat]), np.max(feat_array[feat]), feat_var[feat], sum(feat_array[feat]) / len(feat_array[feat]), np.average(feat_array[feat]))
-    print(feat, feat_var_scaled[feat], np.std(feat_array[feat]))

@@ -210,6 +210,10 @@ all_subdirs = os.listdir()
 open_feats_acceler_scaled_max = pd.read_csv("all_feats_acceler/all_feats_acceler_scaled_to_max.csv", index_col = False)
 #open_feats_acceler = pd.read_csv("all_feats_acceler/all_feats_acceler.csv", index_col = False)
 
+#open_feats_heading_scaled = pd.read_csv("all_feats_heading/all_feats_heading_scaled.csv", index_col = False)
+open_feats_heading_scaled_max = pd.read_csv("all_feats_heading/all_feats_heading_scaled_to_max.csv", index_col = False)
+#open_feats_heading = pd.read_csv("all_feats_heading/all_feats_heading.csv", index_col = False)
+
 def make_clusters_multi_feats():
     dict_for_clustering= dict()
     dict_for_clustering[window_size] = dict()
@@ -326,6 +330,29 @@ def make_clusters_multi_feats():
                     
                     #print(len(dict_for_clustering[window_size][subdir_name][some_file][x]))
 
+                if "heading" in subdirname:
+
+                    for index in range(len(open_feats_heading_scaled_max["start"])):
+                        if str(open_feats_heading_scaled_max["start"][index]) != str(x):
+                            continue
+                        if str(open_feats_heading_scaled_max["window_size"][index]) != str(window_size):
+                            continue
+                        if str(open_feats_heading_scaled_max["vehicle"][index]) != str(subdir_name):
+                            continue
+                        if str(open_feats_heading_scaled_max["ride"][index]) != str(only_number):
+                            continue  
+                        #print("Located feats")
+                        for key_name in open_feats_heading_scaled_max.head(): 
+                            if key_name in header:
+                                continue 
+                            if "Unnamed" in key_name:
+                                continue
+                            #dict_for_clustering[window_size][subdir_name][some_file][x]["all_feats_heading_scaled_" + key_name] = open_feats_heading_scaled[key_name][index]
+                            dict_for_clustering[window_size][subdir_name][some_file][x]["all_feats_heading_scaled_to_max_" + key_name] = open_feats_heading_scaled_max[key_name][index]
+                            #dict_for_clustering[window_size][subdir_name][some_file][x]["all_feats_heading_" + key_name] = open_feats_heading[key_name][index]
+                    
+                    #print(len(dict_for_clustering[window_size][subdir_name][some_file][x]))
+
                 if "only_rays" not in subdirname:
     
                     for index in range(len(open_feats_scaled_max["start"])):
@@ -408,52 +435,22 @@ def make_clusters_multi_feats():
 def read_clusters():
     for filename in os.listdir("all_clus/" + subdirname + "/filenames"):
         random_sample_of_cluster(subdirname, load_object("all_clus/" + subdirname + "/filenames/" + filename), 100, 100, filename)
-'''
+
 for subdirname_p1 in ["all", "no_rays"]:
     for subdirname_p2 in ["", "_poly", "_flags", "_poly_flags"]:
-        subdirname = subdirname_p1 + subdirname_p2 + "_no_same_acceler"
-        if not os.path.isdir("all_clus/" + subdirname): 
-            print(subdirname)
-            make_clusters_multi_feats()
-            read_clusters() 
-        subdirname = subdirname_p1 + subdirname_p2 + "_acceler"
-        if not os.path.isdir("all_clus/" + subdirname): 
-            print(subdirname)
-            make_clusters_multi_feats()
-            read_clusters() 
-           
-part2 = ["only_rays_acceler"]
+        for subdirname_p3 in ["", "_no_same"]:
+            for subdirname_p4 in ["", "_acceler", "_heading", "_acceler_heading"]:
+                subdirname = subdirname_p1 + subdirname_p2 + subdirname_p3 + subdirname_p4
+                print(subdirname)
+                #make_clusters_multi_feats()
+                #read_clusters()  
+            
+part2 = []
 for size in os.listdir("rays"):
-    part2.append("only_rays_acceler_size_" + str(size) + "_")
-for subdirname in part2:  
-    if not os.path.isdir("all_clus/" + subdirname): 
+    part2.append("_size_" + str(size) + "_")  
+for subdirname_p1 in ["", "_acceler", "_heading", "_acceler_heading"]:
+    for subdirname_p2 in part2:    
+        subdirname = "only_rays" + subdirname_p1 + subdirname_p2
         print(subdirname)
-        make_clusters_multi_feats()
-        read_clusters() 
-    
-for subdirname_p1 in ["all", "no_rays"]:
-    for subdirname_p2 in ["", "_poly", "_flags", "_poly_flags"]:
-        subdirname = subdirname_p1 + subdirname_p2 + "_no_same"
-        if not os.path.isdir("all_clus/" + subdirname): 
-            print(subdirname)
-            make_clusters_multi_feats()
-            read_clusters() 
-        subdirname = subdirname_p1 + subdirname_p2
-        if not os.path.isdir("all_clus/" + subdirname): 
-            print(subdirname)
-            make_clusters_multi_feats()
-            read_clusters() 
-           
-part2 = ["only_rays"]
-for size in os.listdir("rays"):
-    part2.append("only_rays_size_" + str(size) + "_")
-for subdirname in part2:  
-    if not os.path.isdir("all_clus/" + subdirname): 
-        print(subdirname)
-        make_clusters_multi_feats()
-        read_clusters() 
-'''
-subdirname = "all_acceler"
-print(subdirname)
-make_clusters_multi_feats()
-read_clusters() 
+        #make_clusters_multi_feats()
+        #read_clusters() 
