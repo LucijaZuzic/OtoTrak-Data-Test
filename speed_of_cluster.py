@@ -173,11 +173,11 @@ print("all_clus")
 for subdirname in os.listdir("all_clus/"):
     print("all_clus/" + subdirname)
     for filename in os.listdir("all_clus/" + subdirname + "/filenames"):
+        if not os.path.isdir("all_clus/" + subdirname + "/output_clus/"):
+            os.makedirs("all_clus/" + subdirname + "/output_clus/")
         print("all_clus/" + subdirname + "/filenames/" + filename)
         output_clus = headercsv
         output_clus = speed_cluster(load_object("all_clus/" + subdirname + "/filenames/" + filename), subdirname, filename, output_clus)
-        if not os.path.isdir("all_clus/" + subdirname + "/output_clus/"):
-            os.path.makedirs("all_clus/" + subdirname + "/output_clus/")
         file_clus = open("all_clus/" + subdirname + "/output_clus/" + filename + ".csv")
         file_clus.write(output_clus)
         file_clus.close()
