@@ -54,7 +54,7 @@ for subdir_name in all_subdirs:
         longitudes = list(file_with_ride["fields_longitude"])
         latitudes = list(file_with_ride["fields_latitude"]) 
         times = list(file_with_ride["time"])   
-        headings = list(file_with_ride["fields_speed"])   
+        headings = list(file_with_ride["fields_direction"])   
   
         for x in range(0, len(longitudes) - window_size + 1, step_size):
             longitudes_tmp = longitudes[x:x + window_size]
