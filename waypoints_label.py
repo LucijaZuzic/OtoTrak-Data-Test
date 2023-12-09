@@ -173,6 +173,8 @@ for subdir_name in all_subdirs:
         all_labels_zero = pd.read_csv("all_labels_zero/" + str(subdir_name) + "/" + str(short_file) + "/all_labels_zero_" + str(subdir_name) + "_" + str(short_file) + ".csv", index_col=False)
         all_labels_max = pd.read_csv("all_labels_max/" + str(subdir_name) + "/" + str(short_file) + "/all_labels_max_" + str(subdir_name) + "_" + str(short_file) + ".csv", index_col=False)
         
+        total_probs_zero_sum = [0 for ix in range(len(all_probs_zero["distance_probs_zero"]))]
+        total_probs_zero_mul = [1 for ix in range(len(all_probs_zero["distance_probs_zero"]))]
         all_probs_zero_dict = dict()
         for col in all_probs_zero:
             if "zero" not in col:
@@ -180,7 +182,13 @@ for subdir_name in all_subdirs:
             all_probs_zero_dict[col] = list(all_probs_zero[col])
             for ix in range(len(all_probs_zero_dict[col])):
                 all_probs_zero_dict[col][ix] = float(all_probs_zero_dict[col][ix])
+                total_probs_zero_sum[ix] += float(all_probs_zero_dict[col][ix])
+                total_probs_zero_mul[ix] *= float(all_probs_zero_dict[col][ix])
+        total_probs_zero_sum = [total_prob / len(all_probs_zero.keys()) < 0.1 for total_prob in total_probs_zero_sum]
+        total_probs_zero_mul = [total_prob < 0.1 for total_prob in total_probs_zero_mul]
 
+        total_probs_max_sum = [0 for ix in range(len(all_probs_max["distance_probs_max"]))]
+        total_probs_max_mul = [1 for ix in range(len(all_probs_max["distance_probs_max"]))]
         all_probs_max_dict = dict()
         for col in all_probs_max:
             if "max" not in col:
@@ -188,7 +196,11 @@ for subdir_name in all_subdirs:
             all_probs_max_dict[col] = list(all_probs_max[col])
             for ix in range(len(all_probs_max_dict[col])):
                 all_probs_max_dict[col][ix] = float(all_probs_max_dict[col][ix])
-
+                total_probs_max_sum[ix] += float(all_probs_max_dict[col][ix])
+                total_probs_max_mul[ix] *= float(all_probs_max_dict[col][ix])
+        total_probs_max_sum = [total_prob / len(all_probs_max.keys()) < 0.1 for total_prob in total_probs_max_sum]
+        total_probs_max_mul = [total_prob < 0.1 for total_prob in total_probs_max_mul]
+ 
         all_thr_zero_dict = dict()
         for col in all_thr_zero:
             if "zero" not in col:
@@ -262,8 +274,13 @@ for subdir_name in all_subdirs:
             all_entries_max[entry] += len(all_labels_max_dict[entry])  
             positive_entries_max[entry] += sum(all_labels_max_dict[entry]) 
         
-        plot_anomaly(longitudes, latitudes, all_labels_max_dict["direction_labels_max"], speed_int, all_probs_max_dict["direction_probs_max"], "direction_labels_max")
- 
+        #plot_anomaly(longitudes, latitudes, all_labels_max_dict["direction_labels_max"], speed_int, all_probs_max_dict["direction_probs_max"], "direction_labels_max")
+        plot_anomaly(longitudes, latitudes, total_probs_zero_mul, speed_int, all_probs_max_dict["direction_probs_max"], "total_probs_zero_mul")
+        plot_anomaly(longitudes, latitudes, total_probs_zero_sum, speed_int, all_probs_max_dict["direction_probs_max"], "total_probs_zero_sum")
+        
+        plot_anomaly(longitudes, latitudes, total_probs_max_mul, speed_int, all_probs_max_dict["direction_probs_max"], "total_probs_max_mul")
+        plot_anomaly(longitudes, latitudes, total_probs_max_sum, speed_int, all_probs_max_dict["direction_probs_max"], "total_probs_max_sum")
+
 for entry in dict(sorted(positive_entries_zero.items(), key = lambda item: item[1])): 
     print(entry, positive_entries_zero[entry] / all_entries_zero[entry] * 100)
 
