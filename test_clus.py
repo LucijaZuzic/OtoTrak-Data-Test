@@ -18,7 +18,6 @@ for subdirname in os.listdir("all_clus/"):
             continue
         if not "_test" in filename:
             continue
-        print("all_clus/" + subdirname + "/filenames/" + filename) 
         fname = load_object("all_clus/" + subdirname + "/filenames/" + filename)
         cluster_test = load_object("all_clus/" + subdirname + "/clus_test/" + filename.replace("filenames_in_cluster_test ", "clus_test_"))
         labels_true = dict()
