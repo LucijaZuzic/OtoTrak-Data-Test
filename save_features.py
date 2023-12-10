@@ -24,12 +24,9 @@ all_feats_scaled_to_max_trajs[window_size] = dict()
 
 trajectory_monotonous = dict()
 trajectory_monotonous[window_size] = dict()
-
-flag_list = ["key", "flip", "zone", "engine", "in_zone", "ignition", "sleep_mode", "staff_mode", "buzzer_active", 
-             "in_primary_zone", "in_restricted_zone", "onboard_geofencing", "speed_limit_active"]
-
+  
 trajectory_flags = dict()
-for flag in flag_list:
+for flag in flag_names:
     trajectory_flags[flag] = dict()
     trajectory_flags[flag][window_size] = dict()
 
@@ -39,8 +36,7 @@ label_I = 0
 label_D = 0
  
 total_possible_trajs = 0
-
-metric_names = ["euclidean", "dtw", "simpson", "trapz", "custom", "simpson x", "trapz x", "simpson y", "trapz y", "rays"]
+ 
 metric_names = ["euclidean", "dtw", "simpson", "trapz", "custom", "simpson x", "trapz x", "simpson y", "trapz y"]
 sample_names = dict()
 
@@ -126,7 +122,7 @@ for subdir_name in all_subdirs:
     all_feats_scaled_trajs[window_size][subdir_name] = dict() 
     all_feats_scaled_to_max_trajs[window_size][subdir_name] = dict() 
     trajectory_monotonous[window_size][subdir_name] = dict() 
-    for flag in flag_list:
+    for flag in flag_names:
         trajectory_flags[flag][window_size][subdir_name] = dict()  
 
     all_files = os.listdir(subdir_name + "/cleaned_csv/") 
@@ -152,7 +148,7 @@ for subdir_name in all_subdirs:
         all_feats_scaled_trajs[window_size][subdir_name][only_num_ride] = dict()
         all_feats_scaled_to_max_trajs[window_size][subdir_name][only_num_ride] = dict() 
         trajectory_monotonous[window_size][subdir_name][only_num_ride] = dict() 
-        for flag in flag_list:
+        for flag in flag_names:
             trajectory_flags[flag][window_size][subdir_name][only_num_ride] = dict() 
     
         file_with_ride = pd.read_csv(subdir_name + "/cleaned_csv/" + some_file)
@@ -160,14 +156,14 @@ for subdir_name in all_subdirs:
         latitudes = list(file_with_ride["fields_latitude"]) 
         times = list(file_with_ride["time"])  
         flags_dict = dict()
-        for flag in flag_list:
+        for flag in flag_names:
             flags_dict[flag] = list(file_with_ride["fields_" + flag])
   
         for x in range(0, len(longitudes) - window_size + 1, step_size):
             longitudes_tmp = longitudes[x:x + window_size]
             latitudes_tmp = latitudes[x:x + window_size]
             times_tmp = times[x:x + window_size] 
-            for flag in flag_list:
+            for flag in flag_names:
                 trajectory_flags_tmp = flags_dict[flag][x:x + window_size] 
  
                 count_limit = False 
@@ -206,22 +202,19 @@ for subdir_name in all_subdirs:
             trajs_in_dir += 1 
 
             all_possible_trajs[window_size][subdir_name][only_num_ride][x] = {"long": longitudes_tmp_transform, "lat": latitudes_tmp_transform, "time": times_tmp_transform}
-
-            #turn_angles = mean_vect_turning_angles(longitudes_tmp_transform, latitudes_tmp_transform)  
+ 
             sp_len = mean_speed_len(longitudes_tmp_transform, latitudes_tmp_transform, times_tmp_transform)  
             sp_offset = mean_speed_offset(longitudes_tmp_transform, latitudes_tmp_transform, times_tmp_transform)   
             surfarea = total_surf(longitudes_tmp_transform, latitudes_tmp_transform) 
             surf_trapz_x, surf_trapz_y = get_surf_xt_yt(longitudes_tmp_transform, latitudes_tmp_transform, times_tmp_transform, "trapz")
             surf_simpson_x, surf_simpson_y = get_surf_xt_yt(longitudes_tmp_transform, latitudes_tmp_transform, times_tmp_transform, "simpson")
-              
-            #turn_angles_scaled = mean_vect_turning_angles(longitudes_scaled, latitudes_scaled)  
+                
             sp_len_scaled = mean_speed_len(longitudes_scaled, latitudes_scaled, times_tmp_transform)  
             sp_offset_scaled = mean_speed_offset(longitudes_scaled, latitudes_scaled, times_tmp_transform)   
             surfarea_scaled = total_surf(longitudes_scaled, latitudes_scaled)  
             surf_trapz_x_scaled, surf_trapz_y_scaled = get_surf_xt_yt(longitudes_scaled, latitudes_scaled, times_tmp_transform, "trapz")
             surf_simpson_x_scaled, surf_simpson_y_scaled = get_surf_xt_yt(longitudes_scaled, latitudes_scaled, times_tmp_transform, "simpson") 
-        
-            #turn_angles_scaled_to_max = mean_vect_turning_angles(longitudes_scaled_to_max, latitudes_scaled_to_max)  
+         
             sp_len_scaled_to_max = mean_speed_len(longitudes_scaled_to_max, latitudes_scaled_to_max, times_tmp_transform)  
             sp_offset_scaled_to_max = mean_speed_offset(longitudes_scaled_to_max, latitudes_scaled_to_max, times_tmp_transform)   
             surfarea_scaled_to_max = total_surf(longitudes_scaled_to_max, latitudes_scaled_to_max)   
@@ -255,7 +248,7 @@ for subdir_name in all_subdirs:
             if len(lat_sgn) == 1 and len(long_sgn) == 1:
                 xy_poly_scaled_to_max = np.polyfit(longitudes_scaled_to_max, latitudes_scaled_to_max, deg)
 
-            all_feats_trajs[window_size][subdir_name][only_num_ride][x] = {#"mean_vect_turning_angles": turn_angles / np.pi * 180, 
+            all_feats_trajs[window_size][subdir_name][only_num_ride][x] = { 
                                                                            "max_x": max(longitudes_tmp_transform),
                                                                            "max_y": max(latitudes_tmp_transform),
                                                                            "surf_trapz_x": surf_trapz_x, 
@@ -282,7 +275,7 @@ for subdir_name in all_subdirs:
                     all_feats_trajs[window_size][subdir_name][only_num_ride][x][sample_name + "_same_" + metric_name] = compare_traj_and_sample(newx, newy, range(len(newx)), {"long": longitudes_tmp_transform, "lat": latitudes_tmp_transform, "time": times_tmp_transform}, metric_name, False, False, True, True, dotsx_original, dotsy_original)
                     all_feats_trajs[window_size][subdir_name][only_num_ride][x][sample_name + "_diff_" + metric_name] = compare_traj_and_sample(oldx, oldy, range(len(oldx)), {"long": longitudes_tmp_transform, "lat": latitudes_tmp_transform, "time": times_tmp_transform}, metric_name, False, False, True, True, dotsx_original, dotsy_original)
 
-            all_feats_scaled_trajs[window_size][subdir_name][only_num_ride][x] = {#"mean_vect_turning_angles": turn_angles_scaled / np.pi * 180, 
+            all_feats_scaled_trajs[window_size][subdir_name][only_num_ride][x] = { 
                                                                            "max_x": max(longitudes_scaled),
                                                                            "max_y": max(latitudes_scaled),
                                                                            "surf_trapz_x": surf_trapz_x_scaled, 
@@ -309,7 +302,7 @@ for subdir_name in all_subdirs:
                     all_feats_scaled_trajs[window_size][subdir_name][only_num_ride][x][sample_name + "_same_" + metric_name] = compare_traj_and_sample(newx, newy, range(len(newx)), {"long": longitudes_scaled, "lat": latitudes_scaled, "time": times_tmp_transform}, metric_name)
                     all_feats_scaled_trajs[window_size][subdir_name][only_num_ride][x][sample_name + "_diff_" + metric_name] = compare_traj_and_sample(oldx, oldy, range(len(oldx)), {"long": longitudes_scaled, "lat": latitudes_scaled, "time": times_tmp_transform}, metric_name)
 
-            all_feats_scaled_to_max_trajs[window_size][subdir_name][only_num_ride][x] = {#"mean_vect_turning_angles": turn_angles_scaled_to_max / np.pi * 180, 
+            all_feats_scaled_to_max_trajs[window_size][subdir_name][only_num_ride][x] = {  
                                                                            "max_x": max(longitudes_scaled_to_max),
                                                                            "max_y": max(latitudes_scaled_to_max),
                                                                            "surf_trapz_x": surf_trapz_x_scaled_to_max, 
@@ -358,6 +351,6 @@ print("NF", label_NF, "NM", label_NM, "D", label_D, "I", label_I)
 if not os.path.isdir("all_feats"):
     os.makedirs("all_feats")
 
-process_csv(trajectory_flags, trajectory_monotonous, window_size, all_possible_trajs, sample_names, metric_names, deg, flag_list, all_feats_trajs, "all_feats/all_feats.csv")
-process_csv(trajectory_flags, trajectory_monotonous, window_size, all_possible_trajs, sample_names, metric_names, deg, flag_list, all_feats_scaled_trajs, "all_feats/all_feats_scaled.csv")
-process_csv(trajectory_flags, trajectory_monotonous, window_size, all_possible_trajs, sample_names, metric_names, deg, flag_list, all_feats_scaled_to_max_trajs, "all_feats/all_feats_scaled_to_max.csv")
+process_csv(trajectory_flags, trajectory_monotonous, window_size, all_possible_trajs, sample_names, metric_names, deg, all_feats_trajs, "all_feats/all_feats.csv")
+process_csv(trajectory_flags, trajectory_monotonous, window_size, all_possible_trajs, sample_names, metric_names, deg, all_feats_scaled_trajs, "all_feats/all_feats_scaled.csv")
+process_csv(trajectory_flags, trajectory_monotonous, window_size, all_possible_trajs, sample_names, metric_names, deg, all_feats_scaled_to_max_trajs, "all_feats/all_feats_scaled_to_max.csv")

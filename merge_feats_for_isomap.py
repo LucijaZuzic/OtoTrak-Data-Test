@@ -1,286 +1,206 @@
+from utilities import * 
+from sklearn.manifold import Isomap
 
-from utilities import *
+window_size = 20
+deg = 5
+maxoffset = 0.005
+step_size = window_size
+#step_size = 1 
+ 
+all_subdirs = os.listdir() 
+ 
+def one_isomaps(type_clus, attempt, train_arr, test_arr, clus_params, sd_subdir_train, sd_ride_train, sd_start_train, sd_window_train, sd_subdir_test, sd_ride_test, sd_start_test, sd_window_test):
+    clus_train = attempt.fit(train_arr)
+    train_labels = clus_train.labels_ 
 
-#open_feats_acceler_scaled = pd.read_csv("all_feats_acceler/all_feats_acceler_scaled.csv", index_col = False)
-open_feats_acceler_scaled_max = pd.read_csv("all_feats_acceler/all_feats_acceler_scaled_to_max.csv", index_col = False)
-#open_feats_acceler = pd.read_csv("all_feats_acceler/all_feats_acceler.csv", index_col = False)
+    if not os.path.isdir("all_isomap/" + subdirname + "/clus_train/"):
+        os.makedirs("all_isomap/" + subdirname + "/clus_train/")
+	
+    save_object("all_isomap/" + subdirname + "/clus_train/clus_train_" + type_clus + " train " + str(clus_params), clus_train) 
+       
+    train_embedded = train_arr
+    test_embedded = test_arr
 
-#open_feats_heading_scaled = pd.read_csv("all_feats_heading/all_feats_heading_scaled.csv", index_col = False)
-open_feats_heading_scaled_max = pd.read_csv("all_feats_heading/all_feats_heading_scaled_to_max.csv", index_col = False)
-#open_feats_heading = pd.read_csv("all_feats_heading/all_feats_heading.csv", index_col = False)
+    dict_train_by_label = dict()
+    for label in train_labels:
+        dict_train_by_label[label] = {"x": [], "y": []}
+	
+    filenames_in_cluster_train = dict()
+    for label_index in range(len(train_labels)):
+        label = train_labels[label_index]
+        dict_train_by_label[label]["x"].append(float(train_embedded[label_index][0]))
+        dict_train_by_label[label]["y"].append(float(train_embedded[label_index][1]))
+        if label not in filenames_in_cluster_train:
+            filenames_in_cluster_train[label] = []
+        filenames_in_cluster_train[label].append({"short_name": sd_subdir_train[label_index] + "/" + sd_ride_train[label_index], "window": sd_window_train[label_index], "start": sd_start_train[label_index]})
+	
+    if type_clus == "KMeans":
+        clus_test = attempt.predict(test_arr) 
+        test_labels = clus_test
+    if type_clus == "DBSCAN":
+        clus_test = attempt.fit_predict(test_arr) 
+        test_labels = clus_test
 
+    if not os.path.isdir("all_isomap/" + subdirname + "/clus_test/"):
+        os.makedirs("all_isomap/" + subdirname + "/clus_test/")
+	
+    save_object("all_isomap/" + subdirname + "/clus_test/clus_test_" + type_clus + " test " + str(clus_params), clus_test) 
 
-header = ["start", "window_size", "vehicle", "ride"] 
-def add_key(key, val, wheradd):
-    if "monoto" not in key:
-        if math.isnan(val):
-            wheradd.append(0)
-        else:
-            wheradd.append(val) 
-    else:
-        if val == "I":
-            wheradd.append(3)
-        if val == "D":
-            wheradd.append(2)
-        if val == "NM":
-            wheradd.append(1)
-        if val == "NF":
-            wheradd.append(0)
-    return wheradd
-def speed_cluster(files_in_cluster, sdn, filename, output): 
-    avg_values = dict()
-    var_iso = output
-    std_iso = output
-    varscaled_iso = output
-    stdscaled_iso = output
-    avg_iso = output
-    min_iso = output
-    max_iso = output
-    range_iso = output
-    for cluster in files_in_cluster:
-        if len(files_in_cluster[cluster]) > 0:
-            avg_values[cluster] = dict()
-            var_iso += str(sdn) + "," + str(filename) + "," + str(cluster) + "," + str(len(files_in_cluster[cluster])) + ","
-            std_iso += str(sdn) + "," + str(filename) + "," + str(cluster) + "," + str(len(files_in_cluster[cluster])) + ","
-            varscaled_iso += str(sdn) + "," + str(filename) + "," + str(cluster) + "," + str(len(files_in_cluster[cluster])) + ","
-            stdscaled_iso += str(sdn) + "," + str(filename) + "," + str(cluster) + "," + str(len(files_in_cluster[cluster])) + ","
-            avg_iso += str(sdn) + "," + str(filename) + "," + str(cluster) + "," + str(len(files_in_cluster[cluster])) + ","
-            min_iso += str(sdn) + "," + str(filename) + "," + str(cluster) + "," + str(len(files_in_cluster[cluster])) + ","
-            max_iso += str(sdn) + "," + str(filename) + "," + str(cluster) + "," + str(len(files_in_cluster[cluster])) + ","
-            range_iso += str(sdn) + "," + str(filename) + "," + str(cluster) + "," + str(len(files_in_cluster[cluster])) + ","
-            for index in range(len(files_in_cluster[cluster])): 
-                name_file = files_in_cluster[cluster][index]["short_name"]
-                vehicle_ride = name_file.split("/") 
-                subdir_name = vehicle_ride[0] 
+    dict_test_by_label = dict()
+    for label in clus_test:
+        dict_test_by_label[label] = {"x": [], "y": []}
+	
+    filenames_in_cluster_test = dict()
+    for label_index in range(len(clus_test)):
+        label = clus_test[label_index]
+        dict_test_by_label[label]["x"].append(test_embedded[label_index][0])
+        dict_test_by_label[label]["y"].append(test_embedded[label_index][1])
+        if label not in filenames_in_cluster_test:
+            filenames_in_cluster_test[label] = []
+        filenames_in_cluster_test[label].append({"short_name": sd_subdir_test[label_index] + "/" + sd_ride_test[label_index], "window": sd_window_test[label_index], "start": sd_start_test[label_index]})
+	
+    random_colors_set = random_colors(len(set(dict_train_by_label.keys()).union(set(dict_test_by_label.keys()))))
+    random_colors_dict = dict()
+    index_num = 0
+    for label in set(dict_train_by_label.keys()).union(set(dict_test_by_label.keys())):
+        random_colors_dict[label] = random_colors_set[index_num]
+        index_num += 1
+ 
+    plt.rcParams.update({'font.size': 22})
+    plt.figure(figsize=(20, 10))
+    plt.subplot(1, 2, 1)
+    label_index = 0 
+    for label in dict_train_by_label:  
+        plt.title(type_clus + " train " + str(clus_params))  
+        plt.scatter(dict_train_by_label[label]["x"], dict_train_by_label[label]["y"], color = random_colors_dict[label], label = str(label) + " train")   
+        label_index += 1 
+    plt.legend()
+    plt.subplot(1, 2, 2) 
+    label_index = 0
+    for label in dict_test_by_label:  
+        plt.title(type_clus + " test " + str(clus_params))    
+        plt.scatter(dict_test_by_label[label]["x"], dict_test_by_label[label]["y"], color = random_colors_dict[label], label = str(label) + " test")  
+        label_index += 1
+    plt.legend()
+    if not os.path.isdir("all_isomap/" + subdirname + "/plots/"):
+        os.makedirs("all_isomap/" + subdirname + "/plots/")
+    plt.savefig("all_isomap/" + subdirname + "/plots/" + type_clus + " test " + str(clus_params) + ".png") 
+    plt.close()
 
-                #open_feats_scaled = pd.read_csv("all_feats/all_feats_scaled_" + subdir_name + ".csv", index_col = False)
-                open_feats_scaled_max = pd.read_csv("all_feats/all_feats_scaled_to_max_" + subdir_name + ".csv", index_col = False)
-                #open_feats = pd.read_csv("all_feats/all_feats_" + subdir_name + ".csv", index_col = False)
+    score_train = "undefined"
+    if len(dict_train_by_label) > 1:
+        score_train = silhouette_score(train_arr, train_labels)
+		
+    score_test = "undefined"
+    if len(dict_test_by_label) > 1:
+        score_test = silhouette_score(test_arr, test_labels) 
+ 
+    if not os.path.isdir("all_isomap/" + subdirname + "/filenames/"):
+        os.makedirs("all_isomap/" + subdirname + "/filenames/")
+	
+    save_object("all_isomap/" + subdirname + "/filenames/filenames_in_cluster_train " + type_clus + " test " + str(clus_params), filenames_in_cluster_train)
+    save_object("all_isomap/" + subdirname + "/filenames/filenames_in_cluster_test " + type_clus + " test " + str(clus_params), filenames_in_cluster_test) 
+    
+    if type_clus == "KMeans":
+        return attempt.inertia_, score_train, score_test 
+    if type_clus == "DBSCAN":
+        return score_train, score_test 
 
-                only_number = vehicle_ride[1].replace("events_", "").replace(".csv", "")
+def make_isomaps(type_clus, sd_window_train, sd_subdir_train, sd_ride_train, sd_start_train, sd_x_train, sd_window_test, sd_subdir_test, sd_ride_test, sd_start_test, sd_x_test):
+	 
+    vals_clus = range(2, 11)   
+    
+    inertia_list = []
+    silhouette_list_train = []
+    silhouette_list_test = []
+    vals_clus_sil_train = []
+    vals_clus_sil_test = [] 
 
-                dsmax = dict()
-                #dsc = dict()
-                #dpp = dict()
-                #d = dict()
-                nsmax = dict()
-                #nsc = dict()
-                #npp = dict()
-                #n = dict() 
-                for size in os.listdir("rays"):   
-                    start_path = "rays/" + str(size) + "/" + subdir_name + "/" + only_number
-                    dsmax[size] = pd.read_csv(start_path + "/all_distances_scaled_to_max_trajs.csv", index_col = False)
-                    #dsc[size] = pd.read_csv(start_path + "/all_distances_scaled_trajs.csv", index_col = False)
-                    #dpp[size] = pd.read_csv(start_path + "/all_distances_preprocessed_trajs.csv", index_col = False)
-                    #d[size] = pd.read_csv(start_path + "/all_distances_trajs.csv", index_col = False)
-                    nsmax[size] = load_object(start_path + "/all_nums_scaled_to_max_trajs")
-                    #nsc[size] = load_object(start_path + "/all_nums_scaled_trajs")
-                    #npp[size] = load_object(start_path + "/all_nums_preprocessed_trajs")
-                    #n[size] = load_object(start_path + "/all_nums_trajs") 
+    for val_clus in vals_clus:
+        if type_clus == "KMeans":
+            attempt = KMeans(n_clusters = val_clus, random_state = 42) 
+            inertia_val, siltrain, siltest = one_isomaps(type_clus, attempt, sd_x_train, sd_x_test, "nclus " + str(val_clus), sd_subdir_train, sd_ride_train, sd_start_train, sd_window_train, sd_subdir_test, sd_ride_test, sd_start_test, sd_window_test)
+            inertia_list.append(inertia_val)
 
-                window_size = files_in_cluster[cluster][index]["window"]
-                x = files_in_cluster[cluster][index]["start"] 
+        if type_clus == "DBSCAN": 
+            new_eps = kneefind(int(len(sd_x_train) // val_clus), sd_x_train)
+            attempt = DBSCAN(min_samples = int(len(sd_x_train) // val_clus), eps = new_eps) 
+            siltrain, siltest = one_isomaps(type_clus, attempt, sd_x_train, sd_x_test, "nclus " + str(val_clus), sd_subdir_train, sd_ride_train, sd_start_train, sd_window_train, sd_subdir_test, sd_ride_test, sd_start_test, sd_window_test)
+  
+        if siltrain != "undefined":
+            silhouette_list_train.append(siltrain)
+            vals_clus_sil_train.append(val_clus)
 
-                for index in range(len(open_feats_scaled_max["start"])):
-                    if str(open_feats_scaled_max["start"][index]) != str(x):
-                        continue
-                    if str(open_feats_scaled_max["window_size"][index]) != str(window_size):
-                        continue
-                    if str(open_feats_scaled_max["vehicle"][index]) != str(subdir_name):
-                        continue
-                    if str(open_feats_scaled_max["ride"][index]) != str(only_number):
-                        continue   
-                    for key_name in open_feats_scaled_max.head(): 
-                        if key_name in header:
-                            continue 
-                        if "diff" in key_name:
-                            continue
-                        if "Unnamed" in key_name:
-                            continue
-                        if key_name not in avg_values[cluster]:
-                            avg_values[cluster][key_name] = []
-                        avg_values[cluster][key_name] = add_key(key_name, open_feats_scaled_max[key_name][index], avg_values[cluster][key_name]) 
-                    
-                for size in os.listdir("rays"):   
-                    for index in range(len(dsmax[size]["start"])):
-                        if str(dsmax[size]["start"][index]) != str(x):
-                            continue
-                        if str(dsmax[size]["window_size"][index]) != str(window_size):
-                            continue
-                        if str(dsmax[size]["vehicle"][index]) != str(subdir_name):
-                            continue
-                        if str(dsmax[size]["ride"][index]) != str(only_number):
-                            continue   
-                        for key_name in dsmax[size].head(): 
-                            if key_name in header:
-                                continue
-                            if "offset" not in key_name:
-                                continue
-                            if "only offset" in key_name:
-                                continue
-                            if str(size) + "_d_" + key_name not in avg_values[cluster]:
-                                avg_values[cluster][str(size) + "_d_" + key_name] = []
-                            avg_values[cluster][str(size) + "_d_" + key_name] = add_key(key_name, dsmax[size][key_name][index], avg_values[cluster][str(size) + "_d_" + key_name])  
-                            
-                    if x in nsmax[size]:
-                        for key_name in nsmax[size][x]:
-                            if key_name != "offset":  
-                                continue
-                            if str(size) + "_n_" + key_name not in avg_values[cluster]:
-                                avg_values[cluster][str(size) + "_n_" + key_name] = []
-                            avg_values[cluster][str(size) + "_n_" + key_name] = add_key(key_name, nsmax[size][x][key_name], avg_values[cluster][str(size) + "_n_" + key_name])  
+        if siltest != "undefined":
+            silhouette_list_test.append(siltest) 
+            vals_clus_sil_test.append(val_clus)
 
-                for index in range(len(open_feats_acceler_scaled_max["start"])):
-                    if str(open_feats_acceler_scaled_max["start"][index]) != str(x):
-                        continue
-                    if str(open_feats_acceler_scaled_max["window_size"][index]) != str(window_size):
-                        continue
-                    if str(open_feats_acceler_scaled_max["vehicle"][index]) != str(subdir_name):
-                        continue
-                    if str(open_feats_acceler_scaled_max["ride"][index]) != str(only_number):
-                        continue    
-                    for key_name in open_feats_acceler_scaled_max.head(): 
-                        if key_name in header:
-                            continue 
-                        if "Unnamed" in key_name:
-                            continue
-                        if key_name not in avg_values[cluster]:
-                            avg_values[cluster][key_name] = [] 
-                        avg_values[cluster][key_name] = add_key(key_name, open_feats_acceler_scaled_max[key_name][index], avg_values[cluster][key_name])  
-                        
-                for index in range(len(open_feats_heading_scaled_max["start"])):
-                    if str(open_feats_heading_scaled_max["start"][index]) != str(x):
-                        continue
-                    if str(open_feats_heading_scaled_max["window_size"][index]) != str(window_size):
-                        continue
-                    if str(open_feats_heading_scaled_max["vehicle"][index]) != str(subdir_name):
-                        continue
-                    if str(open_feats_heading_scaled_max["ride"][index]) != str(only_number):
-                        continue    
-                    for key_name in open_feats_heading_scaled_max.head(): 
-                        if key_name in header:
-                            continue 
-                        if "Unnamed" in key_name:
-                            continue
-                        if key_name not in avg_values[cluster]:
-                            avg_values[cluster][key_name] = [] 
-                        avg_values[cluster][key_name] = add_key(key_name, open_feats_heading_scaled_max[key_name][index], avg_values[cluster][key_name])  
+    if len(silhouette_list_train) > 0:
+        print(max(silhouette_list_train), vals_clus_sil_train[silhouette_list_train.index(max(silhouette_list_train))])
+   
+    if len(silhouette_list_test) > 0:
+        print(max(silhouette_list_test), vals_clus_sil_test[silhouette_list_test.index(max(silhouette_list_test))])	
+      
+def make_isomaps_multi_feats(subdirname):
+    dict_for_clustering= dict()
+    dict_for_clustering[window_size] = dict() 
 
-            for key_name in avg_values[cluster]:                     
-                var_iso += str(np.var(avg_values[cluster][key_name])) + ","
-            var_iso = var_iso[:-1]
-            var_iso += "\n"
+    dict_for_clustering = load_object("dict_for_clustering")
+    train_rides = load_object("train_rides")
+    test_rides = load_object("test_rides")
 
-            for key_name in avg_values[cluster]:                     
-                std_iso += str(np.std(avg_values[cluster][key_name])) + ","
-            std_iso = std_iso[:-1]
-            std_iso += "\n"
+    sd_window_train = load_object("sd_window_train")
+    sd_subdir_train = load_object("sd_subdir_train")
+    sd_ride_train = load_object("sd_ride_train") 
+    sd_start_train = load_object("sd_start_train") 
+    sd_ride_test = load_object("sd_ride_test") 
+    sd_x_train = load_object("sd_x_train") 
 
-            for key_name in avg_values[cluster]:                     
-                varscaled_iso += str(np.var(avg_values[cluster][key_name]) / ((max(avg_values[cluster][key_name]) - min(avg_values[cluster][key_name])) ** 2)) + ","
-            varscaled_iso = varscaled_iso[:-1]
-            varscaled_iso += "\n"
+    sd_window_test = load_object("sd_window_test")
+    sd_subdir_test = load_object("sd_subdir_test")
+    sd_ride_test = load_object("sd_ride_test") 
+    sd_start_test = load_object("sd_start_test") 
+    sd_ride_test = load_object("sd_ride_test") 
+    sd_x_test = load_object("sd_x_test") 
+ 
+    sd_window_train, sd_subdir_train, sd_ride_train, sd_start_train, sd_x_train, sd_window_test, sd_subdir_test, sd_ride_test, sd_start_test, sd_x_test  = divide_train_test(dict_for_clustering, train_rides, test_rides, subdirname)
+    print(len(sd_x_train), len(sd_x_train[0]), sd_x_train[0][:10])
+    print(len(sd_x_test))
+    embedding = Isomap(n_components=2)
+    isomap_new = embedding.fit(sd_x_train)
+    sd_x_train = isomap_new.transform(sd_x_train) 
+    sd_x_test = isomap_new.transform(sd_x_test)
 
-            for key_name in avg_values[cluster]:                     
-                stdscaled_iso += str(np.std(avg_values[cluster][key_name]) / (max(avg_values[cluster][key_name]) - min(avg_values[cluster][key_name]))) + ","
-            stdscaled_iso = stdscaled_iso[:-1]
-            stdscaled_iso += "\n"
+    if not os.path.isdir("all_isomap/" + subdirname + "/isomap/"):
+        os.makedirs("all_isomap/" + subdirname + "/isomap/")
+	
+    save_object("all_isomap/" + subdirname + "/isomap/transform_train", sd_x_train)
+    save_object("all_isomap/" + subdirname + "/isomap/transform_test", sd_x_test) 
+    save_object("all_isomap/" + subdirname + "/isomap/isomap_new", isomap_new) 
 
-            for key_name in avg_values[cluster]:                     
-                avg_iso += str(sum(avg_values[cluster][key_name]) / len(avg_values[cluster][key_name])) + ","
-            avg_iso = avg_iso[:-1]
-            avg_iso += "\n"
-
-            for key_name in avg_values[cluster]:                     
-                min_iso += str(min(avg_values[cluster][key_name])) + ","
-            min_iso = min_iso[:-1]
-            min_iso += "\n"
-
-            for key_name in avg_values[cluster]:                     
-                max_iso += str(max(avg_values[cluster][key_name])) + ","
-            max_iso = max_iso[:-1]
-            max_iso += "\n"
-
-            for key_name in avg_values[cluster]:                     
-                range_iso += str(max(avg_values[cluster][key_name]) - min(avg_values[cluster][key_name])) + ","
-            range_iso = range_iso[:-1]
-            range_iso += "\n"
-              
-    return var_iso, std_iso, varscaled_iso, stdscaled_iso, avg_iso, min_iso, max_iso, range_iso
-headercsv = "subdir,file,cluster,size,"
-open_feats_scaled_maxtmp = pd.read_csv("all_feats/all_feats_scaled_to_max_Vehicle_11.csv", index_col = False)
-for key_name in open_feats_scaled_maxtmp.head(): 
-    if key_name in header:
-        continue 
-    if "diff" in key_name:
-        continue
-    if "Unnamed" in key_name:
-        continue
-    headercsv += str(key_name) + ","
-dsmaxtmp = dict() 
-nsmaxtmp = dict() 
-for size in os.listdir("rays"):   
-    start_path = "rays/" + str(size) + "/Vehicle_11/8354807"
-    dsmaxtmp[size] = pd.read_csv(start_path + "/all_distances_scaled_to_max_trajs.csv", index_col = False) 
-    nsmaxtmp[size] = load_object(start_path + "/all_nums_scaled_to_max_trajs")   
-    for key_name in dsmaxtmp[size].head(): 
-        if key_name in header:
-            continue
-        if "offset" not in key_name:
-            continue
-        if "only offset" in key_name:
-            continue
-        headercsv += str(size) + "_d_" + str(key_name) + "," 
-    for key_name in nsmaxtmp[size][0]:
-        if key_name != "offset":
-            continue
-        headercsv += str(size) + "_n_" + str(key_name) + ","
-for key_name in open_feats_acceler_scaled_max.head(): 
-    if key_name in header:
-        continue 
-    if "Unnamed" in key_name:
-        continue 
-    headercsv += str(key_name) + ","
-for key_name in open_feats_heading_scaled_max.head(): 
-    if key_name in header:
-        continue 
-    if "Unnamed" in key_name:
-        continue 
-    headercsv += str(key_name) + ","
-headercsv = headercsv[:-1]
-headercsv += "\n" 
-print("all_isomap")
-for subdirname in os.listdir("all_isomap/"):
-    print("all_isomap/" + subdirname)
-    for filename in os.listdir("all_isomap/" + subdirname + "/filenames"):
-        if not os.path.isdir("all_isomap/" + subdirname + "/output_isomap/"):
-            os.makedirs("all_isomap/" + subdirname + "/output_isomap/")
-        if os.path.isfile("all_isomap/" + subdirname + "/output_isomap/" + filename + ".csv"):
-            continue
-        print("all_isomap/" + subdirname + "/filenames/" + filename)
-        output_iso = headercsv
-        var_iso, std_iso, varscaled_iso, stdscaled_iso, avg_iso, min_iso, max_iso, range_iso = speed_cluster(load_object("all_isomap/" + subdirname + "/filenames/" + filename), subdirname, filename, output_iso)
-        file_iso = open("all_isomap/" + subdirname + "/output_isomap/" + filename + "_var.csv", "w")
-        file_iso.write(var_iso)
-        file_iso.close()
-        file_iso = open("all_isomap/" + subdirname + "/output_isomap/" + filename + "_std.csv", "w")
-        file_iso.write(std_iso)
-        file_iso.close() 
-        file_iso = open("all_isomap/" + subdirname + "/output_isomap/" + filename + "_var_scaled.csv", "w")
-        file_iso.write(varscaled_iso)
-        file_iso.close()
-        file_iso = open("all_isomap/" + subdirname + "/output_isomap/" + filename + "_std_scaled.csv", "w")
-        file_iso.write(stdscaled_iso)
-        file_iso.close() 
-        file_iso = open("all_isomap/" + subdirname + "/output_isomap/" + filename + "_avg.csv", "w")
-        file_iso.write(avg_iso)
-        file_iso.close()
-        file_iso = open("all_isomap/" + subdirname + "/output_isomap/" + filename + "_min.csv", "w")
-        file_iso.write(min_iso)
-        file_iso.close()
-        file_iso = open("all_isomap/" + subdirname + "/output_isomap/" + filename + "_max.csv", "w")
-        file_iso.write(max_iso)
-        file_iso.close()
-        file_iso = open("all_isomap/" + subdirname + "/output_isomap/" + filename + "_range.csv", "w")
-        file_iso.write(range_iso)
-        file_iso.close()
+    make_isomaps("KMeans", sd_window_train, sd_subdir_train, sd_ride_train, sd_start_train, sd_x_train, sd_window_test, sd_subdir_test, sd_ride_test, sd_start_test, sd_x_test)
+    make_isomaps("DBSCAN", sd_window_train, sd_subdir_train, sd_ride_train, sd_start_train, sd_x_train, sd_window_test, sd_subdir_test, sd_ride_test, sd_start_test, sd_x_test)
+'''
+for subdirname_p1 in ["all", "no_rays"]:
+    for subdirname_p2 in ["", "_poly", "_flags", "_poly_flags"]:
+        for subdirname_p3 in ["", "_no_same", "_no_xy", "_no_same_no_xy"]:
+            for subdirname_p4 in ["", "_acceler", "_heading", "_acceler_heading"]:
+                subdirname = subdirname_p1 + subdirname_p2 + subdirname_p3 + subdirname_p4
+                print(subdirname)
+                make_isomaps_multi_feats(subdirname)
+                read_isomaps(subdirname) 
+            
+part2 = []
+for size in os.listdir("rays"):
+    part2.append("_size_" + str(size) + "_")  
+for subdirname_p1 in ["", "_acceler", "_heading", "_acceler_heading"]:
+    for subdirname_p2 in part2:    
+        subdirname = "only_rays" + subdirname_p1 + subdirname_p2
+        print(subdirname)
+        make_isomaps_multi_feats(subdirname)
+        read_isomaps(subdirname)
+''' 
+subdirname = "all_poly_no_xy_acceler_heading"
+print(subdirname)
+make_isomaps_multi_feats(subdirname)
+read_isomaps(subdirname) 

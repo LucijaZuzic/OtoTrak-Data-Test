@@ -1,7 +1,7 @@
 from utilities import * 
 from sklearn.manifold import TSNE
  
-def divide_train_test(properties, train_set, test_set): 
+def divide_train_test_new(properties, train_set, test_set): 
     sd_window_train = []
     sd_subdir_train = []
     sd_ride_train = []
@@ -102,7 +102,6 @@ step_size = window_size
 #step_size = 1 
 
 header = ["start", "window_size", "vehicle", "ride"] 
-skip = ["key", "flip", "zone", "engine", "in_zone", "ignition", "sleep_mode", "staff_mode", "buzzer_active", "in_primary_zone", "in_restricted_zone", "onboard_geofencing", "speed_limit_active"]
 all_subdirs = os.listdir() 
 
 #open_feats_acceler_scaled = pd.read_csv("all_feats_acceler/all_feats_acceler_scaled.csv", index_col = False)
@@ -113,7 +112,7 @@ open_feats_acceler_scaled_max = pd.read_csv("all_feats_acceler/all_feats_acceler
 open_feats_heading_scaled_max = pd.read_csv("all_feats_heading/all_feats_heading_scaled_to_max.csv", index_col = False)
 #open_feats_heading = pd.read_csv("all_feats_heading/all_feats_heading.csv", index_col = False)
  
-def make_clusters_multi_feats():
+def save_a_cluster_vector(subdirname):
     dict_for_clustering= dict()
     dict_for_clustering[window_size] = dict()
     train_names = set()
@@ -266,10 +265,8 @@ def make_clusters_multi_feats():
                         for key_name in open_feats_scaled_max.head(): 
                             if key_name in header:
                                 continue
-                            if key_name in skip and "flags" not in subdirname:
-                                continue
-                            if "turning" in key_name:
-                                continue
+                            if key_name in flag_names and "flags" not in subdirname:
+                                continue 
                             if "poly" in key_name and "poly" not in subdirname:
                                 continue 
                             if "same" in key_name and "no_same" in subdirname:
@@ -327,10 +324,10 @@ def make_clusters_multi_feats():
     save_object("dict_for_clustering", dict_for_clustering)
     save_object("train_rides", train_rides)
     save_object("test_rides", test_rides)
-    return divide_train_test(dict_for_clustering, train_rides, test_rides)
+    return divide_train_test_new(dict_for_clustering, train_rides, test_rides)
 
 subdirname = "all_poly_flags_acceler_heading" 
-feat_names, feat_array, feat_array_train, feat_array_test, sd_window_train, sd_subdir_train, sd_ride_train, sd_start_train, sd_x_train, sd_window_test, sd_subdir_test, sd_ride_test, sd_start_test, sd_x_test = make_clusters_multi_feats()
+feat_names, feat_array, feat_array_train, feat_array_test, sd_window_train, sd_subdir_train, sd_ride_train, sd_start_train, sd_x_train, sd_window_test, sd_subdir_test, sd_ride_test, sd_start_test, sd_x_test = save_a_cluster_vector(subdirname)
 
 save_object("feat_names", feat_names)
 save_object("feat_array", feat_array)

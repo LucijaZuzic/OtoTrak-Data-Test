@@ -373,16 +373,7 @@ def total_len(long_list, lat_list):
 
 def total_offset(long_list, lat_list):
     return np.sqrt((long_list[0] - long_list[-1]) ** 2 + (lat_list[0] - lat_list[-1]) ** 2)
-     
-def total_angle(long_list, lat_list):
-    if long_list[0] != long_list[-1]: 
-        return np.arctan((lat_list[0] - lat_list[-1]) / (long_list[0] - long_list[-1]))
-    else:
-        if lat_list[0] > lat_list[-1]:
-            return np.pi / 2
-        else:
-            return - np.pi / 2
-  
+       
 def return_angles(long_list, lat_list):
     total_angles = []
     for index_coord in range(len(long_list) - 1):
@@ -403,18 +394,6 @@ def return_angles_abs(long_list, lat_list):
         else: 
             total_angles.append(90) 
     return total_angles
-
-def mean_vect_turning_angles(long_list, lat_list):
-    total_angles = []
-    for index_coord in range(len(long_list) - 1):
-        if long_list[index_coord + 1] != long_list[index_coord]: 
-            total_angles.append(np.arctan((lat_list[index_coord + 1] - lat_list[index_coord]) / (long_list[index_coord + 1] - long_list[index_coord]))) 
-        else:
-            if lat_list[index_coord + 1] > lat_list[index_coord]:
-                total_angles.append(np.pi / 2)
-            else:
-                total_angles.append(- np.pi / 2)
-    return np.average(total_angles)
 
 def mean_speed_len(long_list, lat_list, times_list):
     return total_len(long_list, lat_list) / times_list[-1]
@@ -729,8 +708,8 @@ def process_csv_ray(window_size, vehicle1, r1, some_dict, save_name, flag_overwr
         csv_file.write(new_csv_content)
         csv_file.close() 
      
-def process_csv(trajectory_flags, trajectory_monotonous, window_size, all_possible_trajs, sample_names, metric_names, deg, flag_list, some_dict, save_name): 
-    new_csv_content = "window_size,vehicle,ride,start,mean_vect_turning_angles,max_x,max_y,surf_trapz_x,surf_trapz_y,surf_simpson_x,surf_simpson_y,"
+def process_csv(trajectory_flags, trajectory_monotonous, window_size, all_possible_trajs, sample_names, metric_names, deg, some_dict, save_name): 
+    new_csv_content = "window_size,vehicle,ride,start,max_x,max_y,surf_trapz_x,surf_trapz_y,surf_simpson_x,surf_simpson_y,"
     for d in range(deg + 1):
         new_csv_content += "x_poly_" + str(d + 1) + ","
     for d in range(deg + 1):
@@ -743,7 +722,7 @@ def process_csv(trajectory_flags, trajectory_monotonous, window_size, all_possib
             new_csv_content += sample_name + "_same_" + metric_name + "," 
             new_csv_content += sample_name + "_diff_" + metric_name + ","
     new_csv_content += "monotonous," 
-    for flag in flag_list:
+    for flag in flag_names:
         new_csv_content += flag + ","
     new_csv_content += "\n"
     header = new_csv_content
@@ -762,7 +741,7 @@ def process_csv(trajectory_flags, trajectory_monotonous, window_size, all_possib
                     else:
                         new_csv_content += str(some_dict[window_size][vehicle1][r1][x1][feat_name]) + ","
                 new_csv_content += trajectory_monotonous[window_size][vehicle1][r1][x1] + ","  
-                for flag in flag_list:
+                for flag in flag_names:
                      new_csv_content += str(trajectory_flags[flag][window_size][vehicle1][r1][x1]) + ","  
                 new_csv_content += "\n"    
         csv_file = open(save_name.replace(".csv", "_" + vehicle1 + ".csv"), "w")
@@ -1024,19 +1003,18 @@ def kneefind(NN, X_embedded):
 def random_sample_of_cluster(subdirname, files_in_cluster, nrow, ncol, filename):
     print(filename)
     for cluster in files_in_cluster:
-        if len(files_in_cluster[cluster]) > 0:
+        if len(files_in_cluster[cluster]) > 0: 
             print(cluster, len(files_in_cluster[cluster]))
             if nrow * ncol > len(files_in_cluster[cluster]):
                 ncol = int(np.sqrt(len(files_in_cluster[cluster])))
                 nrow = ncol
+            indexes = [x for x in range(nrow * ncol)]
             appeared = set()
             long1 = []
             lat1 = []
             titles = []
             for x in range(nrow * ncol):
-                index = np.random.randint(0, len(files_in_cluster[cluster]))
-                while index in appeared:
-                    index = np.random.randint(0, len(files_in_cluster[cluster]))
+                index = indexes[x]
                 appeared.add(index)
                 name_file = files_in_cluster[cluster][index]["short_name"]
                 name_file_long = name_file.replace("/", "/cleaned_csv/") 
@@ -1058,14 +1036,13 @@ def random_sample_of_isomap(subdirname, files_in_cluster, nrow, ncol, filename):
             if nrow * ncol > len(files_in_cluster[cluster]):
                 ncol = int(np.sqrt(len(files_in_cluster[cluster])))
                 nrow = ncol
+            indexes = [x for x in range(nrow * ncol)]
             appeared = set()
             long1 = []
             lat1 = []
             titles = []
             for x in range(nrow * ncol):
-                index = np.random.randint(0, len(files_in_cluster[cluster]))
-                while index in appeared:
-                    index = np.random.randint(0, len(files_in_cluster[cluster]))
+                index = indexes[x]
                 appeared.add(index)
                 name_file = files_in_cluster[cluster][index]["short_name"]
                 name_file_long = name_file.replace("/", "/cleaned_csv/") 
@@ -1241,3 +1218,237 @@ translate_var = {"Distance": "Euklidska udaljenost",
              "Y speed": "Apsolutna vrijednost brzine u y smjeru",
              "Y speed no abs": "Brzina u y smjeru",
              }
+
+flag_names = ["key", "flip", "zone", "engine", "in_zone", "ignition", "sleep_mode", "staff_mode", "buzzer_active", "in_primary_zone", "in_restricted_zone", "onboard_geofencing", "speed_limit_active"]
+
+def skip_var(variable_name, subdirname):
+ 
+    if "no_rays" in subdirname: 
+        for size in os.listdir("rays"):
+            if str(size) + "all_" in variable_name:
+                return True
+
+    if "poly" in variable_name and "poly" not in subdirname:
+        return True 
+
+    if "flags" not in subdirname:
+        for var_skip in flag_names:
+            if var_skip in variable_name: 
+                return True
+
+    if "same" in variable_name and "no_same" in subdirname:
+        return True
+
+    if "xy_poly" in variable_name and "no_xy" in subdirname:
+        return True
+    if "simpson" in variable_name and "simpson x" not in variable_name and "simpson y" not in variable_name and "simpson_x" not in variable_name and "simpson_y" not in variable_name and "no_xy" in subdirname:
+        return True
+    if "trapz" in variable_name and "trapz x" not in variable_name and "trapz y" not in variable_name and "trapz_x" not in variable_name and "trapz_y" not in variable_name and "no_xy" in subdirname:
+        return True
+
+    if "acceler" in variable_name and "acceler" not in subdirname:
+        return True
+
+    if "heading" in variable_name and "heading" not in subdirname:
+        return True
+
+    if "only_rays" in subdirname and "size" not in subdirname:
+        any_present = False
+        for size in os.listdir("rays"): 
+            if str(size) + "all_" not in variable_name:
+                any_present = True
+                break
+        if not any_present:
+            return True
+
+    if "size_" in subdirname:
+        for size in os.listdir("rays"):
+            if "size_" + str(size) + "_" in subdirname and  str(size) + "all_" not in variable_name:
+                return True
+    
+    return False 
+
+def divide_train_test(properties, train_set, test_set, subdirname): 
+    sd_window_train = []
+    sd_subdir_train = []
+    sd_ride_train = []
+    sd_start_train = []
+    sd_x_train = [] 
+
+    sd_window_test = []
+    sd_subdir_test = []
+    sd_ride_test = []
+    sd_start_test = []
+    sd_x_test = [] 
+    
+    for window_size in properties:
+        for subdir_name in properties[window_size]:
+            for some_file in properties[window_size][subdir_name]:
+                for start in properties[window_size][subdir_name][some_file]: 
+                    if some_file in train_set:
+                        sd_window_train.append(window_size)
+                        sd_subdir_train.append(subdir_name)
+                        sd_ride_train.append(some_file)
+                        sd_start_train.append(start)
+                        sd_x_train.append([])
+                        for variable_name in properties[window_size][subdir_name][some_file][start]:
+                            if skip_var(variable_name, subdirname):
+                                continue
+ 
+                            if "monoto" not in variable_name:
+                                if math.isnan(properties[window_size][subdir_name][some_file][start][variable_name]):
+                                    sd_x_train[-1].append(0)
+                                else:
+                                    sd_x_train[-1].append(properties[window_size][subdir_name][some_file][start][variable_name]) 
+                            else:
+                                if properties[window_size][subdir_name][some_file][start] == "I":
+                                    sd_x_train[-1].append(3)
+                                if properties[window_size][subdir_name][some_file][start] == "D":
+                                    sd_x_train[-1].append(2)
+                                if properties[window_size][subdir_name][some_file][start] == "NM":
+                                    sd_x_train[-1].append(1)
+                                if properties[window_size][subdir_name][some_file][start] == "NF":
+                                    sd_x_train[-1].append(0)
+                    if some_file in test_set:
+                        sd_window_test.append(window_size)
+                        sd_subdir_test.append(subdir_name)
+                        sd_ride_test.append(some_file)
+                        sd_start_test.append(start)
+                        sd_x_test.append([])
+                        for variable_name in properties[window_size][subdir_name][some_file][start]:
+                            if skip_var(variable_name, subdirname):
+                                continue
+
+                            if "monoto" not in variable_name:
+                                if math.isnan(properties[window_size][subdir_name][some_file][start][variable_name]):
+                                    sd_x_test[-1].append(0)
+                                else:
+                                    sd_x_test[-1].append(properties[window_size][subdir_name][some_file][start][variable_name]) 
+                            else:
+                                if properties[window_size][subdir_name][some_file][start] == "I":
+                                    sd_x_test[-1].append(3)
+                                if properties[window_size][subdir_name][some_file][start] == "D":
+                                    sd_x_test[-1].append(2)
+                                if properties[window_size][subdir_name][some_file][start] == "NM":
+                                    sd_x_test[-1].append(1)
+                                if properties[window_size][subdir_name][some_file][start] == "NF":
+                                    sd_x_test[-1].append(0)
+    
+    for rn in range(len(sd_x_train)):
+        for cn in range(len(sd_x_train[rn])):
+            sd_x_train[rn][cn] = float(sd_x_train[rn][cn])
+     
+    for rn in range(len(sd_x_test)):
+        for cn in range(len(sd_x_test[rn])):
+            sd_x_test[rn][cn] = float(sd_x_test[rn][cn])
+
+    sd_x_train = np.array(sd_x_train)
+    sd_x_test = np.array(sd_x_test)
+
+    print(np.shape(sd_x_train), np.shape(sd_x_test))
+    return sd_window_train, sd_subdir_train, sd_ride_train, sd_start_train, sd_x_train, sd_window_test, sd_subdir_test, sd_ride_test, sd_start_test, sd_x_test 
+    
+def read_clusters(subdirname):
+    for filename in os.listdir("all_clus/" + subdirname + "/filenames"):
+        random_sample_of_cluster(subdirname, load_object("all_clus/" + subdirname + "/filenames/" + filename), 1000, 1000, filename)
+
+def read_isomaps(subdirname):
+    for filename in os.listdir("all_isomap/" + subdirname + "/filenames"):
+        random_sample_of_isomap(subdirname, load_object("all_isomap/" + subdirname + "/filenames/" + filename), 1000, 1000, filename)
+        
+def speed_cluster(files_in_cluster, sdn, filename, output): 
+
+    properties = load_object("dict_for_clustering") 
+  
+    avg_values = dict()
+    var_clus = output
+    std_clus = output
+    varscaled_clus = output
+    stdscaled_clus = output
+    avg_clus = output
+    min_clus = output
+    max_clus = output
+    range_clus = output
+    for cluster in files_in_cluster:
+        if len(files_in_cluster[cluster]) > 0:
+            avg_values[cluster] = dict()
+            var_clus += str(sdn) + "," + str(filename) + "," + str(cluster) + "," + str(len(files_in_cluster[cluster])) + ","
+            std_clus += str(sdn) + "," + str(filename) + "," + str(cluster) + "," + str(len(files_in_cluster[cluster])) + ","
+            varscaled_clus += str(sdn) + "," + str(filename) + "," + str(cluster) + "," + str(len(files_in_cluster[cluster])) + ","
+            stdscaled_clus += str(sdn) + "," + str(filename) + "," + str(cluster) + "," + str(len(files_in_cluster[cluster])) + ","
+            avg_clus += str(sdn) + "," + str(filename) + "," + str(cluster) + "," + str(len(files_in_cluster[cluster])) + ","
+            min_clus += str(sdn) + "," + str(filename) + "," + str(cluster) + "," + str(len(files_in_cluster[cluster])) + ","
+            max_clus += str(sdn) + "," + str(filename) + "," + str(cluster) + "," + str(len(files_in_cluster[cluster])) + ","
+            range_clus += str(sdn) + "," + str(filename) + "," + str(cluster) + "," + str(len(files_in_cluster[cluster])) + ","
+            for index in range(len(files_in_cluster[cluster])): 
+                name_file = files_in_cluster[cluster][index]["short_name"]
+                vehicle_ride = name_file.split("/") 
+                subdir_name = vehicle_ride[0] 
+                window_size = files_in_cluster[cluster][index]["window"]
+                x = files_in_cluster[cluster][index]["start"] 
+    
+                for variable_name in properties[window_size][subdir_name][vehicle_ride[1]][x]: 
+                    if skip_var(variable_name, sdn):
+                        continue
+                    if variable_name not in avg_values[cluster]:
+                        avg_values[cluster][variable_name] = []
+                    avg_values[cluster][variable_name] = add_key(variable_name, properties[window_size][subdir_name][vehicle_ride[1]][x][variable_name], avg_values[cluster][variable_name]) 
+                     
+            for key_name in avg_values[cluster]:                     
+                var_clus += str(np.var(avg_values[cluster][key_name])) + ","
+            var_clus = var_clus[:-1]
+            var_clus += "\n"
+
+            for key_name in avg_values[cluster]:                     
+                std_clus += str(np.std(avg_values[cluster][key_name])) + ","
+            std_clus = std_clus[:-1]
+            std_clus += "\n"
+
+            for key_name in avg_values[cluster]:                     
+                varscaled_clus += str(np.var(avg_values[cluster][key_name]) / ((max(avg_values[cluster][key_name]) - min(avg_values[cluster][key_name])) ** 2)) + ","
+            varscaled_clus = varscaled_clus[:-1]
+            varscaled_clus += "\n"
+
+            for key_name in avg_values[cluster]:                     
+                stdscaled_clus += str(np.std(avg_values[cluster][key_name]) / (max(avg_values[cluster][key_name]) - min(avg_values[cluster][key_name]))) + ","
+            stdscaled_clus = stdscaled_clus[:-1]
+            stdscaled_clus += "\n"
+
+            for key_name in avg_values[cluster]:                     
+                avg_clus += str(sum(avg_values[cluster][key_name]) / len(avg_values[cluster][key_name])) + ","
+            avg_clus = avg_clus[:-1]
+            avg_clus += "\n"
+
+            for key_name in avg_values[cluster]:                     
+                min_clus += str(min(avg_values[cluster][key_name])) + ","
+            min_clus = min_clus[:-1]
+            min_clus += "\n"
+
+            for key_name in avg_values[cluster]:                     
+                max_clus += str(max(avg_values[cluster][key_name])) + ","
+            max_clus = max_clus[:-1]
+            max_clus += "\n"
+
+            for key_name in avg_values[cluster]:                     
+                range_clus += str(max(avg_values[cluster][key_name]) - min(avg_values[cluster][key_name])) + ","
+            range_clus = range_clus[:-1]
+            range_clus += "\n"
+              
+    return var_clus, std_clus, varscaled_clus, stdscaled_clus, avg_clus, min_clus, max_clus, range_clus
+
+def add_key(key, val, wheradd):
+    if "monoto" not in key:
+        if math.isnan(val):
+            wheradd.append(0)
+        else:
+            wheradd.append(val) 
+    else:
+        if val == "I":
+            wheradd.append(3)
+        if val == "D":
+            wheradd.append(2)
+        if val == "NM":
+            wheradd.append(1)
+        if val == "NF":
+            wheradd.append(0)
+    return wheradd
