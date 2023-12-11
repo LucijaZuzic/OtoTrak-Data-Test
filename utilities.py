@@ -1394,7 +1394,11 @@ def speed_cluster(files_in_cluster, sdn, filename, output):
                         avg_values[cluster][variable_name] = []
                     avg_values[cluster][variable_name] = add_key(variable_name, properties[window_size][subdir_name][vehicle_ride[1]][x][variable_name], avg_values[cluster][variable_name]) 
                      
-            for key_name in avg_values[cluster]:                     
+            for key_name in avg_values[cluster]:
+                for inde in range(len(avg_values[cluster][key_name])):
+                    avg_values[cluster][key_name][inde] = float(avg_values[cluster][key_name][inde])
+
+            for key_name in avg_values[cluster]:                   
                 var_clus += str(np.var(avg_values[cluster][key_name])) + ","
             var_clus = var_clus[:-1]
             var_clus += "\n"

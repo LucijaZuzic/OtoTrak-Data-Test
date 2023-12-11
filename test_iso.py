@@ -35,7 +35,7 @@ for subdirname in os.listdir("all_isomap/"):
                     for prop in entries_all[entry][wnd][name_file_long.split("/")[0]][name_file_long.split("/")[-1]][pos]:
                         if prop not in labels_true[entry]:
                             labels_true[entry][prop] = []
-                        labels_true[entry][prop].append(int(entries_all[entry][wnd][name_file_long.split("/")[0]][name_file_long.split("/")[-1]][pos][prop]))
+                        labels_true[entry][prop].append(float(entries_all[entry][wnd][name_file_long.split("/")[0]][name_file_long.split("/")[-1]][pos][prop]))
         
         labels_new.append(0)
         labels_new.append(1)
