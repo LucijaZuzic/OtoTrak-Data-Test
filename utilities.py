@@ -1008,14 +1008,15 @@ def random_sample_of_cluster(subdirname, files_in_cluster, nrow, ncol, filename)
             if nrow * ncol > len(files_in_cluster[cluster]):
                 ncol = int(np.sqrt(len(files_in_cluster[cluster])))
                 nrow = ncol
-            indexes = [x for x in range(nrow * ncol)]
-            appeared = set()
+            indexes = set([x for x in range(len(files_in_cluster[cluster]))])
+            while len(indexes) > nrow * ncol:
+                index_remove = np.random.randint(0, len(files_in_cluster[cluster]))
+                if index_remove in indexes:
+                    indexes.remove(index_remove)
             long1 = []
             lat1 = []
             titles = []
-            for x in range(nrow * ncol):
-                index = indexes[x]
-                appeared.add(index)
+            for index in indexes:
                 name_file = files_in_cluster[cluster][index]["short_name"]
                 name_file_long = name_file.replace("/", "/cleaned_csv/") 
                 long, lat, time = load_traj_window_name(name_file_long, files_in_cluster[cluster][index]["start"], files_in_cluster[cluster][index]["window"])
@@ -1036,14 +1037,15 @@ def random_sample_of_isomap(subdirname, files_in_cluster, nrow, ncol, filename):
             if nrow * ncol > len(files_in_cluster[cluster]):
                 ncol = int(np.sqrt(len(files_in_cluster[cluster])))
                 nrow = ncol
-            indexes = [x for x in range(nrow * ncol)]
-            appeared = set()
+            indexes = set([x for x in range(len(files_in_cluster[cluster]))])
+            while len(indexes) > nrow * ncol:
+                index_remove = np.random.randint(0, len(files_in_cluster[cluster]))
+                if index_remove in indexes:
+                    indexes.remove(index_remove)
             long1 = []
             lat1 = []
             titles = []
-            for x in range(nrow * ncol):
-                index = indexes[x]
-                appeared.add(index)
+            for index in indexes:
                 name_file = files_in_cluster[cluster][index]["short_name"]
                 name_file_long = name_file.replace("/", "/cleaned_csv/") 
                 long, lat, time = load_traj_window_name(name_file_long, files_in_cluster[cluster][index]["start"], files_in_cluster[cluster][index]["window"])

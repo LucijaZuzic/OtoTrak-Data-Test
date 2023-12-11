@@ -181,11 +181,11 @@ for subdirname_p1 in ["all", "no_rays"]:
         for subdirname_p3 in ["", "_no_same", "_no_xy", "_no_same_no_xy"]:
             for subdirname_p4 in ["", "_acceler", "_heading", "_acceler_heading"]:
                 subdirname = subdirname_p1 + subdirname_p2 + subdirname_p3 + subdirname_p4
-                if os.path.isdir("all_clus/" + subdirname):
-                    continue
+                #if os.path.isdir("all_clus/" + subdirname):
+                    #continue
                 print(subdirname)
-                make_clusters_multi_feats(subdirname)
-                #read_clusters(subdirname) 
+                #make_clusters_multi_feats(subdirname)
+                read_clusters(subdirname) 
             
 part2 = []
 for size in os.listdir("rays"):
@@ -193,8 +193,8 @@ for size in os.listdir("rays"):
 for subdirname_p1 in ["", "_acceler", "_heading", "_acceler_heading"]:
     for subdirname_p2 in part2:    
         subdirname = "only_rays" + subdirname_p1 + subdirname_p2
-        if os.path.isdir("all_clus/" + subdirname):
-            continue
+        #if os.path.isdir("all_clus/" + subdirname):
+            #continue
         print(subdirname)
-        make_clusters_multi_feats(subdirname)
-        #read_clusters(subdirname)
+        #make_clusters_multi_feats(subdirname)
+        read_clusters(subdirname)
