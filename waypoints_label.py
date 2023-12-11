@@ -68,6 +68,12 @@ positive_entries_sum_max = 0
 all_entries_mul_max = 0
 positive_entries_mul_max = 0
 
+all_labels_sum_zero = 0
+positive_labels_sum_zero = 0
+  
+all_labels_sum_max = 0
+positive_labels_sum_max = 0
+  
 window_sizes = [3, 20]
 
 labels_window_size_zero = dict()
@@ -91,6 +97,24 @@ for ws in window_sizes:
     labels_window_size_max_dict[ws] = dict()
     percents_window_size_zero_dict[ws] = dict()
     percents_window_size_max_dict[ws] = dict()
+ 
+total_probs_zero_sum_dict = dict()
+total_probs_zero_mul_dict = dict()
+total_probs_max_sum_dict = dict()
+total_probs_max_mul_dict = dict()
+
+for ws in window_sizes:
+    total_probs_zero_sum_dict[ws] = dict()
+    total_probs_zero_mul_dict[ws] = dict()
+    total_probs_max_sum_dict[ws] = dict()
+    total_probs_max_mul_dict[ws] = dict()
+
+total_labels_zero_sum_dict = dict() 
+total_labels_max_sum_dict = dict() 
+
+for ws in window_sizes:
+    total_labels_zero_sum_dict[ws] = dict() 
+    total_labels_max_sum_dict[ws] = dict() 
 
 all_subdirs = os.listdir() 
 for subdir_name in all_subdirs: 
@@ -99,6 +123,14 @@ for subdir_name in all_subdirs:
         labels_window_size_max_dict[ws][subdir_name] = dict()
         percents_window_size_zero_dict[ws][subdir_name] = dict()
         percents_window_size_max_dict[ws][subdir_name] = dict()
+
+        total_probs_zero_sum_dict[ws][subdir_name] = dict()
+        total_probs_zero_mul_dict[ws][subdir_name] = dict()
+        total_probs_max_sum_dict[ws][subdir_name] = dict()
+        total_probs_max_mul_dict[ws][subdir_name] = dict()
+
+        total_labels_zero_sum_dict[ws][subdir_name] = dict() 
+        total_labels_max_sum_dict[ws][subdir_name] = dict() 
 
     if not os.path.isdir(subdir_name) or "Vehicle" not in subdir_name:
         continue
@@ -122,6 +154,15 @@ for subdir_name in all_subdirs:
             labels_window_size_max_dict[ws][subdir_name][some_file] = dict()
             percents_window_size_zero_dict[ws][subdir_name][some_file] = dict()
             percents_window_size_max_dict[ws][subdir_name][some_file] = dict()
+
+            total_probs_zero_sum_dict[ws][subdir_name][some_file] = dict()
+            total_probs_zero_mul_dict[ws][subdir_name][some_file] = dict()
+            total_probs_max_sum_dict[ws][subdir_name][some_file] = dict()
+            total_probs_max_mul_dict[ws][subdir_name][some_file] = dict()
+
+            total_labels_zero_sum_dict[ws][subdir_name][some_file] = dict() 
+            total_labels_max_sum_dict[ws][subdir_name][some_file] = dict() 
+
         file_with_ride = pd.read_csv(subdir_name + "/cleaned_csv/" + some_file)
         longitudes = list(file_with_ride["fields_longitude"]) 
         latitudes = list(file_with_ride["fields_latitude"]) 
@@ -233,12 +274,22 @@ for subdir_name in all_subdirs:
                 all_probs_zero_dict[col][ix] = float(all_probs_zero_dict[col][ix])
                 total_probs_zero_sum[ix] += float(all_probs_zero_dict[col][ix])
                 total_probs_zero_mul[ix] *= float(all_probs_zero_dict[col][ix])
+ 
+        for ws in window_sizes:
+            for pos in range(0, len(total_probs_zero_sum), ws):
+                total_probs_zero_sum_dict[ws][subdir_name][some_file][pos] = dict()
+                total_probs_zero_sum_dict[ws][subdir_name][some_file][pos]["total_probs_zero_sum_dict"] = sum(total_probs_zero_sum[pos:pos + ws]) / len(all_probs_zero.keys()) / ws < 0.1
 
         total_probs_zero_sum = [total_prob / len(all_probs_zero.keys()) < 0.1 for total_prob in total_probs_zero_sum]
         all_entries_sum_zero += len(total_probs_zero_sum)
         positive_entries_sum_zero += sum(total_probs_zero_sum)
 
-        total_probs_zero_mul = [total_prob < 0.1 for total_prob in total_probs_zero_mul]
+        for ws in window_sizes:
+            for pos in range(0, len(total_probs_zero_mul), ws):
+                total_probs_zero_mul_dict[ws][subdir_name][some_file][pos] = dict()
+                total_probs_zero_mul_dict[ws][subdir_name][some_file][pos]["total_probs_zero_mul_dict"] = sum(total_probs_zero_mul[pos:pos + ws]) / ws < 0.1
+
+        total_probs_zero_mul = [total_prob < ((10 ** -10) ** len(all_probs_max.keys())) for total_prob in total_probs_zero_mul]
         all_entries_mul_zero += len(total_probs_zero_mul)
         positive_entries_mul_zero += sum(total_probs_zero_mul)
 
@@ -254,14 +305,62 @@ for subdir_name in all_subdirs:
                 total_probs_max_sum[ix] += float(all_probs_max_dict[col][ix])
                 total_probs_max_mul[ix] *= float(all_probs_max_dict[col][ix])
  
+        for ws in window_sizes:
+            for pos in range(0, len(total_probs_max_sum), ws):
+                total_probs_max_sum_dict[ws][subdir_name][some_file][pos] = dict()
+                total_probs_max_sum_dict[ws][subdir_name][some_file][pos]["total_probs_max_sum_dict"] = sum(total_probs_max_sum[pos:pos + ws]) / len(all_probs_max.keys()) / ws < 0.1
+
         total_probs_max_sum = [total_prob / len(all_probs_max.keys()) < 0.1 for total_prob in total_probs_max_sum]
-        all_entries_sum_max = len(total_probs_max_sum)
-        positive_entries_sum_max = sum(total_probs_max_sum)
+        all_entries_sum_max += len(total_probs_max_sum)
+        positive_entries_sum_max += sum(total_probs_max_sum)
 
-        total_probs_max_mul = [total_prob < 0.1 for total_prob in total_probs_max_mul]
-        all_entries_mul_max = len(total_probs_max_mul)
-        positive_entries_mul_max = sum(total_probs_max_mul)
+        for ws in window_sizes:
+            for pos in range(0, len(total_probs_max_mul), ws):
+                total_probs_max_mul_dict[ws][subdir_name][some_file][pos] = dict()
+                total_probs_max_mul_dict[ws][subdir_name][some_file][pos]["total_probs_max_mul_dict"] = sum(total_probs_max_mul[pos:pos + ws]) / ws < 0.1
 
+        total_probs_max_mul = [total_prob < (0.1 ** len(all_probs_max.keys())) for total_prob in total_probs_max_mul]
+        all_entries_mul_max += len(total_probs_max_mul)
+        positive_entries_mul_max += sum(total_probs_max_mul)
+        
+        total_labels_zero_sum = [0 for ix in range(len(all_labels_zero["distance_labels_zero"]))] 
+        all_labels_zero_dict = dict()
+        for col in all_labels_zero:
+            if "zero" not in col:
+                continue
+            all_labels_zero_dict[col] = list(all_labels_zero[col])
+            for ix in range(len(all_labels_zero_dict[col])):
+                all_labels_zero_dict[col][ix] = float(all_labels_zero_dict[col][ix])
+                total_labels_zero_sum[ix] += float(all_labels_zero_dict[col][ix]) 
+ 
+        for ws in window_sizes:
+            for pos in range(0, len(total_labels_zero_sum), ws):
+                total_labels_zero_sum_dict[ws][subdir_name][some_file][pos] = dict()
+                total_labels_zero_sum_dict[ws][subdir_name][some_file][pos]["total_labels_zero_sum_dict"] = sum(total_labels_zero_sum[pos:pos + ws]) / len(all_labels_zero.keys()) / ws < 0.1
+
+        total_labels_zero_sum = [total_prob / len(all_labels_zero.keys()) < 0.1 for total_prob in total_labels_zero_sum]
+        all_labels_sum_zero += len(total_labels_zero_sum)
+        positive_labels_sum_zero += sum(total_labels_zero_sum)
+  
+        total_labels_max_sum = [0 for ix in range(len(all_labels_max["distance_labels_max"]))] 
+        all_labels_max_dict = dict()
+        for col in all_labels_max:
+            if "max" not in col:
+                continue
+            all_labels_max_dict[col] = list(all_labels_max[col])
+            for ix in range(len(all_labels_max_dict[col])):
+                all_labels_max_dict[col][ix] = float(all_labels_max_dict[col][ix])
+                total_labels_max_sum[ix] += float(all_labels_max_dict[col][ix]) 
+ 
+        for ws in window_sizes:
+            for pos in range(0, len(total_labels_max_sum), ws):
+                total_labels_max_sum_dict[ws][subdir_name][some_file][pos] = dict()
+                total_labels_max_sum_dict[ws][subdir_name][some_file][pos]["total_labels_max_sum_dict"] = sum(total_labels_max_sum[pos:pos + ws]) / len(all_labels_max.keys()) / ws < 0.1
+
+        total_labels_max_sum = [total_prob / len(all_labels_max.keys()) < 0.1 for total_prob in total_labels_max_sum]
+        all_labels_sum_max += len(total_labels_max_sum)
+        positive_labels_sum_max += sum(total_labels_max_sum)
+ 
         all_thr_zero_dict = dict()
         for col in all_thr_zero:
             if "zero" not in col:
@@ -336,7 +435,7 @@ for subdir_name in all_subdirs:
         #plot_anomaly(longitudes, latitudes, all_labels_max_dict["speed_alternative_labels_max"], speed_int, all_probs_max_dict["speed_alternative_probs_max"], "speed_alternative_labels_max")
 
         #plot_anomaly(longitudes, latitudes, total_probs_zero_mul, speed_int, all_probs_max_dict["direction_probs_max"], "total_probs_zero_mul")
-        #plot_anomaly(longitudes, latitudes, total_probs_zero_sum, speed_int, all_probs_max_dict["direction_probs_max"], "total_probs_zero_sum")
+        ##plot_anomaly(longitudes, latitudes, total_probs_zero_sum, speed_int, all_probs_max_dict["direction_probs_max"], "total_probs_zero_sum")
         
         #plot_anomaly(longitudes, latitudes, total_probs_max_mul, speed_int, all_probs_max_dict["direction_probs_max"], "total_probs_max_mul")
         #plot_anomaly(longitudes, latitudes, total_probs_max_sum, speed_int, all_probs_max_dict["direction_probs_max"], "total_probs_max_sum")
@@ -394,6 +493,14 @@ save_object("percents_window_size_zero_dict", percents_window_size_zero_dict)
 save_object("labels_window_size_max_dict", labels_window_size_max_dict)
 save_object("percents_window_size_max_dict", percents_window_size_max_dict)
 
+save_object("total_probs_zero_mul_dict", total_probs_zero_mul_dict)
+save_object("total_probs_zero_sum_dict", total_probs_zero_sum_dict)
+save_object("total_probs_max_mul_dict", total_probs_max_mul_dict)
+save_object("total_probs_max_sum_dict", total_probs_max_sum_dict)
+ 
+save_object("total_labels_zero_sum_dict", total_labels_zero_sum_dict) 
+save_object("total_labels_max_sum_dict", total_labels_max_sum_dict)
+
 for ws in window_sizes:
     for entry in labels_window_size_max[ws]:
         print(ws, entry, sum(labels_window_size_max[ws][entry]) / len(labels_window_size_max[ws][entry]))
@@ -411,6 +518,10 @@ print("total_probs_zero_sum", positive_entries_sum_zero / all_entries_sum_zero *
 
 print("total_probs_max_mul", positive_entries_mul_max / all_entries_mul_max * 100)
 print("total_probs_max_sum", positive_entries_sum_max / all_entries_sum_max * 100)
+ 
+print("total_labels_zero_sum", positive_labels_sum_zero / all_labels_sum_zero * 100)
+ 
+print("total_labels_max_sum", positive_labels_sum_max / all_labels_sum_max * 100)
 
 for entry in dict(sorted(positive_entries_zero.items(), key = lambda item: item[1])): 
     print(entry, positive_entries_zero[entry] / all_entries_zero[entry] * 100)

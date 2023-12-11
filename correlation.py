@@ -71,10 +71,24 @@ percents_window_size_zero_dict = load_object("percents_window_size_zero_dict")
 labels_window_size_max_dict = load_object("labels_window_size_max_dict")
 percents_window_size_max_dict = load_object("percents_window_size_max_dict")
 
+total_probs_zero_mul_dict = load_object("total_probs_zero_mul_dict")
+total_probs_zero_sum_dict = load_object("total_probs_zero_sum_dict")
+total_probs_max_mul_dict = load_object("total_probs_max_mul_dict")
+total_probs_max_sum_dict = load_object("total_probs_max_sum_dict")
+ 
+total_labels_zero_sum_dict = load_object("total_labels_zero_sum_dict") 
+total_labels_max_sum_dict = load_object("total_labels_max_sum_dict")
+
 entries_all = {"labels_window_size_zero_dict": labels_window_size_zero_dict,
                "percents_window_size_zero_dict": percents_window_size_zero_dict,
                "labels_window_size_max_dict": labels_window_size_max_dict,
-               "percents_window_size_max_dict": percents_window_size_max_dict}
+               "percents_window_size_max_dict": percents_window_size_max_dict,
+               "total_probs_zero_mul_dict": total_probs_zero_mul_dict,
+               "total_probs_zero_sum_dict": total_probs_zero_sum_dict,
+               "total_probs_max_mul_dict": total_probs_max_mul_dict,
+               "total_probs_max_sum_dict": total_probs_max_sum_dict, 
+               "total_labels_zero_sum_dict": total_labels_zero_sum_dict, 
+               "total_labels_max_sum_dict": total_labels_max_sum_dict}
 
 feats_dict = dict()
 entries_dict = dict()  

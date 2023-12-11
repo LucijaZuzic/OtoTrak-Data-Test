@@ -3,11 +3,26 @@ from sklearn.metrics import normalized_mutual_info_score, homogeneity_score
 labels_window_size_zero_dict = load_object("labels_window_size_zero_dict")
 percents_window_size_zero_dict = load_object("percents_window_size_zero_dict")
 labels_window_size_max_dict = load_object("labels_window_size_max_dict")
-percents_window_size_max_dict = load_object("percents_window_size_max_dict") 
+percents_window_size_max_dict = load_object("percents_window_size_max_dict")
+
+total_probs_zero_mul_dict = load_object("total_probs_zero_mul_dict")
+total_probs_zero_sum_dict = load_object("total_probs_zero_sum_dict")
+total_probs_max_mul_dict = load_object("total_probs_max_mul_dict")
+total_probs_max_sum_dict = load_object("total_probs_max_sum_dict")
+ 
+total_labels_zero_sum_dict = load_object("total_labels_zero_sum_dict") 
+total_labels_max_sum_dict = load_object("total_labels_max_sum_dict")
+
 entries_all = {"labels_window_size_zero_dict": labels_window_size_zero_dict,
                "percents_window_size_zero_dict": percents_window_size_zero_dict,
                "labels_window_size_max_dict": labels_window_size_max_dict,
-               "percents_window_size_max_dict": percents_window_size_max_dict}
+               "percents_window_size_max_dict": percents_window_size_max_dict,
+               "total_probs_zero_mul_dict": total_probs_zero_mul_dict,
+               "total_probs_zero_sum_dict": total_probs_zero_sum_dict,
+               "total_probs_max_mul_dict": total_probs_max_mul_dict,
+               "total_probs_max_sum_dict": total_probs_max_sum_dict, 
+               "total_labels_zero_sum_dict": total_labels_zero_sum_dict, 
+               "total_labels_max_sum_dict": total_labels_max_sum_dict}
 
 def make_list_labels(part1, subdirnames = [], filenames = [], subdirnames_skip = [], filenames_skip = []):
     for subdirname in os.listdir(part1):
@@ -51,7 +66,7 @@ def make_list_labels(part1, subdirnames = [], filenames = [], subdirnames_skip =
                     labels_new.append(cluster)
                     for entry in entries_all:
                         if entry not in labels_true:
-                            labels_true[entry] = dict()
+                            labels_true[entry] = dict() 
                         for prop in entries_all[entry][wnd][name_file_long.split("/")[0]][name_file_long.split("/")[-1]][pos]:
                             if prop not in labels_true[entry]:
                                 labels_true[entry][prop] = []
@@ -81,6 +96,11 @@ def make_list_labels(part1, subdirnames = [], filenames = [], subdirnames_skip =
 subdirnames = ["all", "poly", "heading", "acceler", "no_xy"]
 filenames = ["KMeans", "nclus 8"]
 subdirnames_skip = ["flags"]
+filenames_skip = ["_train"] 
+
+subdirnames = []
+filenames = []
+subdirnames_skip = []
 filenames_skip = ["_train"] 
 
 part1 = "all_clus/"
