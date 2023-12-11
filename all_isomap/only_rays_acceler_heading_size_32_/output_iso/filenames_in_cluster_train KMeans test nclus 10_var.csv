@@ -1,0 +1,11 @@
+subdir,file,cluster,size,32all_distances_scaled_to_max_trajs_distances_offset,32all_distances_scaled_to_max_trajs_distances_offset x,32all_distances_scaled_to_max_trajs_distances_offset y,32all_nums_scaled_to_max_trajs_num_intersections_offset
+only_rays_acceler_heading_size_32_,filenames_in_cluster_train KMeans test nclus 10,9,326,2.914911062975839e-06,2.424774237101506e-06,2.049134319019154e-06,1.2495923761044908e-06
+only_rays_acceler_heading_size_32_,filenames_in_cluster_train KMeans test nclus 10,0,229,1.2629470455942888e-06,9.057639490572712e-07,1.6783636398116177e-06,1.559924803502958e-06
+only_rays_acceler_heading_size_32_,filenames_in_cluster_train KMeans test nclus 10,6,43,8.23239857263155e-06,3.152973762337186e-06,4.468095906078889e-06,8.157905972982326e-06
+only_rays_acceler_heading_size_32_,filenames_in_cluster_train KMeans test nclus 10,4,48,7.0024282485941505e-06,2.3406222840189524e-06,4.313441717195169e-06,2.4045860264696825e-06
+only_rays_acceler_heading_size_32_,filenames_in_cluster_train KMeans test nclus 10,2,60,6.225888741414038e-06,1.7003690084636276e-06,4.598615263018837e-06,7.742767005232376e-06
+only_rays_acceler_heading_size_32_,filenames_in_cluster_train KMeans test nclus 10,7,36,9.926195736889213e-08,5.559211097195299e-08,2.8980035312058303e-08,9.843774045860264e-06
+only_rays_acceler_heading_size_32_,filenames_in_cluster_train KMeans test nclus 10,8,46,7.530100587332961e-06,3.851147926125067e-06,4.045001670858258e-06,2.5287358484884972e-05
+only_rays_acceler_heading_size_32_,filenames_in_cluster_train KMeans test nclus 10,5,24,3.2811201314651474e-05,1.2163760757755149e-05,1.4990106550692882e-05,4.4466055661357363e-05
+only_rays_acceler_heading_size_32_,filenames_in_cluster_train KMeans test nclus 10,1,39,7.5269132904673695e-06,3.4860929261021356e-06,4.335567931659986e-06,1.7045526980536574e-05
+only_rays_acceler_heading_size_32_,filenames_in_cluster_train KMeans test nclus 10,3,9,2.6064849024111757e-05,8.465757651825961e-06,1.3049598283096789e-05,0.00011542012927054471
