@@ -131,10 +131,10 @@ def make_var(part1, part2, feature_name, subdirnames = [], filenames = [], subdi
                     print(cluster, feat, stdevs_for_cluster[cluster][feat])
                     break 
 
-subdirnames = ["all", "poly", "heading", "acceler", "no_xy"]
-filenames = ["KMeans", "nclus 8"]
-subdirnames_skip = ["flags"]
-filenames_skip = ["_train"]
+subdirnames = ["all", "no_same", "no_xy", "heading", "acceler"]
+filenames = ["KMeans"]
+subdirnames_skip = ["poly", "flags"]
+filenames_skip = ["_train"] 
 feature_name = "_std_scaled"
 thr = 0.5
 
@@ -145,5 +145,5 @@ part2 = "/output_clus/"
 
 part1 = "all_isomap/"
 part2 = "/output_iso/"  
-#make_avg(part1, part2, thr, subdirnames, filenames, subdirnames_skip, filenames_skip)
-make_var(part1, part2, feature_name, subdirnames, filenames, subdirnames_skip, filenames_skip)
+make_avg(part1, part2, thr, subdirnames, filenames, subdirnames_skip, filenames_skip)
+#make_var(part1, part2, feature_name, subdirnames, filenames, subdirnames_skip, filenames_skip)

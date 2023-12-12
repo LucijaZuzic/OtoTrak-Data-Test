@@ -1,3 +1,4 @@
 probability/probability_of_time_in_next_next_step filter=lfs diff=lfs merge=lfs -text
 markov_result/distance_predicted filter=lfs diff=lfs merge=lfs -text
 dict_for_clustering filter=lfs diff=lfs merge=lfs -text
+all_isomap/*/isomap/* filter=lfs diff=lfs merge=lfs -text

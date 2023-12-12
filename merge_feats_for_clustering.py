@@ -174,27 +174,28 @@ def make_clusters_multi_feats(subdirname):
     print(len(sd_x_train), len(sd_x_train[0]), sd_x_train[0][:10])
     print(len(sd_x_test))
     make_clusters("KMeans", sd_window_train, sd_subdir_train, sd_ride_train, sd_start_train, sd_x_train, sd_window_test, sd_subdir_test, sd_ride_test, sd_start_test, sd_x_test)
-    make_clusters("DBSCAN", sd_window_train, sd_subdir_train, sd_ride_train, sd_start_train, sd_x_train, sd_window_test, sd_subdir_test, sd_ride_test, sd_start_test, sd_x_test)
+    #make_clusters("DBSCAN", sd_window_train, sd_subdir_train, sd_ride_train, sd_start_train, sd_x_train, sd_window_test, sd_subdir_test, sd_ride_test, sd_start_test, sd_x_test)
 
 for subdirname_p1 in ["all", "no_rays"]:
     for subdirname_p2 in ["", "_poly", "_flags", "_poly_flags"]:
         for subdirname_p3 in ["", "_no_same", "_no_xy", "_no_same_no_xy"]:
             for subdirname_p4 in ["", "_acceler", "_heading", "_acceler_heading"]:
                 subdirname = subdirname_p1 + subdirname_p2 + subdirname_p3 + subdirname_p4
-                #if os.path.isdir("all_clus/" + subdirname):
-                    #continue
+                if os.path.isdir("all_clus/" + subdirname):
+                    continue
                 print(subdirname)
-                #make_clusters_multi_feats(subdirname)
-                read_clusters(subdirname) 
-            
+                make_clusters_multi_feats(subdirname)
+                #read_clusters(subdirname) 
+'''            
 part2 = []
 for size in os.listdir("rays"):
     part2.append("_size_" + str(size) + "_")  
 for subdirname_p1 in ["", "_acceler", "_heading", "_acceler_heading"]:
     for subdirname_p2 in part2:    
         subdirname = "only_rays" + subdirname_p1 + subdirname_p2
-        #if os.path.isdir("all_clus/" + subdirname):
-            #continue
+        if os.path.isdir("all_clus/" + subdirname):
+            continue
         print(subdirname)
-        #make_clusters_multi_feats(subdirname)
-        read_clusters(subdirname)
+        make_clusters_multi_feats(subdirname)
+        #read_clusters(subdirname)
+'''

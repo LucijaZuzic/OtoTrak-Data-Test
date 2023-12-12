@@ -93,9 +93,9 @@ def make_list_labels(part1, subdirnames = [], filenames = [], subdirnames_skip =
             print(largest_nmi, largest_h)
         print("TOTAL", largest_nmi_all, largest_h_all)
  
-subdirnames = ["all", "poly", "heading", "acceler", "no_xy"]
-filenames = ["KMeans", "nclus 8"]
-subdirnames_skip = ["flags"]
+subdirnames = ["all", "no_same", "no_xy", "heading", "acceler"]
+filenames = ["KMeans"]
+subdirnames_skip = ["poly", "flags"]
 filenames_skip = ["_train"] 
 
 subdirnames = []

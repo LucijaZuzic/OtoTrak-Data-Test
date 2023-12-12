@@ -197,7 +197,7 @@ def one_fourier_clus(type_clus, attempt, train_arr, test_arr, clus_params, sd_su
 
 def make_fourier_clus(type_clus, sd_window_train, sd_subdir_train, sd_ride_train, sd_start_train, sd_x_train, sd_window_test, sd_subdir_test, sd_ride_test, sd_start_test, sd_x_test):
 	 
-    vals_clus = range(8, 11)   
+    vals_clus = range(2, 11)   
     
     inertia_list = []
     silhouette_list_train = []

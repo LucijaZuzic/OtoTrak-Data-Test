@@ -146,8 +146,8 @@ def make_isomaps_multi_feats(subdirname):
     dict_for_clustering[window_size] = dict() 
 
     dict_for_clustering = load_object("dict_for_clustering")
-    train_rides = load_object("train_names")
-    test_rides = load_object("test_names")
+    train_names = load_object("train_names")
+    test_names = load_object("test_names")
 
     sd_window_train = load_object("sd_window_train")
     sd_subdir_train = load_object("sd_subdir_train")
@@ -179,27 +179,28 @@ def make_isomaps_multi_feats(subdirname):
     save_object("all_isomap/" + subdirname + "/isomap/isomap_new", isomap_new) 
 
     make_isomaps("KMeans", sd_window_train, sd_subdir_train, sd_ride_train, sd_start_train, sd_x_train, sd_window_test, sd_subdir_test, sd_ride_test, sd_start_test, sd_x_test)
-    make_isomaps("DBSCAN", sd_window_train, sd_subdir_train, sd_ride_train, sd_start_train, sd_x_train, sd_window_test, sd_subdir_test, sd_ride_test, sd_start_test, sd_x_test)
+    #make_isomaps("DBSCAN", sd_window_train, sd_subdir_train, sd_ride_train, sd_start_train, sd_x_train, sd_window_test, sd_subdir_test, sd_ride_test, sd_start_test, sd_x_test)
 
 for subdirname_p1 in ["all", "no_rays"]:
     for subdirname_p2 in ["", "_poly", "_flags", "_poly_flags"]:
         for subdirname_p3 in ["", "_no_same", "_no_xy", "_no_same_no_xy"]:
             for subdirname_p4 in ["", "_acceler", "_heading", "_acceler_heading"]:
                 subdirname = subdirname_p1 + subdirname_p2 + subdirname_p3 + subdirname_p4
-                #if os.path.isdir("all_isomap/" + subdirname):
-                    #continue
+                if os.path.isdir("all_isomap/" + subdirname):
+                    continue
                 print(subdirname)
-                #make_isomaps_multi_feats(subdirname)
-                read_isomaps(subdirname) 
-            
+                make_isomaps_multi_feats(subdirname)
+                #read_isomaps(subdirname) 
+'''         
 part2 = []
 for size in os.listdir("rays"):
     part2.append("_size_" + str(size) + "_")  
 for subdirname_p1 in ["", "_acceler", "_heading", "_acceler_heading"]:
     for subdirname_p2 in part2:    
         subdirname = "only_rays" + subdirname_p1 + subdirname_p2
-        #if os.path.isdir("all_isomap/" + subdirname):
-            #continue
+        if os.path.isdir("all_isomap/" + subdirname):
+            continue
         print(subdirname)
-        #make_isomaps_multi_feats(subdirname)
-        read_isomaps(subdirname)
+        make_isomaps_multi_feats(subdirname)
+        #read_isomaps(subdirname)
+'''

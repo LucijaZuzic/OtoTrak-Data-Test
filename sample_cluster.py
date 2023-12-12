@@ -6,6 +6,7 @@ def compare_random_cluster(files_in_cluster, nsamples):
     props = dict()
  
     for cluster in files_in_cluster:
+        props[cluster] = dict()
         indexes = set([x for x in range(len(files_in_cluster[cluster]))])
         while len(indexes) > min(nsamples, len(files_in_cluster[cluster])):
             index_remove = np.random.randint(0, len(files_in_cluster[cluster]))
@@ -54,9 +55,9 @@ def sample_get(part1, nsamples, subdirnames = [], filenames = [], subdirnames_sk
         break
 
 samplenum = 1000
-subdirnames = ["all", "poly", "heading", "acceler", "no_xy"]
-filenames = ["KMeans", "nclus 8"]
-subdirnames_skip = ["flags"]
+subdirnames = ["all", "no_same", "no_xy", "heading", "acceler"]
+filenames = ["KMeans"]
+subdirnames_skip = ["poly", "flags"]
 filenames_skip = ["_train"] 
 
 subdirnames = []
