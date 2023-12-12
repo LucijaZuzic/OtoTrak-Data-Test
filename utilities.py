@@ -162,23 +162,25 @@ def return_acceler_long_lat(longitudes, latitudes, times, abs_use = False):
     speeds = return_speeds_long_lat(longitudes, latitudes, times)
     accelers = []
     for i in range(len(speeds) - 1):
-        if abs_use:
-            accelers.append(speeds[i + 1] - speeds[i])
-        else:
-            accelers.append(abs(speeds[i + 1] - speeds[i]))
+        if times[i + 1] - times[i] != 0:
+            if not abs_use:
+                accelers.append((speeds[i + 1] - speeds[i]) / (times[i + 1] - times[i]))
+            else:
+                accelers.append(abs(speeds[i + 1] - speeds[i]) / (times[i + 1] - times[i]))
     return accelers
 
 def avg_acceler_long_lat(longitudes, latitudes, times, abs_use = False): 
     accelers = return_acceler_long_lat(longitudes, latitudes, times, abs_use) 
     return sum(accelers) / len(accelers)
  
-def return_acceler_speeds(speeds, abs_use = False):
+def return_acceler_speeds(speeds, times, abs_use = False):
     accelers = []
     for i in range(len(speeds) - 1):
-        if abs_use:
-            accelers.append(speeds[i + 1] - speeds[i])
-        else:
-            accelers.append(abs(speeds[i + 1] - speeds[i]))
+        if times[i + 1] - times[i] != 0:
+            if not abs_use:
+                accelers.append((speeds[i + 1] - speeds[i]) / (times[i + 1] - times[i]))
+            else:
+                accelers.append(abs(speeds[i + 1] - speeds[i]) / (times[i + 1] - times[i]))
     return accelers
 
 def avg_acceler_speeds(speeds, abs_use = False):
@@ -374,6 +376,26 @@ def total_len(long_list, lat_list):
 def total_offset(long_list, lat_list):
     return np.sqrt((long_list[0] - long_list[-1]) ** 2 + (lat_list[0] - lat_list[-1]) ** 2)
        
+def return_angle_diffs(angles):
+    total_angles = []
+    for index_coord in range(len(angles) - 1):
+        diff = (360 + angles[index_coord + 1] - angles[index_coord]) % 360
+        if diff > 180:
+            diff = 360 - diff
+        total_angles.append(diff)
+    return total_angles
+
+def return_angle_diffs_time(angles, times):
+    total_angles = []
+    for index_coord in range(len(angles) - 1):
+        time_diff = times[index_coord + 1] - times[index_coord]
+        diff = (360 + angles[index_coord + 1] - angles[index_coord]) % 360
+        if diff > 180:
+            diff = 360 - diff
+        if time_diff != 0:
+            total_angles.append(diff / time_diff)
+    return total_angles
+
 def return_angles(long_list, lat_list):
     total_angles = []
     for index_coord in range(len(long_list) - 1):
