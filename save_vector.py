@@ -30,6 +30,10 @@ def divide_train_test_new(properties, train_set, test_set):
                             feat_array_train[feat] = []
                         if feat not in feat_array:
                             feat_array[feat] = []
+
+                    if len(properties[window_size][subdir_name][some_file][start]) == 0:
+                        continue
+
                     if some_file in train_set:
                         sd_window_train.append(window_size)
                         sd_subdir_train.append(subdir_name)
@@ -80,15 +84,15 @@ def divide_train_test_new(properties, train_set, test_set):
 
                             feat_array[variable_name].append(sd_x_test[-1][-1])
                             feat_array_test[variable_name].append(sd_x_test[-1][-1])
-    
-    for rn in range(len(sd_x_train)):
+
+    for rn in range(len(sd_x_train)): 
         for cn in range(len(sd_x_train[rn])):
             sd_x_train[rn][cn] = float(sd_x_train[rn][cn])
-     
-    for rn in range(len(sd_x_test)):
+      
+    for rn in range(len(sd_x_test)): 
         for cn in range(len(sd_x_test[rn])):
             sd_x_test[rn][cn] = float(sd_x_test[rn][cn])
-
+  
     sd_x_train = np.array(sd_x_train)
     sd_x_test = np.array(sd_x_test)
 
@@ -113,6 +117,7 @@ open_feats_heading_scaled_max = pd.read_csv("all_feats_heading/all_feats_heading
 #open_feats_heading = pd.read_csv("all_feats_heading/all_feats_heading.csv", index_col = False)
  
 def save_a_cluster_vector(subdirname):
+    '''
     dict_for_clustering = dict()
     dict_for_clustering[window_size] = dict()
     train_names = set()
@@ -320,10 +325,14 @@ def save_a_cluster_vector(subdirname):
                                 #dict_for_clustering[window_size][subdir_name][some_file][x][str(size) + "all_nums_preprocesssed_trajs_num_intersections_" + key_name] = npp[size][x][key_name]
 
                         #print(len(dict_for_clustering[window_size][subdir_name][some_file][x]))
- 
+     
     save_object("dict_for_clustering", dict_for_clustering)
     save_object("train_names", train_names)
     save_object("test_names", test_names)
+    '''
+    dict_for_clustering = load_object("dict_for_clustering")
+    train_names = load_object("train_names")
+    test_names = load_object("test_names") 
     return divide_train_test_new(dict_for_clustering, train_names, test_names)
 
 subdirname = "all_poly_flags_acceler_heading" 

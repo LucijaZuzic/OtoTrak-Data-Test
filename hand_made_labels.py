@@ -19,8 +19,20 @@ labels_by_hand = {
     15: [('a', 96, 14), ('a', 57, 10), ('a', 33, 2), ('sa', (15, 17), 7), ('a', 17, 8), ('sa', (29, 7), 12), ('sa', (12, 7), 5) ('a', 7, 4), ('s', 56, 3), ('s', 44, 11), ('s', 34, 1), ('s', 25, 6), ('s', 16, 0), ('s', 9, 13)],
 }
 
-def assign_label(number_label):
+def assign_label(number_label, files_in_cluster):
     all_labels = dict()
+    points_from_traj_labels = dict()
+    num_different = dict()
+    num_total = 0
+    for cluster in files_in_cluster: 
+        num_different[cluster] = 0
+        for entry in files_in_cluster[cluster]:
+            name_file = entry["short_name"]
+            name_file_long = name_file.replace("/", "/cleaned_csv/") 
+            pos = entry["start"]
+            if name_file_long not in points_from_traj_labels:
+                points_from_traj_labels[name_file_long] = dict()
+            points_from_traj_labels[name_file_long][pos] = cluster 
     for subdir_name in all_subdirs:
         if not os.path.isdir(subdir_name) or "Vehicle" not in subdir_name:
             continue 
@@ -77,11 +89,18 @@ def assign_label(number_label):
             #print(list(empty_labels)[0], len(set_labeled[list(empty_labels)[0]]))
             for label_some in set_labeled:
                 for ind in set_labeled[label_some]:
+                    actual_label = points_from_traj_labels[name_longer][ind]
+                    if actual_label != label_some:
+                        num_different[actual_label] += 1
+                    num_total += 1
                     all_labels[subdir_name][some_file][ind] = label_some
+    print(num_different)
     return all_labels
                  
-for number_label in labels_by_hand:
-    all_labels = assign_label(number_label)
+for filename in os.listdir("all_location_clus/filenames/"):  
+    for number_label in labels_by_hand:
+        all_labels = assign_label(number_label)
+    break
 
 def limit_of_location_cluster(files_in_cluster, filename):
     print(filename)  

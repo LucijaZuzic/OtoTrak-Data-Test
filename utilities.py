@@ -1309,6 +1309,10 @@ def divide_train_test(properties, train_set, test_set, subdirname):
         for subdir_name in properties[window_size]:
             for some_file in properties[window_size][subdir_name]:
                 for start in properties[window_size][subdir_name][some_file]: 
+                    
+                    if len(properties[window_size][subdir_name][some_file][start]) == 0:
+                        continue
+
                     if some_file in train_set:
                         sd_window_train.append(window_size)
                         sd_subdir_train.append(subdir_name)
@@ -1317,7 +1321,7 @@ def divide_train_test(properties, train_set, test_set, subdirname):
                         sd_x_train.append([])
                         for variable_name in properties[window_size][subdir_name][some_file][start]:
                             if skip_var(variable_name, subdirname):
-                                continue
+                                continue 
  
                             if "monoto" not in variable_name:
                                 if math.isnan(properties[window_size][subdir_name][some_file][start][variable_name]):
