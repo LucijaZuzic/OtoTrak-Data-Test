@@ -113,7 +113,7 @@ open_feats_heading_scaled_max = pd.read_csv("all_feats_heading/all_feats_heading
 #open_feats_heading = pd.read_csv("all_feats_heading/all_feats_heading.csv", index_col = False)
  
 def save_a_cluster_vector(subdirname):
-    dict_for_clustering= dict()
+    dict_for_clustering = dict()
     dict_for_clustering[window_size] = dict()
     train_names = set()
     test_names = set()   
@@ -182,7 +182,7 @@ def save_a_cluster_vector(subdirname):
                     #npp[size] = load_object(start_path + "/all_nums_preprocessed_trajs")
                     #n[size] = load_object(start_path + "/all_nums_trajs") 
     
-            for x in range(0, len(longitudes) - window_size + 1, step_size):
+            for x in range(0, len(longitudes) - window_size + 1, ):
                 longitudes_tmp = longitudes[x:x + window_size]
                 latitudes_tmp = latitudes[x:x + window_size]
 
@@ -322,9 +322,9 @@ def save_a_cluster_vector(subdirname):
                         #print(len(dict_for_clustering[window_size][subdir_name][some_file][x]))
  
     save_object("dict_for_clustering", dict_for_clustering)
-    save_object("train_rides", train_rides)
-    save_object("test_rides", test_rides)
-    return divide_train_test_new(dict_for_clustering, train_rides, test_rides)
+    save_object("train_names", train_names)
+    save_object("test_names", test_names)
+    return divide_train_test_new(dict_for_clustering, train_names, test_names)
 
 subdirname = "all_poly_flags_acceler_heading" 
 feat_names, feat_array, feat_array_train, feat_array_test, sd_window_train, sd_subdir_train, sd_ride_train, sd_start_train, sd_x_train, sd_window_test, sd_subdir_test, sd_ride_test, sd_start_test, sd_x_test = save_a_cluster_vector(subdirname)

@@ -1,7 +1,0 @@
-subdir,file,cluster,size,16all_distances_scaled_to_max_trajs_distances_offset,16all_distances_scaled_to_max_trajs_distances_offset x,16all_distances_scaled_to_max_trajs_distances_offset y,16all_nums_scaled_to_max_trajs_num_intersections_offset
-only_rays_heading_size_16_,filenames_in_cluster_test KMeans test nclus 6,0,407,0.042639237989079905,0.0500041948520822,0.05479054581139169,0.05285607251209217
-only_rays_heading_size_16_,filenames_in_cluster_test KMeans test nclus 6,4,74,0.08182685875178522,0.09834828632306676,0.03708934023461768,0.0856464572680789
-only_rays_heading_size_16_,filenames_in_cluster_test KMeans test nclus 6,2,67,0.034351737425288784,0.03376262856170448,0.03702668910281543,0.08746380040098017
-only_rays_heading_size_16_,filenames_in_cluster_test KMeans test nclus 6,5,35,0.0673924793501836,0.05971189660666689,0.06774346575811835,0.07214285714285713
-only_rays_heading_size_16_,filenames_in_cluster_test KMeans test nclus 6,1,20,0.06569916776741608,0.06019053429148786,0.08223241904158382,0.07281250000000002
-only_rays_heading_size_16_,filenames_in_cluster_test KMeans test nclus 6,3,3,0.17074583906001606,0.174333731128471,0.19397878482296518,0.1805555555555556

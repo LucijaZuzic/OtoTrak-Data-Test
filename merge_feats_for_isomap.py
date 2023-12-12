@@ -146,8 +146,8 @@ def make_isomaps_multi_feats(subdirname):
     dict_for_clustering[window_size] = dict() 
 
     dict_for_clustering = load_object("dict_for_clustering")
-    train_rides = load_object("train_rides")
-    test_rides = load_object("test_rides")
+    train_rides = load_object("train_names")
+    test_rides = load_object("test_names")
 
     sd_window_train = load_object("sd_window_train")
     sd_subdir_train = load_object("sd_subdir_train")
@@ -163,7 +163,7 @@ def make_isomaps_multi_feats(subdirname):
     sd_ride_test = load_object("sd_ride_test") 
     sd_x_test = load_object("sd_x_test") 
  
-    sd_window_train, sd_subdir_train, sd_ride_train, sd_start_train, sd_x_train, sd_window_test, sd_subdir_test, sd_ride_test, sd_start_test, sd_x_test  = divide_train_test(dict_for_clustering, train_rides, test_rides, subdirname)
+    sd_window_train, sd_subdir_train, sd_ride_train, sd_start_train, sd_x_train, sd_window_test, sd_subdir_test, sd_ride_test, sd_start_test, sd_x_test  = divide_train_test(dict_for_clustering, train_names, test_names, subdirname)
     print(len(sd_x_train), len(sd_x_train[0]), sd_x_train[0][:10])
     print(len(sd_x_test))
     embedding = Isomap(n_components=2)

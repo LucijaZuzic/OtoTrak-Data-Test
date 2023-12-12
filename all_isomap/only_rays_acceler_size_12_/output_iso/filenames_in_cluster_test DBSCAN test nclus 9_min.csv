@@ -1,3 +1,0 @@
-subdir,file,cluster,size,12all_distances_scaled_to_max_trajs_distances_offset,12all_distances_scaled_to_max_trajs_distances_offset x,12all_distances_scaled_to_max_trajs_distances_offset y,12all_nums_scaled_to_max_trajs_num_intersections_offset
-only_rays_acceler_size_12_,filenames_in_cluster_test DBSCAN test nclus 9,0,595,0.00966699883937,0.0049097152510109,0.0049950788804644,0.019736842105263157
-only_rays_acceler_size_12_,filenames_in_cluster_test DBSCAN test nclus 9,-1,11,0.0177023373287355,0.0122242266752827,0.0103319689508939,0.0625
