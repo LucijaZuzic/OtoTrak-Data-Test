@@ -385,6 +385,21 @@ def return_angle_diffs(angles):
         total_angles.append(diff)
     return total_angles
 
+def return_angle_diffs_no_abs(angles):
+    total_angles = []
+    for index_coord in range(len(angles) - 1):
+        diff = (360 + angles[index_coord + 1] - angles[index_coord]) % 360
+        rotate = False
+        if diff > 180:
+            rotate = True
+            diff = 360 - diff
+        if angles[index_coord + 1] < angles[index_coord] and not rotate:
+            diff = - diff
+        if angles[index_coord + 1] > angles[index_coord] and rotate:
+            diff = - diff
+        total_angles.append(diff)
+    return total_angles
+
 def return_angle_diffs_time(angles, times):
     total_angles = []
     for index_coord in range(len(angles) - 1):
@@ -392,6 +407,23 @@ def return_angle_diffs_time(angles, times):
         diff = (360 + angles[index_coord + 1] - angles[index_coord]) % 360
         if diff > 180:
             diff = 360 - diff
+        if time_diff != 0:
+            total_angles.append(diff / time_diff)
+    return total_angles
+
+def return_angle_diffs_no_abs_time(angles, times):
+    total_angles = []
+    for index_coord in range(len(angles) - 1):
+        time_diff = times[index_coord + 1] - times[index_coord]
+        diff = (360 + angles[index_coord + 1] - angles[index_coord]) % 360
+        rotate = False
+        if diff > 180:
+            rotate = True
+            diff = 360 - diff
+        if angles[index_coord + 1] < angles[index_coord] and not rotate:
+            diff = - diff
+        if angles[index_coord + 1] > angles[index_coord] and rotate:
+            diff = - diff
         if time_diff != 0:
             total_angles.append(diff / time_diff)
     return total_angles

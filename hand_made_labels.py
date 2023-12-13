@@ -1,8 +1,11 @@
 from utilities import *
 from sklearn.metrics import normalized_mutual_info_score, homogeneity_score
+from numpy.linalg import solve
 all_subdirs = os.listdir()
-MIN_VAL = -1
-MAX_VAL = 360 
+MIN_VAL_SPEED = 0
+MAX_VAL_SPEED = 85 
+MIN_VAL_ANGLE = 0
+MAX_VAL_ANGLE = 180 
 labels_by_hand = {
     2: [('s', 27, 1)],
     3: [('a', 22, 2), ('s', 27, 1)],
@@ -20,6 +23,95 @@ labels_by_hand = {
     15: [('a', 96, 14), ('a', 57, 10), ('a', 33, 2), ('sa', [15, 17], 7), ('a', 17, 8), ('sa', [29, 7], 12), ('sa', [12, 7], 5), ('a', 7, 4), ('s', 56, 3), ('s', 44, 11), ('s', 34, 1), ('s', 25, 6), ('s', 16, 0), ('s', 9, 13)],
 }
 
+def plot_limits(number_label):
+    print(number_label)
+    xy_range_label = dict()  
+    free_space = [[[MIN_VAL_SPEED, MAX_VAL_SPEED], [MIN_VAL_ANGLE, MAX_VAL_ANGLE]]]
+    for limit in labels_by_hand[number_label]:
+        if limit[0] == 's': 
+            xy_range_label[limit[2]] = []
+            for i, fs in enumerate(free_space):
+                if fs[0][1] > limit[1]:
+                    new_fs = [[p[0], p[1]] for p in fs]
+                    new_fs[0][0] = limit[1]
+                    xy_range_label[limit[2]].append(new_fs)
+                    free_space[i][0][1] = limit[1]
+        if limit[0] == 'a': 
+            xy_range_label[limit[2]] = []
+            for i, fs in enumerate(free_space):
+                if fs[1][1] > limit[1]:
+                    new_fs = [[p[0], p[1]] for p in fs]
+                    new_fs[1][0] = limit[1]
+                    xy_range_label[limit[2]].append(new_fs)
+                    free_space[i][1][1] = limit[1]
+        if limit[0] == 'sa': 
+            xy_range_label[limit[2]] = []
+            to_add = []
+            for i, fs in enumerate(free_space):
+                if fs[0][1] > limit[1][0] and fs[1][1] > limit[1][1]:
+                    new_fs = [[p[0], p[1]] for p in fs]
+                    new_fs[0][0] = limit[1][0]
+                    new_fs[1][0] = limit[1][1]
+                    xy_range_label[limit[2]].append(new_fs) 
+                    fs2 = [[p[0], p[1]] for p in fs]
+                    free_space[i][0][1] = limit[1][0]
+                    fs2[0][0] = limit[1][0]
+                    fs2[1][1] = limit[1][1]
+                    to_add.append(fs2)
+            for t in to_add:
+                free_space.append(t) 
+        for i, t1 in enumerate(free_space):
+            for t2 in free_space[i + 1:]: 
+                if t1[0] == t2[0] and (t1[1][0] == t2[1][1] or t1[1][1] == t2[1][0]):
+                    t1[1] = [min(t1[1][0], t2[1][0]), max(t1[1][1], t2[1][1])]
+                    t2[1] = t1[1] 
+                if t1[1] == t2[1] and (t1[0][0] == t2[0][1] or t1[0][1] == t2[0][0]):
+                    t1[0] = [min(t1[0][0], t2[0][0]), max(t1[0][1], t2[0][1])]
+                    t2[0] = t1[0] 
+        to_remove = set()
+        for i, t1 in enumerate(free_space):
+            for t2 in free_space[i + 1:]:
+                if t1 == t2:
+                    to_remove.add(i)  
+        new_free = []
+        for i, t1 in enumerate(free_space):
+            if i not in to_remove:
+                new_free.append(t1)
+        free_space = new_free 
+    for limit in range(number_label):
+        if limit not in xy_range_label:
+            xy_range_label[
+                limit] = free_space
+    plt.title(number_label)
+    rcs = random_colors(number_label + 2)
+    yx_range_label = dict()
+    for limit in xy_range_label:
+        yx_range_label[limit] = [[xy_range_label[limit][0][1][1], xy_range_label[limit][0][0][1]], [xy_range_label[limit][0][1][0], xy_range_label[limit][0][0][0]]]
+    for limit in dict(sorted(yx_range_label.items(), key=lambda item: item[1])):
+        minx, maxx = xy_range_label[limit][0][0]
+        miny, maxy = xy_range_label[limit][0][1]
+        xrange = range(minx, maxx + 1)  
+        plt.fill_between(xrange, [miny for x in xrange], [maxy for x in xrange], label = limit, color = rcs[limit])
+    num_points = 1000
+    x_vals = np.arange(MIN_VAL_SPEED, MAX_VAL_SPEED + 1, (MAX_VAL_SPEED - MIN_VAL_SPEED) / num_points)
+    #y_vals1 = np.arange(MAX_VAL_ANGLE, MIN_VAL_ANGLE, - (MAX_VAL_ANGLE - MIN_VAL_ANGLE) / num_points)
+    #plt.plot(x_vals, y_vals1, color = rcs[number_label])
+    point_on_line = (41, 45)
+    A = np.array([[MAX_VAL_SPEED ** 2, MAX_VAL_SPEED, 1], [point_on_line[0] ** 2, point_on_line[0], 1], [MIN_VAL_SPEED ** 2, MIN_VAL_SPEED, 1]])
+    b = np.array([MIN_VAL_ANGLE, point_on_line[1], MAX_VAL_ANGLE])
+    solution = solve(A, b)
+    y_vals2 = [solution[0] * (x ** 2) + solution[1] * x + solution[2] for x in x_vals]
+    #plt.plot(x_vals, y_vals2, color = rcs[number_label + 1])
+    plt.fill_between(x_vals, y_vals2, [MAX_VAL_ANGLE + 1 for x in x_vals], color = "w")
+    plt.legend()
+    if not os.path.isdir("all_location_clus/interpret/"):
+        os.makedirs("all_location_clus/interpret/")
+    plt.savefig("all_location_clus/interpret/all_labels_" + str(number_label) + ".png", bbox_inches = "tight")
+    plt.close()
+
+for l in labels_by_hand:
+    plot_limits(l)
+     
 def assign_label(number_label, files_in_cluster):
     print(filename) 
     all_labels = dict()
@@ -128,7 +220,10 @@ def assign_label(number_label, files_in_cluster):
                  
 for filename in os.listdir("all_location_clus/filenames/"):
     number_label = int(filename.split(" ")[-1])
-    all_labels = assign_label(number_label, load_object("all_location_clus/filenames/" + filename)) 
+    all_labels = assign_label(number_label, load_object("all_location_clus/filenames/" + filename))
+    if not os.path.isdir("all_location_clus/hand_made_labels/"):
+        os.makedirs("all_location_clus/hand_made_labels/")
+    save_object("all_location_clus/hand_made_labels/all_labels_" + filename, all_labels)
 
 def limit_of_location_cluster(files_in_cluster, filename):
     print(filename)  
@@ -140,10 +235,10 @@ def limit_of_location_cluster(files_in_cluster, filename):
     maxy = dict()
  
     for cluster in files_in_cluster:
-        minx[cluster] = MAX_VAL
-        miny[cluster] = MAX_VAL
-        maxx[cluster] = MIN_VAL
-        maxy[cluster] = MIN_VAL
+        minx[cluster] = MAX_VAL_SPEED
+        miny[cluster] = MAX_VAL_SPEED
+        maxx[cluster] = MIN_VAL_ANGLE
+        maxy[cluster] = MAX_VAL_ANGLE
         for entry in files_in_cluster[cluster]:
             name_file = entry["short_name"]
             name_file_long = name_file.replace("/", "/cleaned_csv/") 
@@ -202,7 +297,7 @@ def limit_of_location_cluster(files_in_cluster, filename):
     for cluster in files_in_cluster:
         print(cluster, minx[cluster], maxx[cluster], miny[cluster], maxy[cluster])
          
-#for filename in os.listdir("all_location_clus/filenames/"): 
-    #if "nclus 15" not in filename:
-        #continue
-    #limit_of_location_cluster(load_object("all_location_clus/filenames/" + filename), filename)
+for filename in os.listdir("all_location_clus/filenames/"): 
+    if "nclus 15" not in filename:
+        continue
+    limit_of_location_cluster(load_object("all_location_clus/filenames/" + filename), filename)
