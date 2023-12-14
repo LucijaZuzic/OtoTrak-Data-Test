@@ -1,0 +1,8 @@
+False
+ & False & True\\ \hline
+False & 95.85\% & 4.15\%\\ \hline
+True & 19.91\% & 80.09\%\\ \hline
+True
+ & True & False\\ \hline
+True & 96.14\% & 3.86\%\\ \hline
+False & 17.93\% & 82.07\%\\ \hline

@@ -1,8 +1,149 @@
-from utilities import *
+from utilities import * 
 
+def save_table(str_save, name_save):
+    if not os.path.isdir("distribution"):
+        os.makedirs("distribution")
+    file_w = open("distribution/" + name_save + ".txt", "w")
+    file_w.write(str_save)
+    file_w.close()
+
+def str_convert(val):
+    if val == False:
+        return "0"
+    if val == True:
+        return "1"
+    power_to = 0
+    while abs(val) < 10 ** -2 and val != 0.0:
+        val *= 10
+        power_to += 1 
+    return_val = str(np.round(val, 2))
+    if power_to != 0:
+        return_val += "\\times 10^{-" + str(power_to) + "}" 
+    return return_val
+
+def header_dict(dictio):
+    str_pr = ""
+    for k in dictio:
+        str_pr += str(k) + " & "
+    str_pr = str_pr[:-3]
+    str_pr += "\\\\ \\hline\n"
+    return str_pr
+ 
+def print_1d(dictio, mul, name_save):
+    str_pr = header_dict(dictio)
+    for k in dictio:
+        str_pr += str(np.round(dictio[k] * mul, 2)) + "\% & "
+    str_pr = str_pr[:-3]
+    str_pr += "\\\\ \\hline\n"
+    save_table(str_pr, name_save)
+    return str_pr
+
+def print_2d(dictio, mul, name_save = ""):
+    str_pr = " & " + header_dict(dictio)
+    for prev in dictio:
+        str_pr += str(prev) + " & "
+        for k in dictio:
+            if k in dictio[prev]:
+                str_pr += str(np.round(dictio[prev][k] * mul, 2)) + "\\% & "
+            else:
+                str_pr += str(np.round(0, 2)) + "\\% & "
+        str_pr = str_pr[:-3]
+        str_pr += "\\\\ \\hline\n"
+    if not name_save == "":
+        save_table(str_pr, name_save)
+    return str_pr
+
+def print_3d(dictio, mul, name_save): 
+    str_pr = ""
+    for prev in dictio:
+        str_pr += str(prev) + "\n"
+        str_pr += print_2d(dictio[prev], mul)
+    save_table(str_pr, name_save)
+    return str_pr
+
+def summarize_dict(old_dict, new_bins, maxval): 
+    new_dict = dict()
+    for i in range(len(new_bins)): 
+        new_min = new_bins[i]
+        new_max = maxval
+        if i + 1 < len(new_bins):
+            new_max = new_bins[i + 1]
+        new_key = "[" + str_convert(new_min) + ", " + str_convert(new_max) + ">"
+        new_dict[new_key] = 0
+        for k in old_dict:
+            if k == "undefined":
+                continue
+            if k >= new_min and k < new_max:
+                new_dict[new_key] += old_dict[k]
+    for k in new_dict:   
+        new_dict[k] = np.round(new_dict[k] * 100, 2)  
+    return new_dict
+
+def summarize_2d_dict(old_dict, new_bins, maxval): 
+    new_1d_fixed = dict()
+    for k in old_dict:
+        new_1d_fixed[k] = summarize_dict(old_dict[k], new_bins, maxval)  
+    new_dict = dict()
+    num_in_old_dict = dict()
+    for i in range(len(new_bins)):
+        new_min = new_bins[i]
+        new_max = maxval
+        if i + 1 < len(new_bins):
+            new_max = new_bins[i + 1]
+        new_key = "[" + str_convert(new_min) + ", " + str_convert(new_max) + ">"
+        new_dict[new_key] = dict()
+        num_in_old_dict[new_key] = 0 
+        for k in old_dict:
+            if k == "undefined":
+                continue 
+            if k >= new_min and k < new_max:
+                num_in_old_dict[new_key] += 1  
+                for new_key2 in new_1d_fixed[k]:
+                    if new_key2 not in new_dict[new_key]:
+                        new_dict[new_key][new_key2] = 0 
+                    new_dict[new_key][new_key2] += new_1d_fixed[k][new_key2]  
+    for k in new_dict:
+        for k2 in new_dict[k]:
+            new_dict[k][k2] /= num_in_old_dict[k]    
+            new_dict[k][k2] = np.round(new_dict[k][k2], 2)  
+    return new_dict
+
+def summarize_3d_dict(old_dict, new_bins, maxval): 
+    new_2d_fixed = dict()
+    for k in old_dict:
+        new_2d_fixed[k] = summarize_2d_dict(old_dict[k], new_bins, maxval)  
+    new_dict = dict()
+    for i in range(len(new_bins)):
+        new_min = new_bins[i]
+        new_max = maxval
+        if i + 1 < len(new_bins):
+            new_max = new_bins[i + 1]
+        new_key = "[" + str_convert(new_min) + ", " + str_convert(new_max) + ">"
+        new_dict[new_key] = dict() 
+        for k in old_dict:
+            if k == "undefined":
+                continue 
+            if k >= new_min and k < new_max:
+                for new_key2 in new_2d_fixed[k]:
+                    if new_key2 not in new_dict[new_key]:
+                        new_dict[new_key][new_key2] = dict() 
+                        for new_key3 in new_2d_fixed[k][new_key2]:
+                            if new_key3 not in new_dict[new_key][new_key2]:
+                                new_dict[new_key][new_key2][new_key3] = 0 
+                            new_dict[new_key][new_key2][new_key3] += new_2d_fixed[k][new_key2][new_key3]
+    for k in new_dict:
+        for k2 in new_dict[k]:
+            for k3 in new_dict[k][k2]:  
+                new_dict[k][k2][k3] = np.round(new_dict[k][k2][k3], 2)  
+    return new_dict
+
+def get_bins(keys_list, num_bins): 
+    print(min(keys_list), max(keys_list), (max(keys_list) - min(keys_list)) / (num_bins))
+    return np.arange(min(keys_list), max(keys_list), (max(keys_list) - min(keys_list)) / (num_bins))
+    
 def get_var(name_of):
     print(name_of)
-    predicted = load_object("predicted/predicted_" + name_of)   
+    #predicted = load_object("predicted/predicted_" + name_of)   
 
     probability_of_in_next_next_step = load_object("probability/probability_of_" + name_of + "_in_next_next_step")   
     probability_of_in_next_step = load_object("probability/probability_of_" + name_of + "_in_next_step")   
@@ -12,29 +153,24 @@ def get_var(name_of):
     print(len(probability_of_in_next_step))
     print(len(probability_of)) 
 
-    if "sgn" in name_of:
-        for curr in probability_of:
-            print(curr, str(np.round(probability_of[curr] * 100, 2)))
-                 
-        for prev in probability_of_in_next_step:
-            strpr = str(prev) + " "
-            for curr in probability_of_in_next_step:
-                if curr in probability_of_in_next_step[prev]:
-                    strpr += str(np.round(probability_of_in_next_step[prev][curr] * 100, 2)) + " "
-                else:
-                    strpr += str(np.round(probability_of_in_next_step[prev]["undefined"] * 100, 2)) + " "
-            print(strpr)
-            
-        for prevprev in probability_of_in_next_next_step:
-            print(prevprev)
-            for prev in probability_of_in_next_next_step[prevprev]:
-                strpr = str(prev) + " "
-                for curr in probability_of_in_next_next_step[prevprev]:
-                    if curr in probability_of_in_next_next_step[prevprev][prev]:
-                        strpr += str(np.round(probability_of_in_next_next_step[prevprev][prev][curr] * 100, 2)) + " "
-                    else:
-                        strpr += str(np.round(probability_of_in_next_next_step[prevprev][prev]["undefined"] * 100, 2)) + " "
-                print(strpr)
+    keys_list = list(probability_of.keys())
+    if "undefined" in keys_list:
+        keys_list.remove("undefined") 
+    keys_list = sorted(keys_list) 
+    nbins = 6
+    mul = 1
+    if "sgn" in name_of: 
+        n1 = probability_of
+        n2 = probability_of_in_next_step
+        n3 = probability_of_in_next_next_step
+        mul = 100
+    else:
+        n1 = summarize_dict(probability_of, get_bins(keys_list, nbins), max(keys_list))
+        n2 = summarize_2d_dict(probability_of_in_next_step, get_bins(keys_list, nbins), max(keys_list))
+        n3 = summarize_3d_dict(probability_of_in_next_next_step, get_bins(keys_list, nbins), max(keys_list))
+    print(print_1d(n1, mul, name_of + "_1d"))
+    print(print_2d(n2, mul, name_of + "_2d"))
+    print(print_3d(n3, mul, name_of + "_3d"))
 
 name_of_var = os.listdir("predicted")
 for v in name_of_var: 
