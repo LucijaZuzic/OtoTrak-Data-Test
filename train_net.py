@@ -1,11 +1,37 @@
 from utilities import *
 
-from keras.models import Sequential
-from keras.layers import Dense, SimpleRNN
+#from keras.models import Sequential
+#from keras.layers import Dense, SimpleRNN
 
 from sklearn.metrics import mean_squared_error
 
 all_subdirs = os.listdir()
+
+def get_keys():  
+
+    data_to_cluster_train = dict()
+    data_to_cluster_train["speed"] = [] 
+    data_to_cluster_train["speed ototrak"] = []
+    data_to_cluster_train["acceler"] = [] 
+    data_to_cluster_train["acceler ototrak"] = []
+    data_to_cluster_train["abs acceler"] = [] 
+    data_to_cluster_train["abs acceler ototrak"] = []
+    data_to_cluster_train["dir diff"] = []
+    data_to_cluster_train["abs dir diff"] = []
+    data_to_cluster_train["dir diff time"] = []
+    data_to_cluster_train["abs dir diff time"] = []
+    data_to_cluster_train["xstep"] = []
+    data_to_cluster_train["ystep"] = [] 
+    data_to_cluster_train["abs xstep"] = []
+    data_to_cluster_train["abs ystep"] = []
+    data_to_cluster_train["xspeed"] = []
+    data_to_cluster_train["yspeed"] = [] 
+    data_to_cluster_train["abs xspeed"] = []
+    data_to_cluster_train["abs yspeed"] = []
+    data_to_cluster_train["heading"] = []
+    data_to_cluster_train["abs heading"] = []
+    data_to_cluster_train["dist"] = []
+    return list(data_to_cluster_train.keys())
 
 def make_dataset_train():  
 
@@ -208,23 +234,67 @@ def plot_result(trainY, testY, train_predict, test_predict, title):
         os.makedirs("train_net/" + title + "/predictions")
     plt.savefig("train_net/" + title + "/predictions/" + title + ".png", bbox_inches = "tight")
     plt.close()
+    
+def plot_actual(trainY, testY, title):
+    actual = np.append(trainY, testY) 
+    rows = len(actual)
+    plt.figure(figsize=(15, 6), dpi=80)
+    plt.plot(range(rows), actual) 
+    plt.axvline(x=len(trainY), color='r')
+    plt.legend(['Actual'])
+    plt.xlabel('Observation number after given time steps')
+    plt.ylabel(title)
+    plt.title('Actual Values. The Red Line Separates The Training And Test Examples') 
+    if not os.path.isdir("train_net/" + title + "/predictions"):
+        os.makedirs("train_net/" + title + "/predictions")
+    plt.savefig("train_net/" + title + "/predictions/" + title + "_actual.png", bbox_inches = "tight")
+    plt.close()
 
-window_size = 20 
-data_to_cluster_train, data_to_cluster_test = make_dataset_train()
-num_props = 1
-for prop_name in data_to_cluster_train:
-    if not os.path.isdir("train_net/" + prop_name + "/model"):
-        os.makedirs("train_net/" + prop_name + "/model")
-    min_val = min(min(data_to_cluster_train[prop_name]), min(data_to_cluster_test[prop_name]))
-    max_val = max(max(data_to_cluster_train[prop_name]), max(data_to_cluster_test[prop_name]))
-    range_val = max_val - min_val
-    xtrain, ytrain = get_XY(data_to_cluster_train[prop_name], window_size, num_props)
-    xtest, ytest = get_XY(data_to_cluster_test[prop_name], window_size, num_props)
-    demo_model = create_RNN(2, 1, (window_size, num_props), activation=['linear', 'linear'])   
-    save_object("train_net/" + prop_name + "/model/demo_model_" + prop_name, demo_model)
-    history = demo_model.fit(xtrain, ytrain, verbose = 1)  
-    save_object("train_net/" + prop_name + "/model/history_" + prop_name, history)
-    predict_train = demo_model.predict(xtrain)
-    predict_test = demo_model.predict(xtest)
-    print_error(ytrain, ytest, predict_train, predict_test, prop_name, range_val)
-    plot_result(ytrain, ytest, predict_train, predict_test, prop_name)
+def plot_predict(trainY, testY, title):
+    actual = np.append(trainY, testY) 
+    rows = len(actual)
+    plt.figure(figsize=(15, 6), dpi=80)
+    plt.plot(range(rows), actual) 
+    plt.axvline(x=len(trainY), color='r')
+    plt.legend(['Predictions'])
+    plt.xlabel('Observation number after given time steps')
+    plt.ylabel(title)
+    plt.title('Predicted Values. The Red Line Separates The Training And Test Examples') 
+    if not os.path.isdir("train_net/" + title + "/predictions"):
+        os.makedirs("train_net/" + title + "/predictions")
+    plt.savefig("train_net/" + title + "/predictions/" + title + "_predicted.png", bbox_inches = "tight")
+    plt.close()
+
+def make_nets():
+    window_size = 20 
+    data_to_cluster_train, data_to_cluster_test = make_dataset_train()
+    num_props = 1
+    for prop_name in data_to_cluster_train:
+        if not os.path.isdir("train_net/" + prop_name + "/model"):
+            os.makedirs("train_net/" + prop_name + "/model")
+        min_val = min(min(data_to_cluster_train[prop_name]), min(data_to_cluster_test[prop_name]))
+        max_val = max(max(data_to_cluster_train[prop_name]), max(data_to_cluster_test[prop_name]))
+        range_val = max_val - min_val
+        xtrain, ytrain = get_XY(data_to_cluster_train[prop_name], window_size, num_props)
+        xtest, ytest = get_XY(data_to_cluster_test[prop_name], window_size, num_props)
+        demo_model = create_RNN(2, 1, (window_size, num_props), activation=['linear', 'linear'])   
+        save_object("train_net/" + prop_name + "/model/demo_model_" + prop_name, demo_model)
+        history = demo_model.fit(xtrain, ytrain, verbose = 1)  
+        save_object("train_net/" + prop_name + "/model/history_" + prop_name, history)
+        predict_train = demo_model.predict(xtrain)
+        predict_test = demo_model.predict(xtest)
+        print_error(ytrain, ytest, predict_train, predict_test, prop_name, range_val)
+        plot_result(ytrain, ytest, predict_train, predict_test, prop_name)
+
+#make_nets()
+        
+def read_nets(): 
+    for prop_name in get_keys():    
+        ytrain = load_object("train_net/" + prop_name + "/predictions/trainY_" + prop_name)
+        ytest = load_object("train_net/" + prop_name + "/predictions/testY_" + prop_name)
+        predict_train = load_object("train_net/" + prop_name + "/predictions/train_predict_" + prop_name)
+        predict_test = load_object("train_net/" + prop_name + "/predictions/test_predict_" + prop_name)  
+        plot_predict(predict_train, predict_test, prop_name) 
+        plot_actual(ytrain, ytest, prop_name)
+
+read_nets()
