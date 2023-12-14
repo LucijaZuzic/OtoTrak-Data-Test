@@ -154,6 +154,12 @@ def return_steps_by_axis(longitudes, latitudes, times):
             absysteps.append(abs(latitudes[i + 1] - latitudes[i]))
     return xsteps, ysteps, absxsteps, absysteps
 
+def return_euclid_by_axis(longitudes, latitudes):
+    euclid = [] 
+    for i in range(len(longitudes) - 1):
+        euclid.append(np.sqrt((longitudes[i + 1] - longitudes[i]) ** 2 + (latitudes[i + 1] - latitudes[i]) ** 2)) 
+    return euclid
+
 def avg_speed_long_lat(longitudes, latitudes, times):
     speeds = return_speeds_long_lat(longitudes, latitudes, times)
     return sum(speeds) / len(speeds)

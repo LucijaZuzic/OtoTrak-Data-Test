@@ -30,6 +30,7 @@ def make_dataset_train():
     data_to_cluster_train["abs yspeed"] = []
     data_to_cluster_train["heading"] = []
     data_to_cluster_train["abs heading"] = []
+    data_to_cluster_train["dist"] = []
 
     data_to_cluster_test = dict()
     data_to_cluster_test["speed"] = [] 
@@ -52,6 +53,7 @@ def make_dataset_train():
     data_to_cluster_test["abs yspeed"] = []
     data_to_cluster_test["heading"] = []
     data_to_cluster_test["abs heading"] = []
+    data_to_cluster_test["dist"] = []
  
     for subdir_name in all_subdirs:
         if not os.path.isdir(subdir_name) or "Vehicle" not in subdir_name:
@@ -108,6 +110,8 @@ def make_dataset_train():
             headings_trajs = return_angles(longitudes, latitudes)
             headings_abs_trajs = return_angles_abs(longitudes, latitudes) 
 
+            distances = return_euclid_by_axis(longitudes, latitudes)
+
             if some_file in train_rides: 
                 for i in range(len(accelers_trajs)):  
                     data_to_cluster_train["speed"].append(speeds_tmp[i])
@@ -130,6 +134,7 @@ def make_dataset_train():
                     data_to_cluster_train["abs yspeed"].append(abs_y_speeds_trajs[i])
                     data_to_cluster_train["heading"].append(headings_trajs[i])
                     data_to_cluster_train["abs heading"].append(headings_abs_trajs[i])
+                    data_to_cluster_train["dist"].append(distances[i])
             if some_file in test_rides: 
                 for i in range(len(accelers_trajs)):   
                     data_to_cluster_test["speed"].append(speeds_tmp[i])
@@ -152,6 +157,7 @@ def make_dataset_train():
                     data_to_cluster_test["abs yspeed"].append(abs_y_speeds_trajs[i])
                     data_to_cluster_test["heading"].append(headings_trajs[i])
                     data_to_cluster_test["abs heading"].append(headings_abs_trajs[i])
+                    data_to_cluster_test["dist"].append(distances[i])
     for k in data_to_cluster_train:
         data_to_cluster_train[k] = np.array(data_to_cluster_train[k])
     for k in data_to_cluster_test:
