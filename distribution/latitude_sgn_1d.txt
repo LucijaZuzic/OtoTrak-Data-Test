@@ -1,2 +1,5 @@
+\begin{tabular}{|c|c|}
+\hline
 $False$ & $True$\\ \hline
 $49.25\%$ & $50.75\%$\\ \hline
+\end{tabular}

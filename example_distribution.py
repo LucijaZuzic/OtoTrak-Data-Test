@@ -30,25 +30,29 @@ def header_dict(dictio):
     return str_pr
  
 def print_1d(dictio, mul, name_save):
-    str_pr = header_dict(dictio)
+    str_pr = "\\begin{tabular}{|" + "c|" * len(dictio) + "}\n\\hline\n"
+    str_pr += header_dict(dictio)
     for k in dictio:
         str_pr += "$" + str(np.round(dictio[k] * mul, 2)) + "\%$ & "
     str_pr = str_pr[:-3]
-    str_pr += "\\\\ \\hline\n"
+    str_pr += "\\\\ \\hline\n\\end{tabular}\n"
     save_table(str_pr, name_save)
     return str_pr
 
 def print_2d(dictio, mul, name_save = ""):
-    str_pr = " & " + header_dict(dictio)
+    str_pr = "\\begin{tabular}{|" + "c|" * (len(dictio) + 1) + "}\n\\hline\n"
+    str_pr += " & " + header_dict(dictio)
     for prev in dictio:
-        str_pr += "$" + str(prev) + "$ & "
-        for k in dictio:
-            if k in dictio[prev]:
-                str_pr += "$" + str(np.round(dictio[prev][k] * mul, 2)) + "\\%$ & "
-            else:
-                str_pr += "$" + str(np.round(0, 2)) + "\\%$ & "
-        str_pr = str_pr[:-3]
-        str_pr += "\\\\ \\hline\n"
+        if sum(list(dictio[prev].values())) > 0:
+            str_pr += "$" + str(prev) + "$ & "
+            for k in dictio:
+                if k in dictio[prev]:
+                    str_pr += "$" + str(np.round(dictio[prev][k] * mul, 2)) + "\\%$ & "
+                else:
+                    str_pr += "$" + str(np.round(0, 2)) + "\\%$ & "
+            str_pr = str_pr[:-3]
+            str_pr += "\\\\ \\hline\n"
+    str_pr += "\\end{tabular}\n"
     if not name_save == "":
         save_table(str_pr, name_save)
     return str_pr
@@ -56,8 +60,11 @@ def print_2d(dictio, mul, name_save = ""):
 def print_3d(dictio, mul, name_save): 
     str_pr = ""
     for prev in dictio:
-        str_pr += "$" + str(prev) + "$\n"
-        str_pr += print_2d(dictio[prev], mul)
+        if len(dictio[prev]) > 0:
+            part1 = print_2d(dictio[prev], mul)
+            part2 = "\\multicolumn{" + str(len(dictio) + 1) + "}{|c|}{$" + str(prev) + "$}\\\\ \\hline\n"
+            part1 = part1.replace("}\n\\hline\n", "}\n\\hline\n" + part2)
+            str_pr += part1
     save_table(str_pr, name_save)
     return str_pr
 
@@ -168,9 +175,14 @@ def get_var(name_of):
         n1 = summarize_dict(probability_of, get_bins(keys_list, nbins), max(keys_list))
         n2 = summarize_2d_dict(probability_of_in_next_step, get_bins(keys_list, nbins), max(keys_list))
         n3 = summarize_3d_dict(probability_of_in_next_next_step, get_bins(keys_list, nbins), max(keys_list))
-    print(print_1d(n1, mul, name_of + "_1d"))
-    print(print_2d(n2, mul, name_of + "_2d"))
-    print(print_3d(n3, mul, name_of + "_3d"))
+    
+    p1 = print_1d(n1, mul, name_of + "_1d")
+    p2 = print_2d(n2, mul, name_of + "_2d")
+    p3 = print_3d(n3, mul, name_of + "_3d")
+    save_table(p1 + p2 + p3, name_of + "_all")
+    print(p1)
+    print(p2)
+    print(p3)
 
 name_of_var = os.listdir("predicted")
 for v in name_of_var: 

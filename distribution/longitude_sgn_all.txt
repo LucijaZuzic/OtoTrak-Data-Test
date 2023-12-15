@@ -1,3 +1,14 @@
+\begin{tabular}{|c|c|}
+\hline
+$True$ & $False$\\ \hline
+$53.29\%$ & $46.71\%$\\ \hline
+\end{tabular}
+\begin{tabular}{|c|c|c|}
+\hline
+ & $True$ & $False$\\ \hline
+$True$ & $96.24\%$ & $3.76\%$\\ \hline
+$False$ & $4.31\%$ & $95.69\%$\\ \hline
+\end{tabular}
 \begin{tabular}{|c|c|c|}
 \hline
 \multicolumn{3}{|c|}{$True$}\\ \hline

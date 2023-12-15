@@ -1,3 +1,6 @@
+\begin{tabular}{|c|c|c|}
+\hline
  & $True$ & $False$\\ \hline
 $True$ & $96.24\%$ & $3.76\%$\\ \hline
 $False$ & $4.31\%$ & $95.69\%$\\ \hline
+\end{tabular}
