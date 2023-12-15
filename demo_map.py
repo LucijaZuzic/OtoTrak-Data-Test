@@ -1,46 +1,81 @@
-import mplleaflet
-from utilities import *
-import folium
-import io
-from PIL import Image
-from selenium import webdriver
-
-from selenium import webdriver
-from selenium.webdriver.chrome.service import Service as ChromeService
-from webdriver_manager.chrome import ChromeDriverManager
-
-driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
-
-def save_trajmap(longitudes, latitudes, subdir_name, filename):
-    figss, ax = plt.subplots() 
-    ax.plot(longitudes, latitudes)  
-    #mplleaflet.display(fig=figss) 
-    # Save the OpenStreetMap plot as a PNG image
-    #plt.savefig("map_gps/" + subdir_name + "/" + filename + ".png", bbox_inches='tight', pad_inches=0.2, dpi=300)  # Adjust parameters as needed
-    #plt.close(figss)  
-    #print("Image saved as 'map_image.png'")
-    m = folium.Map(location=[latitudes[0], longitudes[0]], zoom_start=24)  # You can adjust the zoom level (zoom_start)
-     
-    combined_array = np.column_stack((latitudes, longitudes))
-    # Add a marker for the specified location
-    folium.PolyLine(combined_array).add_to(m)  # You can customize the popup text
-
-    # Display the map
-    #m.save("map_gps/" + subdir_name + "/" + str(filename) + ".html")  # Save the map as an HTML file
-    #m  # Display the map inline in Jupyter Notebook or simil
-    img_data = m._to_png(5)
-    img = Image.open(io.BytesIO(img_data))
-    img.save("map_gps/" + subdir_name + "/" + str(filename) + ".png")
-
+from utilities import *  
+import subprocess
+ 
 all_subdirs = os.listdir()
-for subdir_name in all_subdirs: 
-    if not os.path.isdir(subdir_name) or "Vehicle" not in subdir_name:
-        continue 
-    all_files = os.listdir(subdir_name + "/cleaned_csv/") 
-    for some_file in all_files:  
-        file_with_ride = pd.read_csv(subdir_name + "/cleaned_csv/" + some_file)
-        longitudes = list(file_with_ride["fields_longitude"])
-        latitudes = list(file_with_ride["fields_latitude"]) 
-        if not os.path.isdir("map_gps/" + subdir_name):
-            os.makedirs("map_gps/" + subdir_name)
-        save_trajmap(longitudes, latitudes, subdir_name, some_file.replace(".csv", ""))
+
+location_vehicles = load_object("location_vehicles")
+vehicle_location = load_object("vehicle_location")
+min_long_loc = dict()
+max_long_loc = dict()
+max_lat_loc = dict()
+min_lat_loc = dict()
+min_long_vehicle = dict()
+max_long_vehicle = dict()
+max_lat_vehicle = dict()
+min_lat_vehicle = dict()
+min_long_ride = dict()
+max_long_ride = dict()
+max_lat_ride = dict()
+min_lat_ride = dict()
+  
+for loc in location_vehicles:
+    print(loc)
+    min_long_loc[loc] = 1000000
+    max_long_loc[loc] = -1000000
+    min_lat_loc[loc] = 1000000
+    max_lat_loc[loc] = -1000000
+    for subdir_name in location_vehicles[loc]: 
+        print(subdir_name)
+        min_long_vehicle[subdir_name] = 1000000
+        max_long_vehicle[subdir_name] = -1000000
+        min_lat_vehicle[subdir_name] = 1000000
+        max_lat_vehicle[subdir_name] = -1000000
+        if not os.path.isdir(subdir_name) or "Vehicle" not in subdir_name:
+            continue 
+        all_files = os.listdir(subdir_name + "/cleaned_csv/") 
+        for some_file in all_files:  
+            file_with_ride = pd.read_csv(subdir_name + "/cleaned_csv/" + some_file)
+            min_long_ride[some_file] = 1000000
+            max_long_ride[some_file] = -1000000
+            min_lat_ride[some_file] = 1000000
+            max_lat_ride[some_file] = -1000000
+            longitudes = list(file_with_ride["fields_longitude"])
+            latitudes = list(file_with_ride["fields_latitude"]) 
+
+            min_long_loc[loc] = min(min_long_loc[loc], min(longitudes))
+            max_long_loc[loc] = max(max_long_loc[loc], max(longitudes))
+            min_lat_loc[loc] = min(min_lat_loc[loc], min(latitudes))
+            max_lat_loc[loc] = max(max_lat_loc[loc], max(latitudes))
+
+            min_long_vehicle[subdir_name] = min(min_long_vehicle[subdir_name], min(longitudes))
+            max_long_vehicle[subdir_name] = max(max_long_vehicle[subdir_name], max(longitudes))
+            min_lat_vehicle[subdir_name] = min(min_lat_vehicle[subdir_name], min(latitudes))
+            max_lat_vehicle[subdir_name] = max(max_lat_vehicle[subdir_name], max(latitudes))
+
+            min_long_ride[some_file] = min(min_long_ride[some_file], min(longitudes))
+            max_long_ride[some_file] = max(max_long_ride[some_file], max(longitudes))
+            min_lat_ride[some_file] = min(min_lat_ride[some_file], min(latitudes))
+            max_lat_ride[some_file] = max(max_lat_ride[some_file], max(latitudes))
+
+            if not os.path.isdir("traj_GPS/" + subdir_name):
+                os.makedirs("traj_GPS/" + subdir_name)  
+            
+    print(min_long_loc[loc], max_long_loc[loc], min_lat_loc[loc], max_lat_loc[loc])
+    
+if not os.path.isdir("location_data"):
+    os.makedirs("location_data") 
+    
+save_object("location_data/min_long_loc", min_long_loc)
+save_object("location_data/max_long_loc", max_long_loc)
+save_object("location_data/min_lat_loc", min_lat_loc)
+save_object("location_data/max_lat_loc", max_lat_loc)
+
+save_object("location_data/min_long_vehicle", min_long_vehicle)
+save_object("location_data/max_long_vehicle", max_long_vehicle)
+save_object("location_data/min_lat_vehicle", min_lat_vehicle)
+save_object("location_data/max_lat_vehicle", max_lat_vehicle)
+
+save_object("location_data/min_long_ride", min_long_ride)
+save_object("location_data/max_long_ride", max_long_ride)
+save_object("location_data/min_lat_ride", min_lat_ride)
+save_object("location_data/max_lat_ride", max_lat_ride)

@@ -24,7 +24,7 @@ def str_convert(val):
 def header_dict(dictio):
     str_pr = ""
     for k in dictio:
-        str_pr += str(k) + " & "
+        str_pr += "$" + str(k) + "$ & "
     str_pr = str_pr[:-3]
     str_pr += "\\\\ \\hline\n"
     return str_pr
@@ -32,7 +32,7 @@ def header_dict(dictio):
 def print_1d(dictio, mul, name_save):
     str_pr = header_dict(dictio)
     for k in dictio:
-        str_pr += str(np.round(dictio[k] * mul, 2)) + "\% & "
+        str_pr += "$" + str(np.round(dictio[k] * mul, 2)) + "\%$ & "
     str_pr = str_pr[:-3]
     str_pr += "\\\\ \\hline\n"
     save_table(str_pr, name_save)
@@ -41,12 +41,12 @@ def print_1d(dictio, mul, name_save):
 def print_2d(dictio, mul, name_save = ""):
     str_pr = " & " + header_dict(dictio)
     for prev in dictio:
-        str_pr += str(prev) + " & "
+        str_pr += "$" + str(prev) + "$ & "
         for k in dictio:
             if k in dictio[prev]:
-                str_pr += str(np.round(dictio[prev][k] * mul, 2)) + "\\% & "
+                str_pr += "$" + str(np.round(dictio[prev][k] * mul, 2)) + "\\%$ & "
             else:
-                str_pr += str(np.round(0, 2)) + "\\% & "
+                str_pr += "$" + str(np.round(0, 2)) + "\\%$ & "
         str_pr = str_pr[:-3]
         str_pr += "\\\\ \\hline\n"
     if not name_save == "":
@@ -56,7 +56,7 @@ def print_2d(dictio, mul, name_save = ""):
 def print_3d(dictio, mul, name_save): 
     str_pr = ""
     for prev in dictio:
-        str_pr += str(prev) + "\n"
+        str_pr += "$" + str(prev) + "$\n"
         str_pr += print_2d(dictio[prev], mul)
     save_table(str_pr, name_save)
     return str_pr

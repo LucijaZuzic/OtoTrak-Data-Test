@@ -1,2 +1,2 @@
-True & False\\ \hline
-53.29\% & 46.71\%\\ \hline
+$True$ & $False$\\ \hline
+$53.29\%$ & $46.71\%$\\ \hline
