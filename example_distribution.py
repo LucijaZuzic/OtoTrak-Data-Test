@@ -75,14 +75,22 @@ def print_3d(dictio, mul, name_save):
     save_table(str_pr, name_save)
     return str_pr
 
-def summarize_dict(old_dict, new_bins, maxval): 
-    new_dict = dict()
-    for i in range(len(new_bins)): 
+def convert_keys(new_bins, maxval, i):
         new_min = new_bins[i]
         new_max = maxval
         if i + 1 < len(new_bins):
             new_max = new_bins[i + 1]
-        new_key = "[" + str_convert(new_min) + ", " + str_convert(new_max) + ">"
+        new_key = "[" + str_convert(new_min) + ", " + str_convert(new_max)
+        if i + 1 < len(new_bins):
+            new_key += ">"
+        else:
+            new_key += "]"
+        return new_min, new_max, new_key
+
+def summarize_dict(old_dict, new_bins, maxval): 
+    new_dict = dict()
+    for i in range(len(new_bins)): 
+        new_min, new_max, new_key = convert_keys(new_bins, maxval, i)
         new_dict[new_key] = 0
         for k in old_dict:
             if k == "undefined":
@@ -100,11 +108,7 @@ def summarize_2d_dict(old_dict, new_bins, maxval):
     new_dict = dict()
     num_in_old_dict = dict()
     for i in range(len(new_bins)):
-        new_min = new_bins[i]
-        new_max = maxval
-        if i + 1 < len(new_bins):
-            new_max = new_bins[i + 1]
-        new_key = "[" + str_convert(new_min) + ", " + str_convert(new_max) + ">"
+        new_min, new_max, new_key = convert_keys(new_bins, maxval, i)
         new_dict[new_key] = dict()
         num_in_old_dict[new_key] = 0 
         for k in old_dict:
@@ -128,11 +132,7 @@ def summarize_3d_dict(old_dict, new_bins, maxval):
         new_2d_fixed[k] = summarize_2d_dict(old_dict[k], new_bins, maxval)  
     new_dict = dict()
     for i in range(len(new_bins)):
-        new_min = new_bins[i]
-        new_max = maxval
-        if i + 1 < len(new_bins):
-            new_max = new_bins[i + 1]
-        new_key = "[" + str_convert(new_min) + ", " + str_convert(new_max) + ">"
+        new_min, new_max, new_key = convert_keys(new_bins, maxval, i)
         new_dict[new_key] = dict() 
         for k in old_dict:
             if k == "undefined":
