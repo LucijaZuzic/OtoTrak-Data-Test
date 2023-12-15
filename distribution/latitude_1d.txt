@@ -1,5 +1,5 @@
-\begin{tabular}{|c|c|c|}
+\begin{tabular}{|c|c|}
 \hline
-$[0, 7.06 \times 10^{-3}>$ & $[7.06 \times 10^{-3}, 1.41 \times 10^{-2}>$ & $[1.41 \times 10^{-2}, 2.12 \times 10^{-2}]$\\ \hline
-$100.0\%$ & $0.0\%$ & $0\%$\\ \hline
+$[0, 2.33 \times 10^{-4}>$ & $[2.33 \times 10^{-4}, 2.12 \times 10^{-2}]$\\ \hline
+$50.75\%$ & $49.25\%$\\ \hline
 \end{tabular}

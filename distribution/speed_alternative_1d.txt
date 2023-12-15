@@ -1,5 +1,5 @@
-\begin{tabular}{|c|c|c|}
+\begin{tabular}{|c|c|}
 \hline
-$[0, 0.39>$ & $[0.39, 0.78>$ & $[0.78, 1.18]$\\ \hline
-$100.0\%$ & $0.0\%$ & $0.0\%$\\ \hline
+$[0, 5.2 \times 10^{-4}>$ & $[5.2 \times 10^{-4}, 1.18]$\\ \hline
+$50.69\%$ & $49.31\%$\\ \hline
 \end{tabular}

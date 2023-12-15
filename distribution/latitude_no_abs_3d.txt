@@ -1,16 +1,14 @@
-\begin{tabular}{|c|c|c|c|}
+\begin{tabular}{|c|c|c|}
 \hline
-\multicolumn{4}{|c|}{$[-4.78 \times 10^{-3}, 3.87 \times 10^{-3}>$}\\ \hline
- & $[-4.78 \times 10^{-3}, 3.87 \times 10^{-3}>$ & $[3.87 \times 10^{-3}, 1.25 \times 10^{-2}>$ & $[1.25 \times 10^{-2}, 2.12 \times 10^{-2}]$\\ \hline
-$[-4.78 \times 10^{-3}, 3.87 \times 10^{-3}>$ & $100.0\%$ & $0.0\%$ & $0.0\%$\\ \hline
-$[3.87 \times 10^{-3}, 1.25 \times 10^{-2}>$ & $0\%$ & $0\%$ & $0\%$\\ \hline
-$[1.25 \times 10^{-2}, 2.12 \times 10^{-2}]$ & $0\%$ & $0\%$ & $0\%$\\ \hline
+\multicolumn{3}{|c|}{$[-4.78 \times 10^{-3}, 1.7 \times 10^{-5}>$}\\ \hline
+ & $[-4.78 \times 10^{-3}, 1.7 \times 10^{-5}>$ & $[1.7 \times 10^{-5}, 2.12 \times 10^{-2}]$\\ \hline
+$[-4.78 \times 10^{-3}, 1.7 \times 10^{-5}>$ & $94.51\%$ & $5.49\%$\\ \hline
+$[1.7 \times 10^{-5}, 2.12 \times 10^{-2}]$ & $10.0\%$ & $90.0\%$\\ \hline
 \end{tabular}
-\begin{tabular}{|c|c|c|c|}
+\begin{tabular}{|c|c|c|}
 \hline
-\multicolumn{4}{|c|}{$[3.87 \times 10^{-3}, 1.25 \times 10^{-2}>$}\\ \hline
- & $[-4.78 \times 10^{-3}, 3.87 \times 10^{-3}>$ & $[3.87 \times 10^{-3}, 1.25 \times 10^{-2}>$ & $[1.25 \times 10^{-2}, 2.12 \times 10^{-2}]$\\ \hline
-$[-4.78 \times 10^{-3}, 3.87 \times 10^{-3}>$ & $100.0\%$ & $0.0\%$ & $0.0\%$\\ \hline
-$[3.87 \times 10^{-3}, 1.25 \times 10^{-2}>$ & $0\%$ & $0\%$ & $0\%$\\ \hline
-$[1.25 \times 10^{-2}, 2.12 \times 10^{-2}]$ & $0\%$ & $0\%$ & $0\%$\\ \hline
+\multicolumn{3}{|c|}{$[1.7 \times 10^{-5}, 2.12 \times 10^{-2}]$}\\ \hline
+ & $[-4.78 \times 10^{-3}, 1.7 \times 10^{-5}>$ & $[1.7 \times 10^{-5}, 2.12 \times 10^{-2}]$\\ \hline
+$[-4.78 \times 10^{-3}, 1.7 \times 10^{-5}>$ & $94.58\%$ & $5.42\%$\\ \hline
+$[1.7 \times 10^{-5}, 2.12 \times 10^{-2}]$ & $3.56\%$ & $96.44\%$\\ \hline
 \end{tabular}

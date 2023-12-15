@@ -50,15 +50,16 @@ def print_2d(dictio, mul, name_save = ""):
     str_pr = "\\begin{tabular}{|" + "c|" * (len(dictio) + 1) + "}\n\\hline\n"
     str_pr += " & " + header_dict(dictio)
     for prev in dictio:
-        #if sum(list(dictio[prev].values())) > 0:
-            str_pr += "$" + str(prev) + "$ & "
-            for k in dictio:
-                if k in dictio[prev]:
-                    str_pr += "$" + str(np.round(dictio[prev][k] * mul, 2)) + "\\%$ & "
-                else:
-                    str_pr += "$" + str(np.round(0, 2)) + "\\%$ & "
-            str_pr = str_pr[:-3]
-            str_pr += "\\\\ \\hline\n"
+        if sum(list(dictio[prev].values())) == 0:
+            print("Errror", prev)
+        str_pr += "$" + str(prev) + "$ & "
+        for k in dictio:
+            if k in dictio[prev]:
+                str_pr += "$" + str(np.round(dictio[prev][k] * mul, 2)) + "\\%$ & "
+            else:
+                str_pr += "$" + str(np.round(0, 2)) + "\\%$ & "
+        str_pr = str_pr[:-3]
+        str_pr += "\\\\ \\hline\n"
     str_pr += "\\end{tabular}\n"
     if not name_save == "":
         save_table(str_pr, name_save)
@@ -151,12 +152,24 @@ def summarize_3d_dict(old_dict, new_bins, maxval):
                 new_dict[k][k2][k3] = np.round(new_dict[k][k2][k3], 2)  
     return new_dict
 
-def get_bins(keys_list, num_bins): 
-    if max(keys_list) == 359:
-        return np.arange(0, 360, 360 / (num_bins))
-    print(min(keys_list), max(keys_list), (max(keys_list) - min(keys_list)) / (num_bins))
-    return np.arange(min(keys_list), max(keys_list), (max(keys_list) - min(keys_list)) / (num_bins))
-    
+def get_bins(keys_list, probability_of, num_bins): 
+    so_far = []
+    for k in keys_list:
+        so_far.append(probability_of[k]) 
+    new_bins_indexes = [i for i in range(num_bins)]
+    for index_working in range(num_bins - 1, 0, -1):
+        curr = new_bins_indexes[index_working]
+        if index_working != num_bins - 1:
+            next = new_bins_indexes[index_working + 1] 
+        else:
+            next = -1
+        prev = new_bins_indexes[index_working - 1]
+        while curr > 0 and curr > prev - 1 and sum(so_far[curr:next]) > 1 / num_bins:
+            curr += 1 
+        new_bins_indexes[index_working] = curr
+    new_bins = [keys_list[x] for x in new_bins_indexes]
+    return new_bins
+
 def get_var(name_of):
     print(name_of)
     #predicted = load_object("predicted/predicted_" + name_of)   
@@ -164,16 +177,24 @@ def get_var(name_of):
     probability_of_in_next_next_step = load_object("probability/probability_of_" + name_of + "_in_next_next_step")   
     probability_of_in_next_step = load_object("probability/probability_of_" + name_of + "_in_next_step")   
     probability_of = load_object("probability/probability_of_" + name_of) 
-  
-    print(len(probability_of_in_next_next_step))
-    print(len(probability_of_in_next_step))
-    print(len(probability_of)) 
-
+   
     keys_list = list(probability_of.keys())
     if "undefined" in keys_list:
         keys_list.remove("undefined") 
-    keys_list = sorted(keys_list) 
-    nbins = 3
+    keys_list = sorted(keys_list)
+    keys_list2 = list(probability_of_in_next_step.keys())
+    if "undefined" in keys_list2:
+        keys_list2.remove("undefined") 
+    keys_list2 = sorted(keys_list2)
+    keys_list3 = list(probability_of_in_next_next_step.keys())
+    if "undefined" in keys_list3:
+        keys_list3.remove("undefined") 
+    keys_list3 = sorted(keys_list3)
+    total2 = sum([sum(probability_of_in_next_step[x].values()) for x in probability_of_in_next_step])
+    total3 = sum([sum(probability_of_in_next_next_step[x][y].values()) for x in probability_of_in_next_next_step for y in probability_of_in_next_next_step[x]])
+    probof2 = {x: sum(probability_of_in_next_step[x].values()) / total2 for x in probability_of_in_next_step}
+    probof3 = {x: sum(probability_of_in_next_next_step[x][y].values()) / total3 for x in probability_of_in_next_next_step for y in probability_of_in_next_next_step[x]}
+    nbins = 2
     mul = 1
     if "sgn" in name_of: 
         n1 = probability_of
@@ -181,17 +202,23 @@ def get_var(name_of):
         n3 = probability_of_in_next_next_step
         mul = 100
     else:
-        n1 = summarize_dict(probability_of, get_bins(keys_list, nbins), max(keys_list))
-        n2 = summarize_2d_dict(probability_of_in_next_step, get_bins(keys_list, nbins), max(keys_list))
-        n3 = summarize_3d_dict(probability_of_in_next_next_step, get_bins(keys_list, nbins), max(keys_list))
+        keys_new1 = get_bins(keys_list, probability_of, nbins)
+        keys_new2 = get_bins(keys_list2, probof2, nbins)
+        keys_new3 = get_bins(keys_list3, probof3, nbins)
+        keys_new = keys_new1
+        if name_of == "speed" or name_of == "distance":
+            keys_new = keys_new3
+        n1 = summarize_dict(probability_of, keys_new, max(keys_list))
+        n2 = summarize_2d_dict(probability_of_in_next_step, keys_new, max(keys_list))
+        n3 = summarize_3d_dict(probability_of_in_next_next_step, keys_new, max(keys_list))
     
     p1 = print_1d(n1, mul, name_of + "_1d")
     p2 = print_2d(n2, mul, name_of + "_2d")
     p3 = print_3d(n3, mul, name_of + "_3d")
     save_table(p1 + p2 + p3, name_of + "_all")
-    print(p1)
-    print(p2)
-    print(p3)
+    #print(p1)
+    #print(p2)
+    #print(p3)
 
 name_of_var = os.listdir("predicted")
 for v in name_of_var: 

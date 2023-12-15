@@ -1,5 +1,5 @@
-\begin{tabular}{|c|c|c|}
+\begin{tabular}{|c|c|}
 \hline
-$[0, 120>$ & $[120, 240>$ & $[240, 359]$\\ \hline
-$53.91\%$ & $0\%$ & $45.77\%$\\ \hline
+$[0, 82>$ & $[82, 359]$\\ \hline
+$49.95\%$ & $49.73\%$\\ \hline
 \end{tabular}

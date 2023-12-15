@@ -1,16 +1,14 @@
-\begin{tabular}{|c|c|c|c|}
+\begin{tabular}{|c|c|c|}
 \hline
-\multicolumn{4}{|c|}{$[0, 8.06 \times 10^{-3}>$}\\ \hline
- & $[0, 8.06 \times 10^{-3}>$ & $[8.06 \times 10^{-3}, 1.61 \times 10^{-2}>$ & $[1.61 \times 10^{-2}, 2.42 \times 10^{-2}]$\\ \hline
-$[0, 8.06 \times 10^{-3}>$ & $100.0\%$ & $0.0\%$ & $0.0\%$\\ \hline
-$[8.06 \times 10^{-3}, 1.61 \times 10^{-2}>$ & $0\%$ & $0\%$ & $0\%$\\ \hline
-$[1.61 \times 10^{-2}, 2.42 \times 10^{-2}]$ & $0\%$ & $0\%$ & $0\%$\\ \hline
+\multicolumn{3}{|c|}{$[0, 2 \times 10^{-5}>$}\\ \hline
+ & $[0, 2 \times 10^{-5}>$ & $[2 \times 10^{-5}, 2.42 \times 10^{-2}]$\\ \hline
+$[0, 2 \times 10^{-5}>$ & $78.82\%$ & $21.18\%$\\ \hline
+$[2 \times 10^{-5}, 2.42 \times 10^{-2}]$ & $1.13\%$ & $98.87\%$\\ \hline
 \end{tabular}
-\begin{tabular}{|c|c|c|c|}
+\begin{tabular}{|c|c|c|}
 \hline
-\multicolumn{4}{|c|}{$[8.06 \times 10^{-3}, 1.61 \times 10^{-2}>$}\\ \hline
- & $[0, 8.06 \times 10^{-3}>$ & $[8.06 \times 10^{-3}, 1.61 \times 10^{-2}>$ & $[1.61 \times 10^{-2}, 2.42 \times 10^{-2}]$\\ \hline
-$[0, 8.06 \times 10^{-3}>$ & $100.0\%$ & $0.0\%$ & $0.0\%$\\ \hline
-$[8.06 \times 10^{-3}, 1.61 \times 10^{-2}>$ & $0\%$ & $0\%$ & $0\%$\\ \hline
-$[1.61 \times 10^{-2}, 2.42 \times 10^{-2}]$ & $0\%$ & $0\%$ & $0\%$\\ \hline
+\multicolumn{3}{|c|}{$[2 \times 10^{-5}, 2.42 \times 10^{-2}]$}\\ \hline
+ & $[0, 2 \times 10^{-5}>$ & $[2 \times 10^{-5}, 2.42 \times 10^{-2}]$\\ \hline
+$[0, 2 \times 10^{-5}>$ & $50.0\%$ & $50.0\%$\\ \hline
+$[2 \times 10^{-5}, 2.42 \times 10^{-2}]$ & $0.05\%$ & $99.95\%$\\ \hline
 \end{tabular}
