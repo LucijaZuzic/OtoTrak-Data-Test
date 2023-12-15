@@ -1,4 +1,6 @@
 from utilities import *
+import random
+import seaborn as sns
 
 dict_for_clustering = load_object("dict_for_clustering")
 train_names = load_object("train_names")
@@ -9,8 +11,7 @@ from sklearn.manifold import Isomap
 def only_shape(subdirname, features = []):
     feats_vect = []
     feats_vect_train = []
-    feats_vect_test = []
-    maxlen = 100000
+    feats_vect_test = [] 
     feature_order = []
     for window_size in dict_for_clustering: 
         for subdir_name in dict_for_clustering[window_size]: 
@@ -35,9 +36,7 @@ def only_shape(subdirname, features = []):
             for some_file in dict_for_clustering[window_size][subdir_name]: 
                 for x in dict_for_clustering[window_size][subdir_name][some_file]: 
                     if len(dict_for_clustering[window_size][subdir_name][some_file][x]) == 0:
-                        continue
-                    if len(feats_vect) > maxlen:
-                        continue
+                        continue 
                     feats_vect.append([])
                     if some_file in train_names:
                         feats_vect_train.append([])
@@ -65,7 +64,7 @@ def only_shape(subdirname, features = []):
             plt.title(name1 + " " + name2)
             plt.scatter(feats_vect[:, i], feats_vect[:, j])
             plt.show()
-    '''
+
     train_embedded = TSNE(n_components=2).fit_transform(feats_vect_train)
     test_embedded = TSNE(n_components=2).fit_transform(feats_vect_test)
     all_embedded = TSNE(n_components=2).fit_transform(feats_vect)
@@ -74,8 +73,7 @@ def only_shape(subdirname, features = []):
     sd_x_train = isomap_new.transform(feats_vect_train) 
     sd_x_test = isomap_new.transform(feats_vect_test)
     sd_x_all = isomap_new.transform(feats_vect)
-
-    
+ 
     plt.rcParams.update({'font.size': 22})
     plt.figure(figsize=(20, 10))
     plt.subplot(1, 3, 1) 
@@ -100,15 +98,35 @@ def only_shape(subdirname, features = []):
     plt.title("All Isomap")  
     plt.scatter(sd_x_all[:, 0], sd_x_all[:, 1])   
     plt.show()
+    '''
 
-    #get_euclid(feats_vect)
+    get_euclid(feats_vect, 100)
     #analyse_cols(feats_vect, feature_order)
+ 
 
-def get_euclid(array_np):  
+def get_euclid(array_np, size_of_sample):  
+    start_range = 0
+    end_range = len(array_np)  
+    random_numbers = random.sample(range(start_range, end_range + 1), size_of_sample)
+    print(random_numbers)
+    array_np = array_np[random_numbers, ]
+    print(np.shape(array_np))
     distances_np = np.linalg.norm(array_np[:, None] - array_np, axis=2) 
+    '''
     print("Euclidean distances between rows:")
     print(distances_np)
-
+    for rn in range(size_of_sample): 
+        new_row = [x for x in distances_np[rn, :]]
+        new_row = sorted(new_row)
+        new_index = [random_numbers[list(distances_np[rn, :]).index(x)] for x in new_row]
+        print(random_numbers[rn], new_row[1:11], new_index[1:11])
+    '''
+    sns.heatmap(distances_np, cmap='YlGnBu', xticklabels=random_numbers, yticklabels=random_numbers)
+    plt.title('Heatmap from NumPy Array')
+    plt.xlabel('X axis') 
+    plt.ylabel('Y axis')
+    plt.show()
+ 
 def analyse_cols(array, feature_order):
     import numpy as np 
     var_col = np.var(array, axis=0) 
