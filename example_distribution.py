@@ -50,7 +50,7 @@ def print_2d(dictio, mul, name_save = ""):
     str_pr = "\\begin{tabular}{|" + "c|" * (len(dictio) + 1) + "}\n\\hline\n"
     str_pr += " & " + header_dict(dictio)
     for prev in dictio:
-        if sum(list(dictio[prev].values())) > 0:
+        #if sum(list(dictio[prev].values())) > 0:
             str_pr += "$" + str(prev) + "$ & "
             for k in dictio:
                 if k in dictio[prev]:
@@ -173,7 +173,7 @@ def get_var(name_of):
     if "undefined" in keys_list:
         keys_list.remove("undefined") 
     keys_list = sorted(keys_list) 
-    nbins = 6
+    nbins = 3
     mul = 1
     if "sgn" in name_of: 
         n1 = probability_of
