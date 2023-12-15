@@ -11,14 +11,21 @@ def str_convert(val):
     if val == False:
         return "0"
     if val == True:
-        return "1"
+        return "1" 
     power_to = 0
-    while abs(val) < 10 ** -2 and val != 0.0:
+    while abs(val) < 1 and val != 0.0:
         val *= 10
         power_to += 1 
     return_val = str(np.round(val, 2))
-    if power_to != 0:
-        return_val += "\\times 10^{-" + str(power_to) + "}" 
+    if power_to == 1:
+        return_val = str(np.round(val / 10, 2))
+    if return_val[-2:] == '.0':
+        return_val = return_val[:-2]
+    if power_to > 1:
+        if return_val != "1": 
+            return_val += " \\times 10^{-" + str(power_to) + "}"
+        else:
+            return_val = "10^{-" + str(power_to) + "}"
     return return_val
 
 def header_dict(dictio):
@@ -145,6 +152,8 @@ def summarize_3d_dict(old_dict, new_bins, maxval):
     return new_dict
 
 def get_bins(keys_list, num_bins): 
+    if max(keys_list) == 359:
+        return np.arange(0, 360, 360 / (num_bins))
     print(min(keys_list), max(keys_list), (max(keys_list) - min(keys_list)) / (num_bins))
     return np.arange(min(keys_list), max(keys_list), (max(keys_list) - min(keys_list)) / (num_bins))
     
