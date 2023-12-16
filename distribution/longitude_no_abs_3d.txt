@@ -1,14 +1,14 @@
-\begin{tabular}{|c|c|c|}
+\begin{table}
+\centering
+\begin{tabular}{|c|c|c|c|c|}
 \hline
-\multicolumn{3}{|c|}{$[-1.16 \times 10^{-2}, 6.6 \times 10^{-5}>$}\\ \hline
- & $[-1.16 \times 10^{-2}, 6.6 \times 10^{-5}>$ & $[6.6 \times 10^{-5}, 9.45 \times 10^{-3}]$\\ \hline
-$[-1.16 \times 10^{-2}, 6.6 \times 10^{-5}>$ & $97.5\%$ & $2.5\%$\\ \hline
-$[6.6 \times 10^{-5}, 9.45 \times 10^{-3}]$ & $3.46\%$ & $96.54\%$\\ \hline
+\multirow{3}{*}{$P(X_{i}|X_{i-1},X_{i-2})$} & \multicolumn{4}{|c|}{$X_{i-2}$}\\ \cline{2-5}
+ & \multicolumn{2}{|c|}{$V_{1}$} & \multicolumn{2}{|c|}{$V_{2}$}\\ \cline{2-5}
+ & \multicolumn{2}{|c|}{$X_{i}$} & \multicolumn{2}{|c|}{$X_{i}$}\\ \hline
+$X_{i-1}$ & $V_{1}$ & $V_{2}$ & $V_{1}$ & $V_{2}$\\ \hline
+$V_{1}=[-1.16 \times 10^{-2}, 6.6 \times 10^{-5}>$ & $97.5\%$ & $2.5\%$ & $99.02\%$ & $0.98\%$\\ \hline
+$V_{2}=[6.6 \times 10^{-5}, 9.45 \times 10^{-3}]$ & $3.46\%$ & $96.54\%$ & $10.04\%$ & $89.96\%$\\ \hline
 \end{tabular}
-\begin{tabular}{|c|c|c|}
-\hline
-\multicolumn{3}{|c|}{$[6.6 \times 10^{-5}, 9.45 \times 10^{-3}]$}\\ \hline
- & $[-1.16 \times 10^{-2}, 6.6 \times 10^{-5}>$ & $[6.6 \times 10^{-5}, 9.45 \times 10^{-3}]$\\ \hline
-$[-1.16 \times 10^{-2}, 6.6 \times 10^{-5}>$ & $99.02\%$ & $0.98\%$\\ \hline
-$[6.6 \times 10^{-5}, 9.45 \times 10^{-3}]$ & $10.04\%$ & $89.96\%$\\ \hline
-\end{tabular}
+\caption{Longitude no abs 3d}
+\label{tab:longitude_no_abs_3d}
+\end{table}

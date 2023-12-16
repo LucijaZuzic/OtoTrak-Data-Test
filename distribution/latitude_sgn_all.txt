@@ -1,25 +1,37 @@
-\begin{tabular}{|c|c|}
-\hline
-$False$ & $True$\\ \hline
-$49.25\%$ & $50.75\%$\\ \hline
-\end{tabular}
+\chapter{Latitude sgn}
+\begin{table}
+\centering
 \begin{tabular}{|c|c|c|}
 \hline
- & $False$ & $True$\\ \hline
-$False$ & $95.17\%$ & $4.83\%$\\ \hline
-$True$ & $4.63\%$ & $95.37\%$\\ \hline
+$X_{i}$ & $False$ & $True$\\ \hline
+$P(X_{i})$ & $49.25\%$ & $50.75\%$\\ \hline
 \end{tabular}
+\caption{Latitude sgn 1d}
+\label{tab:latitude_sgn_1d}
+\end{table}
+\begin{table}
+\centering
 \begin{tabular}{|c|c|c|}
 \hline
-\multicolumn{3}{|c|}{$False$}\\ \hline
- & $False$ & $True$\\ \hline
-$False$ & $95.85\%$ & $4.15\%$\\ \hline
-$True$ & $19.91\%$ & $80.09\%$\\ \hline
+$P(X_{i}|X_{i-1})$ & \multicolumn{2}{|c|}{$X_{i}$}\\ \hline
+$X_{i-1}$ & $V_{1}$ & $V_{2}$\\ \hline
+$V_{1}=False$ & $95.17\%$ & $4.83\%$\\ \hline
+$V_{2}=True$ & $4.63\%$ & $95.37\%$\\ \hline
 \end{tabular}
-\begin{tabular}{|c|c|c|}
+\caption{Latitude sgn 2d}
+\label{tab:latitude_sgn_2d}
+\end{table}
+\begin{table}
+\centering
+\begin{tabular}{|c|c|c|c|c|}
 \hline
-\multicolumn{3}{|c|}{$True$}\\ \hline
- & $True$ & $False$\\ \hline
-$True$ & $96.14\%$ & $3.86\%$\\ \hline
-$False$ & $17.93\%$ & $82.07\%$\\ \hline
+\multirow{3}{*}{$P(X_{i}|X_{i-1},X_{i-2})$} & \multicolumn{4}{|c|}{$X_{i-2}$}\\ \cline{2-5}
+ & \multicolumn{2}{|c|}{$V_{1}$} & \multicolumn{2}{|c|}{$V_{2}$}\\ \cline{2-5}
+ & \multicolumn{2}{|c|}{$X_{i}$} & \multicolumn{2}{|c|}{$X_{i}$}\\ \hline
+$X_{i-1}$ & $V_{1}$ & $V_{2}$ & $V_{1}$ & $V_{2}$\\ \hline
+$V_{1}=False$ & $95.85\%$ & $4.15\%$ & $82.07\%$ & $17.93\%$\\ \hline
+$V_{2}=True$ & $19.91\%$ & $80.09\%$ & $3.86\%$ & $96.14\%$\\ \hline
 \end{tabular}
+\caption{Latitude sgn 3d}
+\label{tab:latitude_sgn_3d}
+\end{table}

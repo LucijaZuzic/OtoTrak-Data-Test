@@ -1,5 +1,10 @@
-\begin{tabular}{|c|c|}
+\begin{table}
+\centering
+\begin{tabular}{|c|c|c|}
 \hline
-$True$ & $False$\\ \hline
-$53.29\%$ & $46.71\%$\\ \hline
+$X_{i}$ & $True$ & $False$\\ \hline
+$P(X_{i})$ & $53.29\%$ & $46.71\%$\\ \hline
 \end{tabular}
+\caption{Longitude sgn 1d}
+\label{tab:longitude_sgn_1d}
+\end{table}

@@ -1,6 +1,12 @@
+\begin{table}
+\centering
 \begin{tabular}{|c|c|c|}
 \hline
- & $[0, 3.1 \times 10^{-4}>$ & $[3.1 \times 10^{-4}, 0.69]$\\ \hline
-$[0, 3.1 \times 10^{-4}>$ & $85.52\%$ & $14.48\%$\\ \hline
-$[3.1 \times 10^{-4}, 0.69]$ & $11.05\%$ & $88.95\%$\\ \hline
+$P(X_{i}|X_{i-1})$ & \multicolumn{2}{|c|}{$X_{i}$}\\ \hline
+$X_{i-1}$ & $V_{1}$ & $V_{2}$\\ \hline
+$V_{1}=[0, 3.1 \times 10^{-4}>$ & $85.52\%$ & $14.48\%$\\ \hline
+$V_{2}=[3.1 \times 10^{-4}, 6.91 \times 10^{-1}]$ & $11.05\%$ & $88.95\%$\\ \hline
 \end{tabular}
+\caption{X speed alternative 2d}
+\label{tab:x_speed_alternative_2d}
+\end{table}

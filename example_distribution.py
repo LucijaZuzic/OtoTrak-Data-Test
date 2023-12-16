@@ -11,22 +11,18 @@ def str_convert(val):
     if val == False:
         return "0"
     if val == True:
-        return "1" 
+        return "1"
+    new_val = val
     power_to = 0
-    while abs(val) < 1 and val != 0.0:
-        val *= 10
+    while abs(new_val) < 1 and new_val != 0.0:
+        new_val *= 10
         power_to += 1 
-    return_val = str(np.round(val, 2))
-    if power_to == 1:
-        return_val = str(np.round(val / 10, 2))
-    if return_val[-2:] == '.0':
-        return_val = return_val[:-2]
-    if power_to > 1:
-        if return_val != "1": 
-            return_val += " \\times 10^{-" + str(power_to) + "}"
-        else:
-            return_val = "10^{-" + str(power_to) + "}"
-    return return_val
+    rounded = str(np.round(new_val, 2))
+    if rounded[-2:] == '.0':
+        rounded = rounded[:-2]
+    if power_to != 0:  
+        rounded += " \\times 10^{-" + str(power_to) + "}"
+    return rounded
 
 def header_dict(dictio):
     str_pr = ""
@@ -37,22 +33,38 @@ def header_dict(dictio):
     return str_pr
  
 def print_1d(dictio, mul, name_save):
-    str_pr = "\\begin{tabular}{|" + "c|" * len(dictio) + "}\n\\hline\n"
-    str_pr += header_dict(dictio)
+    str_pr = "\\begin{table}\n\\centering\n"
+    str_pr += "\\begin{tabular}{|" + "c|" * (len(dictio) + 1) + "}\n\\hline\n"
+    str_pr += "$X_{i}$ & " + header_dict(dictio) + "$P(X_{i})$ & "
     for k in dictio:
         str_pr += "$" + str(np.round(dictio[k] * mul, 2)) + "\%$ & "
     str_pr = str_pr[:-3]
     str_pr += "\\\\ \\hline\n\\end{tabular}\n"
-    save_table(str_pr, name_save)
-    return str_pr
+    str_pr_short = str_pr.replace("\\begin{table}\n\\centering\n", "")
+    str_pr_shortest = str_pr_short.replace("\\begin{tabular}{|" + "c|" * (len(dictio) + 1) + "}\n", "")
+    str_pr_shortest = str_pr_shortest.replace("\\end{tabular}\n", "")
+    str_pr += "\\caption{" + name_save.replace("_", " ").capitalize() + "}\n"
+    str_pr += "\\label{tab:" + name_save + "}\n"
+    str_pr += "\\end{table}\n"
+    if not name_save == "":
+        save_table(str_pr, name_save)
+    return str_pr, str_pr_short, str_pr_shortest
 
 def print_2d(dictio, mul, name_save = ""):
-    str_pr = "\\begin{tabular}{|" + "c|" * (len(dictio) + 1) + "}\n\\hline\n"
-    str_pr += " & " + header_dict(dictio)
-    for prev in dictio:
-        if sum(list(dictio[prev].values())) == 0:
-            print("Errror", prev)
-        str_pr += "$" + str(prev) + "$ & "
+    str_pr = "\\begin{table}\n\\centering\n"
+    str_pr += "\\begin{tabular}{|" + "c|" * (len(dictio) + 1) + "}\n\\hline\n"
+    str_pr += "$P(X_{i}|X_{i-1})$ & \\multicolumn{" + str(len(dictio)) + "}{|c|}{$X_{i}$}\\\\ \\hline\n"
+    str_pr += "$X_{i-1}$ & "  
+    ix = 0
+    for prev in dictio: 
+        ix += 1
+        str_pr += "$V_{" + str(ix) + "}$ & "
+    str_pr = str_pr[:-3]
+    str_pr += "\\\\ \\hline\n"
+    ix = 0 
+    for prev in dictio: 
+        ix += 1
+        str_pr += "$V_{" + str(ix) + "}=" + str(prev) + "$ & "
         for k in dictio:
             if k in dictio[prev]:
                 str_pr += "$" + str(np.round(dictio[prev][k] * mul, 2)) + "\\%$ & "
@@ -61,20 +73,57 @@ def print_2d(dictio, mul, name_save = ""):
         str_pr = str_pr[:-3]
         str_pr += "\\\\ \\hline\n"
     str_pr += "\\end{tabular}\n"
+    str_pr_short = str_pr.replace("\\begin{table}\n\\centering\n", "")
+    str_pr_shortest = str_pr_short.replace("\\begin{tabular}{|" + "c|" * (len(dictio) + 1) + "}\n", "")
+    str_pr_shortest = str_pr_shortest.replace("\\end{tabular}\n", "")
+    str_pr += "\\caption{" + name_save.replace("_", " ").capitalize() + "}\n"
+    str_pr += "\\label{tab:" + name_save + "}\n"
+    str_pr += "\\end{table}\n"
     if not name_save == "":
         save_table(str_pr, name_save)
-    return str_pr
+    return str_pr, str_pr_short, str_pr_shortest
 
 def print_3d(dictio, mul, name_save): 
-    str_pr = ""
-    for prev in dictio:
-        if len(dictio[prev]) > 0:
-            part1 = print_2d(dictio[prev], mul)
-            part2 = "\\multicolumn{" + str(len(dictio) + 1) + "}{|c|}{$" + str(prev) + "$}\\\\ \\hline\n"
-            part1 = part1.replace("}\n\\hline\n", "}\n\\hline\n" + part2)
-            str_pr += part1
-    save_table(str_pr, name_save)
-    return str_pr
+    str_pr = "\\begin{table}\n\\centering\n"
+    str_pr += "\\begin{tabular}{|" + "c|" * (len(dictio) ** 2 + 1) + "}\n\\hline\n"
+    str_pr += "\multirow{3}{*}{$P(X_{i}|X_{i-1},X_{i-2})$} & \\multicolumn{" + str(len(dictio) ** 2) + "}{|c|}{$X_{i-2}$}\\\\ \\cline{2-" + str(len(dictio) ** 2 + 1) + "}\n"
+    str_pr += " & "
+    ix = 0
+    for prev in dictio: 
+        ix += 1
+        str_pr += "\\multicolumn{" + str(len(dictio)) + "}{|c|}{$V_{" + str(ix) + "}$} & "
+    str_pr = str_pr[:-3]
+    str_pr += "\\\\ \\cline{2-" + str(len(dictio) ** 2 + 1) + "}\n"
+    part = "\\multicolumn{" + str(len(dictio)) + "}{|c|}{$X_{i}$}"
+    str_pr += " & " + (part + " & ") * (len(dictio) - 1) + part + "\\\\ \\hline\n"
+    hd_short = ""
+    ix = 0
+    for prev in dictio: 
+        ix += 1
+        hd_short += "$V_{" + str(ix) + "}$ & "
+    hd = hd_short
+    hd = hd[:-3]
+    hd += "\\\\ \\hline\n"
+    str_pr += "$X_{i-1}$ & " + hd_short * (len(dictio) - 1) + hd 
+    ix = 0 
+    for prev in dictio: 
+        ix += 1
+        str_pr += "$V_{" + str(ix) + "}=" + str(prev) + "$ & "
+        for prevprev in dictio:
+            for curr in dictio:
+                str_pr += "$" + str(np.round(dictio[prevprev][prev][curr] * mul, 2)) + "\\%$ & "
+        str_pr = str_pr[:-3]
+        str_pr += "\\\\ \\hline\n"
+    str_pr += "\\end{tabular}\n"
+    str_pr_short = str_pr.replace("\\begin{table}\n\\centering\n", "")
+    str_pr_shortest = str_pr_short.replace("\\begin{tabular}{|" + "c|" * (len(dictio) + 1) + "}\n", "")
+    str_pr_shortest = str_pr_shortest.replace("\\end{tabular}\n", "")
+    str_pr += "\\caption{" + name_save.replace("_", " ").capitalize() + "}\n"
+    str_pr += "\\label{tab:" + name_save + "}\n"
+    str_pr += "\\end{table}\n"
+    if not name_save == "":
+        save_table(str_pr, name_save)
+    return str_pr, str_pr_short, str_pr_shortest
 
 def convert_keys(new_bins, maxval, i):
         new_min = new_bins[i]
@@ -194,7 +243,7 @@ def get_var(name_of):
     total3 = sum([sum(probability_of_in_next_next_step[x][y].values()) for x in probability_of_in_next_next_step for y in probability_of_in_next_next_step[x]])
     probof2 = {x: sum(probability_of_in_next_step[x].values()) / total2 for x in probability_of_in_next_step}
     probof3 = {x: sum(probability_of_in_next_next_step[x][y].values()) / total3 for x in probability_of_in_next_next_step for y in probability_of_in_next_next_step[x]}
-    nbins = 2
+    nbins = ncols
     mul = 1
     if "sgn" in name_of: 
         n1 = probability_of
@@ -212,13 +261,32 @@ def get_var(name_of):
         n2 = summarize_2d_dict(probability_of_in_next_step, keys_new, max(keys_list))
         n3 = summarize_3d_dict(probability_of_in_next_next_step, keys_new, max(keys_list))
     
-    p1 = print_1d(n1, mul, name_of + "_1d")
-    p2 = print_2d(n2, mul, name_of + "_2d")
-    p3 = print_3d(n3, mul, name_of + "_3d")
-    save_table(p1 + p2 + p3, name_of + "_all")
-    #print(p1)
-    #print(p2)
-    #print(p3)
+    p1, p1s, p1ss = print_1d(n1, mul, name_of + "_1d")
+    p2, p2s, p2ss = print_2d(n2, mul, name_of + "_2d")
+    p3, p3s, p3ss = print_3d(n3, mul, name_of + "_3d")
+    repl_name = name_of.replace("_", " ").capitalize()
+    save_table("\chapter{" + repl_name + "}\n" + p1 + p2 + p3, name_of + "_all") 
+    str_pr_short = "\chapter{" + repl_name + "}\n\\begin{table}\n\\centering\n" + p1s + p2s + p3s
+    str_pr_short += "\\caption{" + repl_name + "}\n"
+    str_pr_short += "\\label{tab:" + name_of + "}\n"
+    str_pr_short += "\\end{table}\n"
+    save_table(str_pr_short, name_of + "_all_short")
+    print(p1)
+    print(p2)
+    print(p3)
+    return "\chapter{" + name_of.replace("_", " ").capitalize() + "}\n" + p1 + p2 + p3, str_pr_short, p1ss, p2ss, p3ss
+
+totally = ""
+totally_short = ""
+ncols = 2
+shortest_p1 = "\\begin{table}\n\\centering\n"
+shortest_p1 += "\\begin{tabular}{|" + "c|" * (ncols + 1) + "}\n\\hline\n"
+
+shortest_p2 = "\\begin{table}\n\\centering\n"
+shortest_p2 += "\\begin{tabular}{|" + "c|" * (ncols + 1) + "}\n\\hline\n"
+
+shortest_p3 = "\\begin{table}\n\\centering\n"
+shortest_p3 += "\\begin{tabular}{|" + "c|" * (ncols ** 2 + 1) + "}\n\\hline\n"
 
 name_of_var = os.listdir("predicted")
 for v in name_of_var: 
@@ -226,4 +294,33 @@ for v in name_of_var:
         continue
     if v == "predicted_time_ten":
         continue
-    get_var(v.replace("predicted_", ""))
+    starting1 = "\\multicolumn{" + str(ncols + 1) + "}{|c|}{" + v.replace("_", " ").capitalize() + "}\\\\ "
+    starting2 = "\\multicolumn{" + str(ncols + 1) + "}{|c|}{" + v.replace("_", " ").capitalize() + "}\\\\ "
+    starting3 = "\\multicolumn{" + str(ncols ** 2 + 1) + "}{|c|}{" + v.replace("_", " ").capitalize() + "}\\\\ "
+    t, ts, s1, s2, s3 = get_var(v.replace("predicted_", ""))
+    totally += t
+    totally_short += ts
+    shortest_p1 += starting1 + s1
+    shortest_p2 += starting2 + s2
+    shortest_p3 += starting3 + s3
+    
+shortest_p1 += "\\end{tabular}\n"
+shortest_p1 += "\\caption{1d}\n"
+shortest_p1 += "\\label{tab:1d}\n"
+shortest_p1 += "\\end{table}\n"
+
+shortest_p2 += "\\end{tabular}\n"
+shortest_p2 += "\\caption{2d}\n"
+shortest_p2 += "\\label{tab:2d}\n"
+shortest_p2 += "\\end{table}\n"
+
+shortest_p3 += "\\end{tabular}\n"
+shortest_p3 += "\\caption{3d}\n"
+shortest_p3 += "\\label{tab:3d}\n"
+shortest_p3 += "\\end{table}\n"
+
+save_table(totally, "all_all")
+save_table(totally_short, "all_all_short")
+save_table(shortest_p1, "all_p1")
+save_table(shortest_p2, "all_p2")
+save_table(shortest_p3, "all_p3")

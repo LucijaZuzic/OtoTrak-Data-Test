@@ -1,0 +1,93 @@
+\begin{table}
+\centering
+\begin{tabular}{|c|c|c|}
+\hline
+\multicolumn{3}{|c|}{Predicted direction}\\ \hline
+$P(X_{i}|X_{i-1})$ & \multicolumn{2}{|c|}{$X_{i}$}\\ \hline
+$X_{i-1}$ & $V_{1}$ & $V_{2}$\\ \hline
+$V_{1}=[0, 189>$ & $96.6\%$ & $3.4\%$\\ \hline
+$V_{2}=[189, 360]$ & $3.8\%$ & $96.2\%$\\ \hline
+\multicolumn{3}{|c|}{Predicted direction abs alternative}\\ \hline
+$P(X_{i}|X_{i-1})$ & \multicolumn{2}{|c|}{$X_{i}$}\\ \hline
+$X_{i-1}$ & $V_{1}$ & $V_{2}$\\ \hline
+$V_{1}=[0, 34>$ & $91.34\%$ & $8.47\%$\\ \hline
+$V_{2}=[34, 90]$ & $6.6\%$ & $91.01\%$\\ \hline
+\multicolumn{3}{|c|}{Predicted direction alternative}\\ \hline
+$P(X_{i}|X_{i-1})$ & \multicolumn{2}{|c|}{$X_{i}$}\\ \hline
+$X_{i-1}$ & $V_{1}$ & $V_{2}$\\ \hline
+$V_{1}=[0, 82>$ & $92.15\%$ & $7.63\%$\\ \hline
+$V_{2}=[82, 359]$ & $7.61\%$ & $92.19\%$\\ \hline
+\multicolumn{3}{|c|}{Predicted distance}\\ \hline
+$P(X_{i}|X_{i-1})$ & \multicolumn{2}{|c|}{$X_{i}$}\\ \hline
+$X_{i-1}$ & $V_{1}$ & $V_{2}$\\ \hline
+$V_{1}=[0, 2 \times 10^{-5}>$ & $57.67\%$ & $42.33\%$\\ \hline
+$V_{2}=[2 \times 10^{-5}, 2.42 \times 10^{-2}]$ & $0.1\%$ & $99.9\%$\\ \hline
+\multicolumn{3}{|c|}{Predicted latitude}\\ \hline
+$P(X_{i}|X_{i-1})$ & \multicolumn{2}{|c|}{$X_{i}$}\\ \hline
+$X_{i-1}$ & $V_{1}$ & $V_{2}$\\ \hline
+$V_{1}=[0, 2.33 \times 10^{-4}>$ & $91.86\%$ & $8.14\%$\\ \hline
+$V_{2}=[2.33 \times 10^{-4}, 2.12 \times 10^{-2}]$ & $3.89\%$ & $96.11\%$\\ \hline
+\multicolumn{3}{|c|}{Predicted latitude no abs}\\ \hline
+$P(X_{i}|X_{i-1})$ & \multicolumn{2}{|c|}{$X_{i}$}\\ \hline
+$X_{i-1}$ & $V_{1}$ & $V_{2}$\\ \hline
+$V_{1}=[-4.78 \times 10^{-3}, 1.7 \times 10^{-5}>$ & $98.46\%$ & $1.54\%$\\ \hline
+$V_{2}=[1.7 \times 10^{-5}, 2.12 \times 10^{-2}]$ & $2.05\%$ & $97.95\%$\\ \hline
+\multicolumn{3}{|c|}{Predicted latitude sgn}\\ \hline
+$P(X_{i}|X_{i-1})$ & \multicolumn{2}{|c|}{$X_{i}$}\\ \hline
+$X_{i-1}$ & $V_{1}$ & $V_{2}$\\ \hline
+$V_{1}=False$ & $95.17\%$ & $4.83\%$\\ \hline
+$V_{2}=True$ & $4.63\%$ & $95.37\%$\\ \hline
+\multicolumn{3}{|c|}{Predicted longitude}\\ \hline
+$P(X_{i}|X_{i-1})$ & \multicolumn{2}{|c|}{$X_{i}$}\\ \hline
+$X_{i-1}$ & $V_{1}$ & $V_{2}$\\ \hline
+$V_{1}=[0, 3 \times 10^{-4}>$ & $92.37\%$ & $7.63\%$\\ \hline
+$V_{2}=[3 \times 10^{-4}, 1.16 \times 10^{-2}]$ & $3.15\%$ & $96.85\%$\\ \hline
+\multicolumn{3}{|c|}{Predicted longitude no abs}\\ \hline
+$P(X_{i}|X_{i-1})$ & \multicolumn{2}{|c|}{$X_{i}$}\\ \hline
+$X_{i-1}$ & $V_{1}$ & $V_{2}$\\ \hline
+$V_{1}=[-1.16 \times 10^{-2}, 6.6 \times 10^{-5}>$ & $98.69\%$ & $1.31\%$\\ \hline
+$V_{2}=[6.6 \times 10^{-5}, 9.45 \times 10^{-3}]$ & $1.1\%$ & $98.9\%$\\ \hline
+\multicolumn{3}{|c|}{Predicted longitude sgn}\\ \hline
+$P(X_{i}|X_{i-1})$ & \multicolumn{2}{|c|}{$X_{i}$}\\ \hline
+$X_{i-1}$ & $V_{1}$ & $V_{2}$\\ \hline
+$V_{1}=True$ & $96.24\%$ & $3.76\%$\\ \hline
+$V_{2}=False$ & $4.31\%$ & $95.69\%$\\ \hline
+\multicolumn{3}{|c|}{Predicted speed}\\ \hline
+$P(X_{i}|X_{i-1})$ & \multicolumn{2}{|c|}{$X_{i}$}\\ \hline
+$X_{i-1}$ & $V_{1}$ & $V_{2}$\\ \hline
+$V_{1}=[0, 1>$ & $69.87\%$ & $30.13\%$\\ \hline
+$V_{2}=[1, 83]$ & $0.44\%$ & $99.48\%$\\ \hline
+\multicolumn{3}{|c|}{Predicted speed alternative}\\ \hline
+$P(X_{i}|X_{i-1})$ & \multicolumn{2}{|c|}{$X_{i}$}\\ \hline
+$X_{i-1}$ & $V_{1}$ & $V_{2}$\\ \hline
+$V_{1}=[0, 5.2 \times 10^{-4}>$ & $87.76\%$ & $12.24\%$\\ \hline
+$V_{2}=[5.2 \times 10^{-4}, 1.18]$ & $16.02\%$ & $83.98\%$\\ \hline
+\multicolumn{3}{|c|}{Predicted time}\\ \hline
+$P(X_{i}|X_{i-1})$ & \multicolumn{2}{|c|}{$X_{i}$}\\ \hline
+$X_{i-1}$ & $V_{1}$ & $V_{2}$\\ \hline
+$V_{1}=[1 \times 10^{-3}, 9.96 \times 10^{-1}>$ & $45.08\%$ & $54.92\%$\\ \hline
+$V_{2}=[9.96 \times 10^{-1}, 4.32]$ & $89.85\%$ & $10.15\%$\\ \hline
+\multicolumn{3}{|c|}{Predicted x speed alternative}\\ \hline
+$P(X_{i}|X_{i-1})$ & \multicolumn{2}{|c|}{$X_{i}$}\\ \hline
+$X_{i-1}$ & $V_{1}$ & $V_{2}$\\ \hline
+$V_{1}=[0, 3.1 \times 10^{-4}>$ & $85.52\%$ & $14.48\%$\\ \hline
+$V_{2}=[3.1 \times 10^{-4}, 6.91 \times 10^{-1}]$ & $11.05\%$ & $88.95\%$\\ \hline
+\multicolumn{3}{|c|}{Predicted x speed no abs alternative}\\ \hline
+$P(X_{i}|X_{i-1})$ & \multicolumn{2}{|c|}{$X_{i}$}\\ \hline
+$X_{i-1}$ & $V_{1}$ & $V_{2}$\\ \hline
+$V_{1}=[-6.91 \times 10^{-1}, 6 \times 10^{-5}>$ & $99.22\%$ & $0.78\%$\\ \hline
+$V_{2}=[6 \times 10^{-5}, 6.18 \times 10^{-1}]$ & $1.57\%$ & $98.43\%$\\ \hline
+\multicolumn{3}{|c|}{Predicted y speed alternative}\\ \hline
+$P(X_{i}|X_{i-1})$ & \multicolumn{2}{|c|}{$X_{i}$}\\ \hline
+$X_{i-1}$ & $V_{1}$ & $V_{2}$\\ \hline
+$V_{1}=[0, 2.4 \times 10^{-4}>$ & $85.4\%$ & $14.6\%$\\ \hline
+$V_{2}=[2.4 \times 10^{-4}, 1.1]$ & $10.23\%$ & $89.77\%$\\ \hline
+\multicolumn{3}{|c|}{Predicted y speed no abs alternative}\\ \hline
+$P(X_{i}|X_{i-1})$ & \multicolumn{2}{|c|}{$X_{i}$}\\ \hline
+$X_{i-1}$ & $V_{1}$ & $V_{2}$\\ \hline
+$V_{1}=[-1.1, 3 \times 10^{-5}>$ & $99.35\%$ & $0.65\%$\\ \hline
+$V_{2}=[3 \times 10^{-5}, 7.5 \times 10^{-1}]$ & $1.89\%$ & $98.02\%$\\ \hline
+\end{tabular}
+\caption{2d}
+\label{tab:2d}
+\end{table}

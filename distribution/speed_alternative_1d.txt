@@ -1,5 +1,10 @@
-\begin{tabular}{|c|c|}
+\begin{table}
+\centering
+\begin{tabular}{|c|c|c|}
 \hline
-$[0, 5.2 \times 10^{-4}>$ & $[5.2 \times 10^{-4}, 1.18]$\\ \hline
-$50.69\%$ & $49.31\%$\\ \hline
+$X_{i}$ & $[0, 5.2 \times 10^{-4}>$ & $[5.2 \times 10^{-4}, 1.18]$\\ \hline
+$P(X_{i})$ & $50.69\%$ & $49.31\%$\\ \hline
 \end{tabular}
+\caption{Speed alternative 1d}
+\label{tab:speed_alternative_1d}
+\end{table}

@@ -1,6 +1,12 @@
+\begin{table}
+\centering
 \begin{tabular}{|c|c|c|}
 \hline
- & $True$ & $False$\\ \hline
-$True$ & $96.24\%$ & $3.76\%$\\ \hline
-$False$ & $4.31\%$ & $95.69\%$\\ \hline
+$P(X_{i}|X_{i-1})$ & \multicolumn{2}{|c|}{$X_{i}$}\\ \hline
+$X_{i-1}$ & $V_{1}$ & $V_{2}$\\ \hline
+$V_{1}=True$ & $96.24\%$ & $3.76\%$\\ \hline
+$V_{2}=False$ & $4.31\%$ & $95.69\%$\\ \hline
 \end{tabular}
+\caption{Longitude sgn 2d}
+\label{tab:longitude_sgn_2d}
+\end{table}

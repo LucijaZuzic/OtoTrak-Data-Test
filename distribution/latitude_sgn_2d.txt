@@ -1,6 +1,12 @@
+\begin{table}
+\centering
 \begin{tabular}{|c|c|c|}
 \hline
- & $False$ & $True$\\ \hline
-$False$ & $95.17\%$ & $4.83\%$\\ \hline
-$True$ & $4.63\%$ & $95.37\%$\\ \hline
+$P(X_{i}|X_{i-1})$ & \multicolumn{2}{|c|}{$X_{i}$}\\ \hline
+$X_{i-1}$ & $V_{1}$ & $V_{2}$\\ \hline
+$V_{1}=False$ & $95.17\%$ & $4.83\%$\\ \hline
+$V_{2}=True$ & $4.63\%$ & $95.37\%$\\ \hline
 \end{tabular}
+\caption{Latitude sgn 2d}
+\label{tab:latitude_sgn_2d}
+\end{table}

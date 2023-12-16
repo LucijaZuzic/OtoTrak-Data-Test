@@ -1,25 +1,37 @@
-\begin{tabular}{|c|c|}
-\hline
-$[0, 3 \times 10^{-4}>$ & $[3 \times 10^{-4}, 1.16 \times 10^{-2}]$\\ \hline
-$50.14\%$ & $49.85\%$\\ \hline
-\end{tabular}
+\chapter{Longitude}
+\begin{table}
+\centering
 \begin{tabular}{|c|c|c|}
 \hline
- & $[0, 3 \times 10^{-4}>$ & $[3 \times 10^{-4}, 1.16 \times 10^{-2}]$\\ \hline
-$[0, 3 \times 10^{-4}>$ & $92.37\%$ & $7.63\%$\\ \hline
-$[3 \times 10^{-4}, 1.16 \times 10^{-2}]$ & $3.15\%$ & $96.85\%$\\ \hline
+$X_{i}$ & $[0, 3 \times 10^{-4}>$ & $[3 \times 10^{-4}, 1.16 \times 10^{-2}]$\\ \hline
+$P(X_{i})$ & $50.14\%$ & $49.85\%$\\ \hline
 \end{tabular}
+\caption{Longitude 1d}
+\label{tab:longitude_1d}
+\end{table}
+\begin{table}
+\centering
 \begin{tabular}{|c|c|c|}
 \hline
-\multicolumn{3}{|c|}{$[0, 3 \times 10^{-4}>$}\\ \hline
- & $[0, 3 \times 10^{-4}>$ & $[3 \times 10^{-4}, 1.16 \times 10^{-2}]$\\ \hline
-$[0, 3 \times 10^{-4}>$ & $67.77\%$ & $32.23\%$\\ \hline
-$[3 \times 10^{-4}, 1.16 \times 10^{-2}]$ & $17.47\%$ & $82.53\%$\\ \hline
+$P(X_{i}|X_{i-1})$ & \multicolumn{2}{|c|}{$X_{i}$}\\ \hline
+$X_{i-1}$ & $V_{1}$ & $V_{2}$\\ \hline
+$V_{1}=[0, 3 \times 10^{-4}>$ & $92.37\%$ & $7.63\%$\\ \hline
+$V_{2}=[3 \times 10^{-4}, 1.16 \times 10^{-2}]$ & $3.15\%$ & $96.85\%$\\ \hline
 \end{tabular}
-\begin{tabular}{|c|c|c|}
+\caption{Longitude 2d}
+\label{tab:longitude_2d}
+\end{table}
+\begin{table}
+\centering
+\begin{tabular}{|c|c|c|c|c|}
 \hline
-\multicolumn{3}{|c|}{$[3 \times 10^{-4}, 1.16 \times 10^{-2}]$}\\ \hline
- & $[0, 3 \times 10^{-4}>$ & $[3 \times 10^{-4}, 1.16 \times 10^{-2}]$\\ \hline
-$[0, 3 \times 10^{-4}>$ & $87.7\%$ & $12.3\%$\\ \hline
-$[3 \times 10^{-4}, 1.16 \times 10^{-2}]$ & $4.05\%$ & $95.95\%$\\ \hline
+\multirow{3}{*}{$P(X_{i}|X_{i-1},X_{i-2})$} & \multicolumn{4}{|c|}{$X_{i-2}$}\\ \cline{2-5}
+ & \multicolumn{2}{|c|}{$V_{1}$} & \multicolumn{2}{|c|}{$V_{2}$}\\ \cline{2-5}
+ & \multicolumn{2}{|c|}{$X_{i}$} & \multicolumn{2}{|c|}{$X_{i}$}\\ \hline
+$X_{i-1}$ & $V_{1}$ & $V_{2}$ & $V_{1}$ & $V_{2}$\\ \hline
+$V_{1}=[0, 3 \times 10^{-4}>$ & $67.77\%$ & $32.23\%$ & $87.7\%$ & $12.3\%$\\ \hline
+$V_{2}=[3 \times 10^{-4}, 1.16 \times 10^{-2}]$ & $17.47\%$ & $82.53\%$ & $4.05\%$ & $95.95\%$\\ \hline
 \end{tabular}
+\caption{Longitude 3d}
+\label{tab:longitude_3d}
+\end{table}

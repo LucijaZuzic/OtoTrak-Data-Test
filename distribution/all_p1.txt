@@ -1,0 +1,59 @@
+\begin{table}
+\centering
+\begin{tabular}{|c|c|c|}
+\hline
+\multicolumn{3}{|c|}{Predicted direction}\\ \hline
+$X_{i}$ & $[0, 189>$ & $[189, 360]$\\ \hline
+$P(X_{i})$ & $50.27\%$ & $49.73\%$\\ \hline
+\multicolumn{3}{|c|}{Predicted direction abs alternative}\\ \hline
+$X_{i}$ & $[0, 34>$ & $[34, 90]$\\ \hline
+$P(X_{i})$ & $48.64\%$ & $49.7\%$\\ \hline
+\multicolumn{3}{|c|}{Predicted direction alternative}\\ \hline
+$X_{i}$ & $[0, 82>$ & $[82, 359]$\\ \hline
+$P(X_{i})$ & $49.95\%$ & $49.73\%$\\ \hline
+\multicolumn{3}{|c|}{Predicted distance}\\ \hline
+$X_{i}$ & $[0, 2 \times 10^{-5}>$ & $[2 \times 10^{-5}, 2.42 \times 10^{-2}]$\\ \hline
+$P(X_{i})$ & $0.39\%$ & $99.61\%$\\ \hline
+\multicolumn{3}{|c|}{Predicted latitude}\\ \hline
+$X_{i}$ & $[0, 2.33 \times 10^{-4}>$ & $[2.33 \times 10^{-4}, 2.12 \times 10^{-2}]$\\ \hline
+$P(X_{i})$ & $50.75\%$ & $49.25\%$\\ \hline
+\multicolumn{3}{|c|}{Predicted latitude no abs}\\ \hline
+$X_{i}$ & $[-4.78 \times 10^{-3}, 1.7 \times 10^{-5}>$ & $[1.7 \times 10^{-5}, 2.12 \times 10^{-2}]$\\ \hline
+$P(X_{i})$ & $50.15\%$ & $49.85\%$\\ \hline
+\multicolumn{3}{|c|}{Predicted latitude sgn}\\ \hline
+$X_{i}$ & $False$ & $True$\\ \hline
+$P(X_{i})$ & $49.25\%$ & $50.75\%$\\ \hline
+\multicolumn{3}{|c|}{Predicted longitude}\\ \hline
+$X_{i}$ & $[0, 3 \times 10^{-4}>$ & $[3 \times 10^{-4}, 1.16 \times 10^{-2}]$\\ \hline
+$P(X_{i})$ & $50.14\%$ & $49.85\%$\\ \hline
+\multicolumn{3}{|c|}{Predicted longitude no abs}\\ \hline
+$X_{i}$ & $[-1.16 \times 10^{-2}, 6.6 \times 10^{-5}>$ & $[6.6 \times 10^{-5}, 9.45 \times 10^{-3}]$\\ \hline
+$P(X_{i})$ & $51.04\%$ & $48.96\%$\\ \hline
+\multicolumn{3}{|c|}{Predicted longitude sgn}\\ \hline
+$X_{i}$ & $True$ & $False$\\ \hline
+$P(X_{i})$ & $53.29\%$ & $46.71\%$\\ \hline
+\multicolumn{3}{|c|}{Predicted speed}\\ \hline
+$X_{i}$ & $[0, 1>$ & $[1, 83]$\\ \hline
+$P(X_{i})$ & $1.23\%$ & $98.77\%$\\ \hline
+\multicolumn{3}{|c|}{Predicted speed alternative}\\ \hline
+$X_{i}$ & $[0, 5.2 \times 10^{-4}>$ & $[5.2 \times 10^{-4}, 1.18]$\\ \hline
+$P(X_{i})$ & $50.69\%$ & $49.31\%$\\ \hline
+\multicolumn{3}{|c|}{Predicted time}\\ \hline
+$X_{i}$ & $[1 \times 10^{-3}, 9.96 \times 10^{-1}>$ & $[9.96 \times 10^{-1}, 4.32]$\\ \hline
+$P(X_{i})$ & $50.55\%$ & $49.45\%$\\ \hline
+\multicolumn{3}{|c|}{Predicted x speed alternative}\\ \hline
+$X_{i}$ & $[0, 3.1 \times 10^{-4}>$ & $[3.1 \times 10^{-4}, 6.91 \times 10^{-1}]$\\ \hline
+$P(X_{i})$ & $50.3\%$ & $49.7\%$\\ \hline
+\multicolumn{3}{|c|}{Predicted x speed no abs alternative}\\ \hline
+$X_{i}$ & $[-6.91 \times 10^{-1}, 6 \times 10^{-5}>$ & $[6 \times 10^{-5}, 6.18 \times 10^{-1}]$\\ \hline
+$P(X_{i})$ & $50.89\%$ & $49.11\%$\\ \hline
+\multicolumn{3}{|c|}{Predicted y speed alternative}\\ \hline
+$X_{i}$ & $[0, 2.4 \times 10^{-4}>$ & $[2.4 \times 10^{-4}, 1.1]$\\ \hline
+$P(X_{i})$ & $51.0\%$ & $49.0\%$\\ \hline
+\multicolumn{3}{|c|}{Predicted y speed no abs alternative}\\ \hline
+$X_{i}$ & $[-1.1, 3 \times 10^{-5}>$ & $[3 \times 10^{-5}, 7.5 \times 10^{-1}]$\\ \hline
+$P(X_{i})$ & $51.94\%$ & $48.06\%$\\ \hline
+\end{tabular}
+\caption{1d}
+\label{tab:1d}
+\end{table}

@@ -1,25 +1,37 @@
-\begin{tabular}{|c|c|}
-\hline
-$True$ & $False$\\ \hline
-$53.29\%$ & $46.71\%$\\ \hline
-\end{tabular}
+\chapter{Longitude sgn}
+\begin{table}
+\centering
 \begin{tabular}{|c|c|c|}
 \hline
- & $True$ & $False$\\ \hline
-$True$ & $96.24\%$ & $3.76\%$\\ \hline
-$False$ & $4.31\%$ & $95.69\%$\\ \hline
+$X_{i}$ & $True$ & $False$\\ \hline
+$P(X_{i})$ & $53.29\%$ & $46.71\%$\\ \hline
 \end{tabular}
+\caption{Longitude sgn 1d}
+\label{tab:longitude_sgn_1d}
+\end{table}
+\begin{table}
+\centering
 \begin{tabular}{|c|c|c|}
 \hline
-\multicolumn{3}{|c|}{$True$}\\ \hline
- & $False$ & $True$\\ \hline
-$False$ & $85.13\%$ & $14.87\%$\\ \hline
-$True$ & $3.26\%$ & $96.74\%$\\ \hline
+$P(X_{i}|X_{i-1})$ & \multicolumn{2}{|c|}{$X_{i}$}\\ \hline
+$X_{i-1}$ & $V_{1}$ & $V_{2}$\\ \hline
+$V_{1}=True$ & $96.24\%$ & $3.76\%$\\ \hline
+$V_{2}=False$ & $4.31\%$ & $95.69\%$\\ \hline
 \end{tabular}
-\begin{tabular}{|c|c|c|}
+\caption{Longitude sgn 2d}
+\label{tab:longitude_sgn_2d}
+\end{table}
+\begin{table}
+\centering
+\begin{tabular}{|c|c|c|c|c|}
 \hline
-\multicolumn{3}{|c|}{$False$}\\ \hline
- & $False$ & $True$\\ \hline
-$False$ & $96.19\%$ & $3.81\%$\\ \hline
-$True$ & $16.26\%$ & $83.74\%$\\ \hline
+\multirow{3}{*}{$P(X_{i}|X_{i-1},X_{i-2})$} & \multicolumn{4}{|c|}{$X_{i-2}$}\\ \cline{2-5}
+ & \multicolumn{2}{|c|}{$V_{1}$} & \multicolumn{2}{|c|}{$V_{2}$}\\ \cline{2-5}
+ & \multicolumn{2}{|c|}{$X_{i}$} & \multicolumn{2}{|c|}{$X_{i}$}\\ \hline
+$X_{i-1}$ & $V_{1}$ & $V_{2}$ & $V_{1}$ & $V_{2}$\\ \hline
+$V_{1}=True$ & $96.74\%$ & $3.26\%$ & $83.74\%$ & $16.26\%$\\ \hline
+$V_{2}=False$ & $14.87\%$ & $85.13\%$ & $3.81\%$ & $96.19\%$\\ \hline
 \end{tabular}
+\caption{Longitude sgn 3d}
+\label{tab:longitude_sgn_3d}
+\end{table}

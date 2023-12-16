@@ -1,14 +1,14 @@
-\begin{tabular}{|c|c|c|}
+\begin{table}
+\centering
+\begin{tabular}{|c|c|c|c|c|}
 \hline
-\multicolumn{3}{|c|}{$[0, 5.2 \times 10^{-4}>$}\\ \hline
- & $[0, 5.2 \times 10^{-4}>$ & $[5.2 \times 10^{-4}, 1.18]$\\ \hline
-$[0, 5.2 \times 10^{-4}>$ & $98.46\%$ & $1.54\%$\\ \hline
-$[5.2 \times 10^{-4}, 1.18]$ & $78.57\%$ & $21.43\%$\\ \hline
+\multirow{3}{*}{$P(X_{i}|X_{i-1},X_{i-2})$} & \multicolumn{4}{|c|}{$X_{i-2}$}\\ \cline{2-5}
+ & \multicolumn{2}{|c|}{$V_{1}$} & \multicolumn{2}{|c|}{$V_{2}$}\\ \cline{2-5}
+ & \multicolumn{2}{|c|}{$X_{i}$} & \multicolumn{2}{|c|}{$X_{i}$}\\ \hline
+$X_{i-1}$ & $V_{1}$ & $V_{2}$ & $V_{1}$ & $V_{2}$\\ \hline
+$V_{1}=[0, 5.2 \times 10^{-4}>$ & $98.46\%$ & $1.54\%$ & $55.48\%$ & $44.52\%$\\ \hline
+$V_{2}=[5.2 \times 10^{-4}, 1.18]$ & $78.57\%$ & $21.43\%$ & $3.46\%$ & $96.54\%$\\ \hline
 \end{tabular}
-\begin{tabular}{|c|c|c|}
-\hline
-\multicolumn{3}{|c|}{$[5.2 \times 10^{-4}, 1.18]$}\\ \hline
- & $[0, 5.2 \times 10^{-4}>$ & $[5.2 \times 10^{-4}, 1.18]$\\ \hline
-$[0, 5.2 \times 10^{-4}>$ & $55.48\%$ & $44.52\%$\\ \hline
-$[5.2 \times 10^{-4}, 1.18]$ & $3.46\%$ & $96.54\%$\\ \hline
-\end{tabular}
+\caption{Speed alternative 3d}
+\label{tab:speed_alternative_3d}
+\end{table}

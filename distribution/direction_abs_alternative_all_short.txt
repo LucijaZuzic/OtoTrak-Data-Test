@@ -1,0 +1,27 @@
+\chapter{Direction abs alternative}
+\begin{table}
+\centering
+\begin{tabular}{|c|c|c|}
+\hline
+$X_{i}$ & $[0, 34>$ & $[34, 90]$\\ \hline
+$P(X_{i})$ & $48.64\%$ & $49.7\%$\\ \hline
+\end{tabular}
+\begin{tabular}{|c|c|c|}
+\hline
+$P(X_{i}|X_{i-1})$ & \multicolumn{2}{|c|}{$X_{i}$}\\ \hline
+$X_{i-1}$ & $V_{1}$ & $V_{2}$\\ \hline
+$V_{1}=[0, 34>$ & $91.34\%$ & $8.47\%$\\ \hline
+$V_{2}=[34, 90]$ & $6.6\%$ & $91.01\%$\\ \hline
+\end{tabular}
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+\multirow{3}{*}{$P(X_{i}|X_{i-1},X_{i-2})$} & \multicolumn{4}{|c|}{$X_{i-2}$}\\ \cline{2-5}
+ & \multicolumn{2}{|c|}{$V_{1}$} & \multicolumn{2}{|c|}{$V_{2}$}\\ \cline{2-5}
+ & \multicolumn{2}{|c|}{$X_{i}$} & \multicolumn{2}{|c|}{$X_{i}$}\\ \hline
+$X_{i-1}$ & $V_{1}$ & $V_{2}$ & $V_{1}$ & $V_{2}$\\ \hline
+$V_{1}=[0, 34>$ & $87.28\%$ & $12.17\%$ & $61.11\%$ & $36.11\%$\\ \hline
+$V_{2}=[34, 90]$ & $10.4\%$ & $86.99\%$ & $23.89\%$ & $74.28\%$\\ \hline
+\end{tabular}
+\caption{Direction abs alternative}
+\label{tab:direction_abs_alternative}
+\end{table}

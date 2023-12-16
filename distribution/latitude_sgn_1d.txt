@@ -1,5 +1,10 @@
-\begin{tabular}{|c|c|}
+\begin{table}
+\centering
+\begin{tabular}{|c|c|c|}
 \hline
-$False$ & $True$\\ \hline
-$49.25\%$ & $50.75\%$\\ \hline
+$X_{i}$ & $False$ & $True$\\ \hline
+$P(X_{i})$ & $49.25\%$ & $50.75\%$\\ \hline
 \end{tabular}
+\caption{Latitude sgn 1d}
+\label{tab:latitude_sgn_1d}
+\end{table}

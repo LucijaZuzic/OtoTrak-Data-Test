@@ -1,14 +1,14 @@
-\begin{tabular}{|c|c|c|}
+\begin{table}
+\centering
+\begin{tabular}{|c|c|c|c|c|}
 \hline
-\multicolumn{3}{|c|}{$[0, 2.33 \times 10^{-4}>$}\\ \hline
- & $[0, 2.33 \times 10^{-4}>$ & $[2.33 \times 10^{-4}, 2.12 \times 10^{-2}]$\\ \hline
-$[0, 2.33 \times 10^{-4}>$ & $66.81\%$ & $33.19\%$\\ \hline
-$[2.33 \times 10^{-4}, 2.12 \times 10^{-2}]$ & $14.0\%$ & $86.0\%$\\ \hline
+\multirow{3}{*}{$P(X_{i}|X_{i-1},X_{i-2})$} & \multicolumn{4}{|c|}{$X_{i-2}$}\\ \cline{2-5}
+ & \multicolumn{2}{|c|}{$V_{1}$} & \multicolumn{2}{|c|}{$V_{2}$}\\ \cline{2-5}
+ & \multicolumn{2}{|c|}{$X_{i}$} & \multicolumn{2}{|c|}{$X_{i}$}\\ \hline
+$X_{i-1}$ & $V_{1}$ & $V_{2}$ & $V_{1}$ & $V_{2}$\\ \hline
+$V_{1}=[0, 2.33 \times 10^{-4}>$ & $66.81\%$ & $33.19\%$ & $74.59\%$ & $25.41\%$\\ \hline
+$V_{2}=[2.33 \times 10^{-4}, 2.12 \times 10^{-2}]$ & $14.0\%$ & $86.0\%$ & $2.75\%$ & $97.25\%$\\ \hline
 \end{tabular}
-\begin{tabular}{|c|c|c|}
-\hline
-\multicolumn{3}{|c|}{$[2.33 \times 10^{-4}, 2.12 \times 10^{-2}]$}\\ \hline
- & $[0, 2.33 \times 10^{-4}>$ & $[2.33 \times 10^{-4}, 2.12 \times 10^{-2}]$\\ \hline
-$[0, 2.33 \times 10^{-4}>$ & $74.59\%$ & $25.41\%$\\ \hline
-$[2.33 \times 10^{-4}, 2.12 \times 10^{-2}]$ & $2.75\%$ & $97.25\%$\\ \hline
-\end{tabular}
+\caption{Latitude 3d}
+\label{tab:latitude_3d}
+\end{table}

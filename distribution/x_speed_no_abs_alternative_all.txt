@@ -1,25 +1,37 @@
-\begin{tabular}{|c|c|}
-\hline
-$[-0.69, 6 \times 10^{-5}>$ & $[6 \times 10^{-5}, 0.62]$\\ \hline
-$50.89\%$ & $49.11\%$\\ \hline
-\end{tabular}
+\chapter{X speed no abs alternative}
+\begin{table}
+\centering
 \begin{tabular}{|c|c|c|}
 \hline
- & $[-0.69, 6 \times 10^{-5}>$ & $[6 \times 10^{-5}, 0.62]$\\ \hline
-$[-0.69, 6 \times 10^{-5}>$ & $99.22\%$ & $0.78\%$\\ \hline
-$[6 \times 10^{-5}, 0.62]$ & $1.57\%$ & $98.43\%$\\ \hline
+$X_{i}$ & $[-6.91 \times 10^{-1}, 6 \times 10^{-5}>$ & $[6 \times 10^{-5}, 6.18 \times 10^{-1}]$\\ \hline
+$P(X_{i})$ & $50.89\%$ & $49.11\%$\\ \hline
 \end{tabular}
+\caption{X speed no abs alternative 1d}
+\label{tab:x_speed_no_abs_alternative_1d}
+\end{table}
+\begin{table}
+\centering
 \begin{tabular}{|c|c|c|}
 \hline
-\multicolumn{3}{|c|}{$[-0.69, 6 \times 10^{-5}>$}\\ \hline
- & $[-0.69, 6 \times 10^{-5}>$ & $[6 \times 10^{-5}, 0.62]$\\ \hline
-$[-0.69, 6 \times 10^{-5}>$ & $96.73\%$ & $3.27\%$\\ \hline
-$[6 \times 10^{-5}, 0.62]$ & $10.57\%$ & $89.43\%$\\ \hline
+$P(X_{i}|X_{i-1})$ & \multicolumn{2}{|c|}{$X_{i}$}\\ \hline
+$X_{i-1}$ & $V_{1}$ & $V_{2}$\\ \hline
+$V_{1}=[-6.91 \times 10^{-1}, 6 \times 10^{-5}>$ & $99.22\%$ & $0.78\%$\\ \hline
+$V_{2}=[6 \times 10^{-5}, 6.18 \times 10^{-1}]$ & $1.57\%$ & $98.43\%$\\ \hline
 \end{tabular}
-\begin{tabular}{|c|c|c|}
+\caption{X speed no abs alternative 2d}
+\label{tab:x_speed_no_abs_alternative_2d}
+\end{table}
+\begin{table}
+\centering
+\begin{tabular}{|c|c|c|c|c|}
 \hline
-\multicolumn{3}{|c|}{$[6 \times 10^{-5}, 0.62]$}\\ \hline
- & $[-0.69, 6 \times 10^{-5}>$ & $[6 \times 10^{-5}, 0.62]$\\ \hline
-$[-0.69, 6 \times 10^{-5}>$ & $100.0\%$ & $0.0\%$\\ \hline
-$[6 \times 10^{-5}, 0.62]$ & $6.34\%$ & $93.66\%$\\ \hline
+\multirow{3}{*}{$P(X_{i}|X_{i-1},X_{i-2})$} & \multicolumn{4}{|c|}{$X_{i-2}$}\\ \cline{2-5}
+ & \multicolumn{2}{|c|}{$V_{1}$} & \multicolumn{2}{|c|}{$V_{2}$}\\ \cline{2-5}
+ & \multicolumn{2}{|c|}{$X_{i}$} & \multicolumn{2}{|c|}{$X_{i}$}\\ \hline
+$X_{i-1}$ & $V_{1}$ & $V_{2}$ & $V_{1}$ & $V_{2}$\\ \hline
+$V_{1}=[-6.91 \times 10^{-1}, 6 \times 10^{-5}>$ & $96.73\%$ & $3.27\%$ & $100.0\%$ & $0.0\%$\\ \hline
+$V_{2}=[6 \times 10^{-5}, 6.18 \times 10^{-1}]$ & $10.57\%$ & $89.43\%$ & $6.34\%$ & $93.66\%$\\ \hline
 \end{tabular}
+\caption{X speed no abs alternative 3d}
+\label{tab:x_speed_no_abs_alternative_3d}
+\end{table}

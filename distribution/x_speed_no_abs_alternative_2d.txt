@@ -1,6 +1,12 @@
+\begin{table}
+\centering
 \begin{tabular}{|c|c|c|}
 \hline
- & $[-0.69, 6 \times 10^{-5}>$ & $[6 \times 10^{-5}, 0.62]$\\ \hline
-$[-0.69, 6 \times 10^{-5}>$ & $99.22\%$ & $0.78\%$\\ \hline
-$[6 \times 10^{-5}, 0.62]$ & $1.57\%$ & $98.43\%$\\ \hline
+$P(X_{i}|X_{i-1})$ & \multicolumn{2}{|c|}{$X_{i}$}\\ \hline
+$X_{i-1}$ & $V_{1}$ & $V_{2}$\\ \hline
+$V_{1}=[-6.91 \times 10^{-1}, 6 \times 10^{-5}>$ & $99.22\%$ & $0.78\%$\\ \hline
+$V_{2}=[6 \times 10^{-5}, 6.18 \times 10^{-1}]$ & $1.57\%$ & $98.43\%$\\ \hline
 \end{tabular}
+\caption{X speed no abs alternative 2d}
+\label{tab:x_speed_no_abs_alternative_2d}
+\end{table}

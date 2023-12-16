@@ -1,0 +1,27 @@
+\chapter{Latitude sgn}
+\begin{table}
+\centering
+\begin{tabular}{|c|c|c|}
+\hline
+$X_{i}$ & $False$ & $True$\\ \hline
+$P(X_{i})$ & $49.25\%$ & $50.75\%$\\ \hline
+\end{tabular}
+\begin{tabular}{|c|c|c|}
+\hline
+$P(X_{i}|X_{i-1})$ & \multicolumn{2}{|c|}{$X_{i}$}\\ \hline
+$X_{i-1}$ & $V_{1}$ & $V_{2}$\\ \hline
+$V_{1}=False$ & $95.17\%$ & $4.83\%$\\ \hline
+$V_{2}=True$ & $4.63\%$ & $95.37\%$\\ \hline
+\end{tabular}
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+\multirow{3}{*}{$P(X_{i}|X_{i-1},X_{i-2})$} & \multicolumn{4}{|c|}{$X_{i-2}$}\\ \cline{2-5}
+ & \multicolumn{2}{|c|}{$V_{1}$} & \multicolumn{2}{|c|}{$V_{2}$}\\ \cline{2-5}
+ & \multicolumn{2}{|c|}{$X_{i}$} & \multicolumn{2}{|c|}{$X_{i}$}\\ \hline
+$X_{i-1}$ & $V_{1}$ & $V_{2}$ & $V_{1}$ & $V_{2}$\\ \hline
+$V_{1}=False$ & $95.85\%$ & $4.15\%$ & $82.07\%$ & $17.93\%$\\ \hline
+$V_{2}=True$ & $19.91\%$ & $80.09\%$ & $3.86\%$ & $96.14\%$\\ \hline
+\end{tabular}
+\caption{Latitude sgn}
+\label{tab:latitude_sgn}
+\end{table}

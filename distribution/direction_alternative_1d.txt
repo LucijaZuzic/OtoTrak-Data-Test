@@ -1,5 +1,10 @@
-\begin{tabular}{|c|c|}
+\begin{table}
+\centering
+\begin{tabular}{|c|c|c|}
 \hline
-$[0, 82>$ & $[82, 359]$\\ \hline
-$49.95\%$ & $49.73\%$\\ \hline
+$X_{i}$ & $[0, 82>$ & $[82, 359]$\\ \hline
+$P(X_{i})$ & $49.95\%$ & $49.73\%$\\ \hline
 \end{tabular}
+\caption{Direction alternative 1d}
+\label{tab:direction_alternative_1d}
+\end{table}

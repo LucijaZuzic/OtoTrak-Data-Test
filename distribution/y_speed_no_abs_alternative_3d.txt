@@ -1,14 +1,14 @@
-\begin{tabular}{|c|c|c|}
+\begin{table}
+\centering
+\begin{tabular}{|c|c|c|c|c|}
 \hline
-\multicolumn{3}{|c|}{$[-1.1, 3 \times 10^{-5}>$}\\ \hline
- & $[-1.1, 3 \times 10^{-5}>$ & $[3 \times 10^{-5}, 0.75]$\\ \hline
-$[-1.1, 3 \times 10^{-5}>$ & $96.04\%$ & $3.96\%$\\ \hline
-$[3 \times 10^{-5}, 0.75]$ & $2.08\%$ & $97.92\%$\\ \hline
+\multirow{3}{*}{$P(X_{i}|X_{i-1},X_{i-2})$} & \multicolumn{4}{|c|}{$X_{i-2}$}\\ \cline{2-5}
+ & \multicolumn{2}{|c|}{$V_{1}$} & \multicolumn{2}{|c|}{$V_{2}$}\\ \cline{2-5}
+ & \multicolumn{2}{|c|}{$X_{i}$} & \multicolumn{2}{|c|}{$X_{i}$}\\ \hline
+$X_{i-1}$ & $V_{1}$ & $V_{2}$ & $V_{1}$ & $V_{2}$\\ \hline
+$V_{1}=[-1.1, 3 \times 10^{-5}>$ & $96.04\%$ & $3.96\%$ & $92.11\%$ & $7.89\%$\\ \hline
+$V_{2}=[3 \times 10^{-5}, 7.5 \times 10^{-1}]$ & $2.08\%$ & $97.92\%$ & $3.58\%$ & $96.42\%$\\ \hline
 \end{tabular}
-\begin{tabular}{|c|c|c|}
-\hline
-\multicolumn{3}{|c|}{$[3 \times 10^{-5}, 0.75]$}\\ \hline
- & $[-1.1, 3 \times 10^{-5}>$ & $[3 \times 10^{-5}, 0.75]$\\ \hline
-$[-1.1, 3 \times 10^{-5}>$ & $92.11\%$ & $7.89\%$\\ \hline
-$[3 \times 10^{-5}, 0.75]$ & $3.58\%$ & $96.42\%$\\ \hline
-\end{tabular}
+\caption{Y speed no abs alternative 3d}
+\label{tab:y_speed_no_abs_alternative_3d}
+\end{table}

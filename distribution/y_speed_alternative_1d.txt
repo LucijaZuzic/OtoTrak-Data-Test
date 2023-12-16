@@ -1,5 +1,10 @@
-\begin{tabular}{|c|c|}
+\begin{table}
+\centering
+\begin{tabular}{|c|c|c|}
 \hline
-$[0, 2.4 \times 10^{-4}>$ & $[2.4 \times 10^{-4}, 1.1]$\\ \hline
-$51.0\%$ & $49.0\%$\\ \hline
+$X_{i}$ & $[0, 2.4 \times 10^{-4}>$ & $[2.4 \times 10^{-4}, 1.1]$\\ \hline
+$P(X_{i})$ & $51.0\%$ & $49.0\%$\\ \hline
 \end{tabular}
+\caption{Y speed alternative 1d}
+\label{tab:y_speed_alternative_1d}
+\end{table}

@@ -1,6 +1,12 @@
+\begin{table}
+\centering
 \begin{tabular}{|c|c|c|}
 \hline
- & $[0, 2.33 \times 10^{-4}>$ & $[2.33 \times 10^{-4}, 2.12 \times 10^{-2}]$\\ \hline
-$[0, 2.33 \times 10^{-4}>$ & $91.86\%$ & $8.14\%$\\ \hline
-$[2.33 \times 10^{-4}, 2.12 \times 10^{-2}]$ & $3.89\%$ & $96.11\%$\\ \hline
+$P(X_{i}|X_{i-1})$ & \multicolumn{2}{|c|}{$X_{i}$}\\ \hline
+$X_{i-1}$ & $V_{1}$ & $V_{2}$\\ \hline
+$V_{1}=[0, 2.33 \times 10^{-4}>$ & $91.86\%$ & $8.14\%$\\ \hline
+$V_{2}=[2.33 \times 10^{-4}, 2.12 \times 10^{-2}]$ & $3.89\%$ & $96.11\%$\\ \hline
 \end{tabular}
+\caption{Latitude 2d}
+\label{tab:latitude_2d}
+\end{table}

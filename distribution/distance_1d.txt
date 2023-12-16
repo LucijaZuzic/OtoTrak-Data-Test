@@ -1,5 +1,10 @@
-\begin{tabular}{|c|c|}
+\begin{table}
+\centering
+\begin{tabular}{|c|c|c|}
 \hline
-$[0, 2 \times 10^{-5}>$ & $[2 \times 10^{-5}, 2.42 \times 10^{-2}]$\\ \hline
-$0.39\%$ & $99.61\%$\\ \hline
+$X_{i}$ & $[0, 2 \times 10^{-5}>$ & $[2 \times 10^{-5}, 2.42 \times 10^{-2}]$\\ \hline
+$P(X_{i})$ & $0.39\%$ & $99.61\%$\\ \hline
 \end{tabular}
+\caption{Distance 1d}
+\label{tab:distance_1d}
+\end{table}

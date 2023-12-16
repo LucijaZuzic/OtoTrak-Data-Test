@@ -1,6 +1,12 @@
+\begin{table}
+\centering
 \begin{tabular}{|c|c|c|}
 \hline
- & $[0, 5.2 \times 10^{-4}>$ & $[5.2 \times 10^{-4}, 1.18]$\\ \hline
-$[0, 5.2 \times 10^{-4}>$ & $87.76\%$ & $12.24\%$\\ \hline
-$[5.2 \times 10^{-4}, 1.18]$ & $16.02\%$ & $83.98\%$\\ \hline
+$P(X_{i}|X_{i-1})$ & \multicolumn{2}{|c|}{$X_{i}$}\\ \hline
+$X_{i-1}$ & $V_{1}$ & $V_{2}$\\ \hline
+$V_{1}=[0, 5.2 \times 10^{-4}>$ & $87.76\%$ & $12.24\%$\\ \hline
+$V_{2}=[5.2 \times 10^{-4}, 1.18]$ & $16.02\%$ & $83.98\%$\\ \hline
 \end{tabular}
+\caption{Speed alternative 2d}
+\label{tab:speed_alternative_2d}
+\end{table}

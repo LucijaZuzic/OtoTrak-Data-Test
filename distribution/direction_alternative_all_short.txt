@@ -1,0 +1,27 @@
+\chapter{Direction alternative}
+\begin{table}
+\centering
+\begin{tabular}{|c|c|c|}
+\hline
+$X_{i}$ & $[0, 82>$ & $[82, 359]$\\ \hline
+$P(X_{i})$ & $49.95\%$ & $49.73\%$\\ \hline
+\end{tabular}
+\begin{tabular}{|c|c|c|}
+\hline
+$P(X_{i}|X_{i-1})$ & \multicolumn{2}{|c|}{$X_{i}$}\\ \hline
+$X_{i-1}$ & $V_{1}$ & $V_{2}$\\ \hline
+$V_{1}=[0, 82>$ & $92.15\%$ & $7.63\%$\\ \hline
+$V_{2}=[82, 359]$ & $7.61\%$ & $92.19\%$\\ \hline
+\end{tabular}
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+\multirow{3}{*}{$P(X_{i}|X_{i-1},X_{i-2})$} & \multicolumn{4}{|c|}{$X_{i-2}$}\\ \cline{2-5}
+ & \multicolumn{2}{|c|}{$V_{1}$} & \multicolumn{2}{|c|}{$V_{2}$}\\ \cline{2-5}
+ & \multicolumn{2}{|c|}{$X_{i}$} & \multicolumn{2}{|c|}{$X_{i}$}\\ \hline
+$X_{i-1}$ & $V_{1}$ & $V_{2}$ & $V_{1}$ & $V_{2}$\\ \hline
+$V_{1}=[0, 82>$ & $78.14\%$ & $21.86\%$ & $81.94\%$ & $18.06\%$\\ \hline
+$V_{2}=[82, 359]$ & $9.91\%$ & $90.09\%$ & $17.44\%$ & $82.56\%$\\ \hline
+\end{tabular}
+\caption{Direction alternative}
+\label{tab:direction_alternative}
+\end{table}
