@@ -2,8 +2,8 @@
 \centering
 \begin{tabular}{|c|c|c|}
 \hline
-$X_{i}$ & $[0, 2.33 \times 10^{-4}>$ & $[2.33 \times 10^{-4}, 2.12 \times 10^{-2}]$\\ \hline
-$P(X_{i})$ & $50.75\%$ & $49.25\%$\\ \hline
+$X_{i}$ & $[0, 1.06 \times 10^{-2}>$ & $[1.06 \times 10^{-2}, 2.12 \times 10^{-2}]$\\ \hline
+$P(X_{i})$ & $99.99\%$ & $0.01\%$\\ \hline
 \end{tabular}
 \caption{Latitude 1d}
 \label{tab:latitude_1d}

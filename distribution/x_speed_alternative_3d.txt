@@ -6,8 +6,8 @@
  & \multicolumn{2}{|c|}{$V_{1}$} & \multicolumn{2}{|c|}{$V_{2}$}\\ \cline{2-5}
  & \multicolumn{2}{|c|}{$X_{i}$} & \multicolumn{2}{|c|}{$X_{i}$}\\ \hline
 $X_{i-1}$ & $V_{1}$ & $V_{2}$ & $V_{1}$ & $V_{2}$\\ \hline
-$V_{1}=[0, 3.1 \times 10^{-4}>$ & $69.14\%$ & $30.86\%$ & $50.0\%$ & $50.0\%$\\ \hline
-$V_{2}=[3.1 \times 10^{-4}, 6.91 \times 10^{-1}]$ & $30.47\%$ & $69.53\%$ & $5.95\%$ & $94.05\%$\\ \hline
+$V_{1}=[0, 3.45 \times 10^{-1}>$ & $99.99\%$ & $0.01\%$ & $99.99\%$ & $0.01\%$\\ \hline
+$V_{2}=[3.45 \times 10^{-1}, 6.91 \times 10^{-1}]$ & $99.99\%$ & $0.01\%$ & $99.99\%$ & $0.01\%$\\ \hline
 \end{tabular}
 \caption{X speed alternative 3d}
 \label{tab:x_speed_alternative_3d}

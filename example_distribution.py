@@ -111,7 +111,17 @@ def print_3d(dictio, mul, name_save):
         str_pr += "$V_{" + str(ix) + "}=" + str(prev) + "$ & "
         for prevprev in dictio:
             for curr in dictio:
-                str_pr += "$" + str(np.round(dictio[prevprev][prev][curr] * mul, 2)) + "\\%$ & "
+                if prev in dictio[prevprev] and curr in dictio[prevprev][prev]:
+                    str_pr += "$" + str(np.round(dictio[prevprev][prev][curr] * mul, 2)) + "\\%$ & "
+                else: 
+                    closest_prev = ""
+                    for cp in dictio:
+                        if cp in dictio[prevprev] and curr in dictio[prevprev][cp]:
+                            closest_prev = cp
+                    if closest_prev == "":
+                        str_pr += "$" + str(np.round(0, 2)) + "\\%$ & "
+                    else:
+                        str_pr += "$" + str(np.round(dictio[prevprev][closest_prev][curr] * mul, 2)) + "\\%$ & "
         str_pr = str_pr[:-3]
         str_pr += "\\\\ \\hline\n"
     str_pr += "\\end{tabular}\n"
@@ -148,6 +158,10 @@ def summarize_dict(old_dict, new_bins, maxval):
             if k >= new_min and k < new_max:
                 new_dict[new_key] += old_dict[k]
     for k in new_dict:   
+        if new_dict[k] >= 0.9999:
+            new_dict[k] = 0.9999
+        if new_dict[k] <= 0.0001:
+            new_dict[k] = 0.0001
         new_dict[k] = np.round(new_dict[k] * 100, 2)  
     return new_dict
 
@@ -200,6 +214,14 @@ def summarize_3d_dict(old_dict, new_bins, maxval):
             for k3 in new_dict[k][k2]:  
                 new_dict[k][k2][k3] = np.round(new_dict[k][k2][k3], 2)  
     return new_dict
+
+def get_bins_simple(keys_list, num_bins): 
+    minr = min(keys_list)
+    maxr = max(keys_list)
+    if maxr > 358:
+        maxr = 360
+    stepr = (maxr - minr) / num_bins
+    return np.arange(minr, maxr, stepr)
 
 def get_bins(keys_list, probability_of, num_bins): 
     so_far = []
@@ -257,6 +279,7 @@ def get_var(name_of):
         keys_new = keys_new1
         if name_of == "speed" or name_of == "distance":
             keys_new = keys_new3
+        keys_new = get_bins_simple(keys_list, nbins)
         n1 = summarize_dict(probability_of, keys_new, max(keys_list))
         n2 = summarize_2d_dict(probability_of_in_next_step, keys_new, max(keys_list))
         n3 = summarize_3d_dict(probability_of_in_next_next_step, keys_new, max(keys_list))

@@ -3,8 +3,8 @@
 \centering
 \begin{tabular}{|c|c|c|}
 \hline
-$X_{i}$ & $[-1.1, 3 \times 10^{-5}>$ & $[3 \times 10^{-5}, 7.5 \times 10^{-1}]$\\ \hline
-$P(X_{i})$ & $51.94\%$ & $48.06\%$\\ \hline
+$X_{i}$ & $[-1.1, -1.75 \times 10^{-1}>$ & $[-1.75 \times 10^{-1}, 7.5 \times 10^{-1}]$\\ \hline
+$P(X_{i})$ & $0.01\%$ & $99.99\%$\\ \hline
 \end{tabular}
 \caption{Y speed no abs alternative 1d}
 \label{tab:y_speed_no_abs_alternative_1d}
@@ -15,8 +15,8 @@ $P(X_{i})$ & $51.94\%$ & $48.06\%$\\ \hline
 \hline
 $P(X_{i}|X_{i-1})$ & \multicolumn{2}{|c|}{$X_{i}$}\\ \hline
 $X_{i-1}$ & $V_{1}$ & $V_{2}$\\ \hline
-$V_{1}=[-1.1, 3 \times 10^{-5}>$ & $99.35\%$ & $0.65\%$\\ \hline
-$V_{2}=[3 \times 10^{-5}, 7.5 \times 10^{-1}]$ & $1.89\%$ & $98.02\%$\\ \hline
+$V_{1}=[-1.1, -1.75 \times 10^{-1}>$ & $0.01\%$ & $99.99\%$\\ \hline
+$V_{2}=[-1.75 \times 10^{-1}, 7.5 \times 10^{-1}]$ & $0.01\%$ & $99.94\%$\\ \hline
 \end{tabular}
 \caption{Y speed no abs alternative 2d}
 \label{tab:y_speed_no_abs_alternative_2d}
@@ -29,8 +29,8 @@ $V_{2}=[3 \times 10^{-5}, 7.5 \times 10^{-1}]$ & $1.89\%$ & $98.02\%$\\ \hline
  & \multicolumn{2}{|c|}{$V_{1}$} & \multicolumn{2}{|c|}{$V_{2}$}\\ \cline{2-5}
  & \multicolumn{2}{|c|}{$X_{i}$} & \multicolumn{2}{|c|}{$X_{i}$}\\ \hline
 $X_{i-1}$ & $V_{1}$ & $V_{2}$ & $V_{1}$ & $V_{2}$\\ \hline
-$V_{1}=[-1.1, 3 \times 10^{-5}>$ & $96.04\%$ & $3.96\%$ & $92.11\%$ & $7.89\%$\\ \hline
-$V_{2}=[3 \times 10^{-5}, 7.5 \times 10^{-1}]$ & $2.08\%$ & $97.92\%$ & $3.58\%$ & $96.42\%$\\ \hline
+$V_{1}=[-1.1, -1.75 \times 10^{-1}>$ & $0.01\%$ & $99.99\%$ & $0.01\%$ & $99.99\%$\\ \hline
+$V_{2}=[-1.75 \times 10^{-1}, 7.5 \times 10^{-1}]$ & $0.01\%$ & $99.99\%$ & $0.01\%$ & $99.99\%$\\ \hline
 \end{tabular}
 \caption{Y speed no abs alternative 3d}
 \label{tab:y_speed_no_abs_alternative_3d}

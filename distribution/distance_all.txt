@@ -3,8 +3,8 @@
 \centering
 \begin{tabular}{|c|c|c|}
 \hline
-$X_{i}$ & $[0, 2 \times 10^{-5}>$ & $[2 \times 10^{-5}, 2.42 \times 10^{-2}]$\\ \hline
-$P(X_{i})$ & $0.39\%$ & $99.61\%$\\ \hline
+$X_{i}$ & $[0, 1.21 \times 10^{-2}>$ & $[1.21 \times 10^{-2}, 2.42 \times 10^{-2}]$\\ \hline
+$P(X_{i})$ & $99.99\%$ & $0.01\%$\\ \hline
 \end{tabular}
 \caption{Distance 1d}
 \label{tab:distance_1d}
@@ -15,8 +15,8 @@ $P(X_{i})$ & $0.39\%$ & $99.61\%$\\ \hline
 \hline
 $P(X_{i}|X_{i-1})$ & \multicolumn{2}{|c|}{$X_{i}$}\\ \hline
 $X_{i-1}$ & $V_{1}$ & $V_{2}$\\ \hline
-$V_{1}=[0, 2 \times 10^{-5}>$ & $57.67\%$ & $42.33\%$\\ \hline
-$V_{2}=[2 \times 10^{-5}, 2.42 \times 10^{-2}]$ & $0.1\%$ & $99.9\%$\\ \hline
+$V_{1}=[0, 1.21 \times 10^{-2}>$ & $99.99\%$ & $0.01\%$\\ \hline
+$V_{2}=[1.21 \times 10^{-2}, 2.42 \times 10^{-2}]$ & $99.99\%$ & $0.01\%$\\ \hline
 \end{tabular}
 \caption{Distance 2d}
 \label{tab:distance_2d}
@@ -29,8 +29,8 @@ $V_{2}=[2 \times 10^{-5}, 2.42 \times 10^{-2}]$ & $0.1\%$ & $99.9\%$\\ \hline
  & \multicolumn{2}{|c|}{$V_{1}$} & \multicolumn{2}{|c|}{$V_{2}$}\\ \cline{2-5}
  & \multicolumn{2}{|c|}{$X_{i}$} & \multicolumn{2}{|c|}{$X_{i}$}\\ \hline
 $X_{i-1}$ & $V_{1}$ & $V_{2}$ & $V_{1}$ & $V_{2}$\\ \hline
-$V_{1}=[0, 2 \times 10^{-5}>$ & $78.82\%$ & $21.18\%$ & $50.0\%$ & $50.0\%$\\ \hline
-$V_{2}=[2 \times 10^{-5}, 2.42 \times 10^{-2}]$ & $1.13\%$ & $98.87\%$ & $0.05\%$ & $99.95\%$\\ \hline
+$V_{1}=[0, 1.21 \times 10^{-2}>$ & $99.99\%$ & $0.01\%$ & $99.99\%$ & $0.01\%$\\ \hline
+$V_{2}=[1.21 \times 10^{-2}, 2.42 \times 10^{-2}]$ & $99.99\%$ & $0.01\%$ & $99.99\%$ & $0.01\%$\\ \hline
 \end{tabular}
 \caption{Distance 3d}
 \label{tab:distance_3d}

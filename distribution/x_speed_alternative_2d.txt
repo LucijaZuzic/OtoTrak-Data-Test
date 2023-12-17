@@ -4,8 +4,8 @@
 \hline
 $P(X_{i}|X_{i-1})$ & \multicolumn{2}{|c|}{$X_{i}$}\\ \hline
 $X_{i-1}$ & $V_{1}$ & $V_{2}$\\ \hline
-$V_{1}=[0, 3.1 \times 10^{-4}>$ & $85.52\%$ & $14.48\%$\\ \hline
-$V_{2}=[3.1 \times 10^{-4}, 6.91 \times 10^{-1}]$ & $11.05\%$ & $88.95\%$\\ \hline
+$V_{1}=[0, 3.45 \times 10^{-1}>$ & $99.87\%$ & $0.13\%$\\ \hline
+$V_{2}=[3.45 \times 10^{-1}, 6.91 \times 10^{-1}]$ & $99.99\%$ & $0.01\%$\\ \hline
 \end{tabular}
 \caption{X speed alternative 2d}
 \label{tab:x_speed_alternative_2d}

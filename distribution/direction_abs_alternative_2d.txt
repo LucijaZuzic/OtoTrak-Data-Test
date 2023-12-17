@@ -4,8 +4,8 @@
 \hline
 $P(X_{i}|X_{i-1})$ & \multicolumn{2}{|c|}{$X_{i}$}\\ \hline
 $X_{i-1}$ & $V_{1}$ & $V_{2}$\\ \hline
-$V_{1}=[0, 34>$ & $91.34\%$ & $8.47\%$\\ \hline
-$V_{2}=[34, 90]$ & $6.6\%$ & $91.01\%$\\ \hline
+$V_{1}=[0, 45>$ & $92.43\%$ & $7.3\%$\\ \hline
+$V_{2}=[45, 90]$ & $8.52\%$ & $88.63\%$\\ \hline
 \end{tabular}
 \caption{Direction abs alternative 2d}
 \label{tab:direction_abs_alternative_2d}

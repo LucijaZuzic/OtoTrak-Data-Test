@@ -2,8 +2,8 @@
 \centering
 \begin{tabular}{|c|c|c|}
 \hline
-$X_{i}$ & $[-1.1, 3 \times 10^{-5}>$ & $[3 \times 10^{-5}, 7.5 \times 10^{-1}]$\\ \hline
-$P(X_{i})$ & $51.94\%$ & $48.06\%$\\ \hline
+$X_{i}$ & $[-1.1, -1.75 \times 10^{-1}>$ & $[-1.75 \times 10^{-1}, 7.5 \times 10^{-1}]$\\ \hline
+$P(X_{i})$ & $0.01\%$ & $99.99\%$\\ \hline
 \end{tabular}
 \caption{Y speed no abs alternative 1d}
 \label{tab:y_speed_no_abs_alternative_1d}

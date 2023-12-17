@@ -4,8 +4,8 @@
 \hline
 $P(X_{i}|X_{i-1})$ & \multicolumn{2}{|c|}{$X_{i}$}\\ \hline
 $X_{i-1}$ & $V_{1}$ & $V_{2}$\\ \hline
-$V_{1}=[0, 3 \times 10^{-4}>$ & $92.37\%$ & $7.63\%$\\ \hline
-$V_{2}=[3 \times 10^{-4}, 1.16 \times 10^{-2}]$ & $3.15\%$ & $96.85\%$\\ \hline
+$V_{1}=[0, 5.82 \times 10^{-3}>$ & $99.99\%$ & $0.01\%$\\ \hline
+$V_{2}=[5.82 \times 10^{-3}, 1.16 \times 10^{-2}]$ & $99.99\%$ & $0.01\%$\\ \hline
 \end{tabular}
 \caption{Longitude 2d}
 \label{tab:longitude_2d}

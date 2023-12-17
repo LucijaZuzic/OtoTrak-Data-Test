@@ -2,8 +2,8 @@
 \centering
 \begin{tabular}{|c|c|c|}
 \hline
-$X_{i}$ & $[0, 3.1 \times 10^{-4}>$ & $[3.1 \times 10^{-4}, 6.91 \times 10^{-1}]$\\ \hline
-$P(X_{i})$ & $50.3\%$ & $49.7\%$\\ \hline
+$X_{i}$ & $[0, 3.45 \times 10^{-1}>$ & $[3.45 \times 10^{-1}, 6.91 \times 10^{-1}]$\\ \hline
+$P(X_{i})$ & $99.99\%$ & $0.01\%$\\ \hline
 \end{tabular}
 \caption{X speed alternative 1d}
 \label{tab:x_speed_alternative_1d}
