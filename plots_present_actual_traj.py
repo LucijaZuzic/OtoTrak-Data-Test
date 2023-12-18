@@ -184,31 +184,150 @@ def plot_original_file_method(lf, long):
     plot_trapezoid(lat_dict[lf][lat], olat, times_processed, "_{y}", filename + "_y_trapz")
     plot_all(long_dict[lf][long], lat_dict[lf][lat], olong, olat, 10, filename + "_euclid")
 
-def get_all_for_name(lf): 
-    file_with_ride = pd.read_csv(lf)
+def get_all_for_name(lf, len_tr):  
     longitudes, latitudes, times = load_traj_name(lf)
     longitudes, latitudes = preprocess_long_lat(longitudes, latitudes)
     longitudes, latitudes = scale_long_lat(longitudes, latitudes, 0.1, 0.1, True)
     times_processed = [process_time(time_new) for time_new in times] 
-    time_int = [np.round(times_processed[time_index + 1] - times_processed[time_index], 3) for time_index in range(len(times_processed) - 1)] 
-    times = [np.round(times_processed[time_index] - times_processed[0], 3) for time_index in range(len(times_processed))] 
-    longer_file_name = lf
-    time_no_gap = fill_gap(predicted_time[longer_file_name])
-    distance_no_gap = fill_gap(predicted_distance[longer_file_name])
-    longitudes_no_gap = fill_gap(predicted_longitude[longer_file_name])
-    latitudes_no_gap = fill_gap(predicted_latitude[longer_file_name])
-    longitudes_no_abs_no_gap = fill_gap(predicted_longitude_no_abs[longer_file_name])
-    latitudes_no_abs_no_gap = fill_gap(predicted_latitude_no_abs[longer_file_name])
-    direction_no_gap = fill_gap(predicted_direction[longer_file_name])
-    direction_alternative_no_gap = fill_gap(predicted_direction_alternative[longer_file_name]) 
-    direction_abs_alternative_no_gap = fill_gap(predicted_direction_abs_alternative[longer_file_name])
-    speed_no_gap = fill_gap(predicted_speed[longer_file_name])
-    speed_alternative_no_gap = fill_gap(predicted_speed_alternative[longer_file_name])
-    x_speed_alternative_no_gap = fill_gap(predicted_x_speed_alternative[longer_file_name]) 
-    y_speed_alternative_no_gap = fill_gap(predicted_y_speed_alternative[longer_file_name])
-    x_speed_no_abs_alternative_no_gap = fill_gap(predicted_x_speed_no_abs_alternative[longer_file_name])
-    y_speed_no_abs_alternative_no_gap = fill_gap(predicted_y_speed_no_abs_alternative[longer_file_name])
 
+    time_int = [np.round(times_processed[time_index + 1] - times_processed[time_index], 3) for time_index in range(len(times_processed) - 1)]  
+    time_no_gap = fill_gap(predicted_time[lf])
+    print("predicted_time", time_no_gap[:len_tr], time_int[:len_tr])
+
+    distance_int = [np.round(np.sqrt((longitudes[distance_index + 1] - longitudes[distance_index]) ** 2 + (latitudes[distance_index + 1] - latitudes[distance_index]) ** 2), 5) for distance_index in range(len(longitudes) - 1)]
+    distance_no_gap = fill_gap(predicted_distance[lf])
+    print("predicted_distance", distance_no_gap[:len_tr], distance_int[:len_tr])
+
+    longitude_int = [np.round(abs(longitudes[longitude_index + 1] - longitudes[longitude_index]), 10) for longitude_index in range(len(longitudes) - 1)]
+    longitudes_no_gap = fill_gap(predicted_longitude[lf])
+    print("predicted_longitude", longitudes_no_gap[:len_tr], longitude_int[:len_tr])
+
+    longitude_no_abs_int = [np.round(longitudes[longitude_index + 1] - longitudes[longitude_index], 10) for longitude_index in range(len(longitudes) - 1)]
+    longitudes_no_abs_no_gap = fill_gap(predicted_longitude_no_abs[lf])
+    print("predicted_longitude_no_abs", longitudes_no_abs_no_gap[:len_tr], longitude_no_abs_int[:len_tr])
+    
+    longitude_sgn_int = [longitudes[longitude_index + 1] > longitudes[longitude_index] for longitude_index in range(len(longitudes) - 1)] 
+    longitudes_sgn_no_gap = fill_gap(predicted_longitude_sgn[lf])
+    print("predicted_longitude_sgn", longitudes_sgn_no_gap[:len_tr], longitude_sgn_int[:len_tr])
+ 
+    latitude_int = [np.round(abs(latitudes[latitude_index + 1] - latitudes[latitude_index]), 10) for latitude_index in range(len(latitudes) - 1)]
+    latitudes_no_gap = fill_gap(predicted_latitude[lf])
+    print("predicted_latitude", latitudes_no_gap[:len_tr], latitude_int[:len_tr])
+
+    latitude_no_abs_int = [np.round(latitudes[latitude_index + 1] - latitudes[latitude_index], 10) for latitude_index in range(len(latitudes) - 1)]
+    latitudes_no_abs_no_gap = fill_gap(predicted_latitude_no_abs[lf])
+    print("predicted_latitude_no_abs", latitudes_no_abs_no_gap[:len_tr], latitude_no_abs_int[:len_tr])
+   
+    latitude_sgn_int = [latitudes[latitude_index + 1] > latitudes[latitude_index] for latitude_index in range(len(latitudes) - 1)] 
+    latitudes_sgn_no_gap = fill_gap(predicted_latitude_sgn[lf])
+    print("predicted_latitude_sgn", latitudes_sgn_no_gap[:len_tr], latitude_sgn_int[:len_tr])
+    
+    file_with_ride = pd.read_csv(lf)
+    directions = list(file_with_ride["fields_direction"]) 
+    direction_int = [np.round(direction, 0) for direction in directions]
+    direction_no_gap = fill_gap(predicted_direction[lf])
+    print("predicted_direction", direction_no_gap[:len_tr], direction_int[:len_tr])
+     
+    xdistance_int = [longitudes[distance_index + 1] - longitudes[distance_index] for distance_index in range(len(longitudes) - 1)]
+    ydistance_int = [latitudes[distance_index + 1] - latitudes[distance_index] for distance_index in range(len(latitudes) - 1)]
+    direction_alternative_int = []
+    for heading_alternative_index in range(len(longitudes) - 1):
+        if xdistance_int[heading_alternative_index] != 0:
+            direction_alternative_int.append((360 + np.round(np.arctan(ydistance_int[heading_alternative_index] / xdistance_int[heading_alternative_index]) / np.pi * 180, 0)) % 360)
+        else:
+            if ydistance_int[heading_alternative_index] > 0:
+                direction_alternative_int.append(90.0)
+            if ydistance_int[heading_alternative_index] < 0:
+                direction_alternative_int.append(270.0)
+            if ydistance_int[heading_alternative_index] == 0:  
+                direction_alternative_int.append("undefined")
+                last_value = "undefined"
+    for heading_alternative_index in range(len(longitudes) - 1):
+        if direction_alternative_int[heading_alternative_index] == "undefined":
+            if last_value != "undefined":
+                direction_alternative_int[heading_alternative_index] = last_value
+            else:
+                for heading_alternative_index2 in range(heading_alternative_index + 1, len(longitudes) - 1): 
+                    if direction_alternative_int[heading_alternative_index2] != "undefined":
+                        direction_alternative_int[heading_alternative_index] = direction_alternative_int[heading_alternative_index2]
+                        break
+    direction_alternative_no_gap = fill_gap(predicted_direction_alternative[lf]) 
+    print("predicted_direction_alternative", direction_alternative_no_gap[:len_tr], direction_alternative_int[:len_tr])
+
+    xdistance_int = [abs(longitudes[distance_index + 1] - longitudes[distance_index]) for distance_index in range(len(longitudes) - 1)]
+    ydistance_int = [abs(latitudes[distance_index + 1] - latitudes[distance_index]) for distance_index in range(len(latitudes) - 1)]
+    direction_abs_alternative_int = []
+    for heading_alternative_index in range(len(longitudes) - 1):
+        if xdistance_int[heading_alternative_index] != 0:
+            direction_abs_alternative_int.append((360 + np.round(np.arctan(ydistance_int[heading_alternative_index] / xdistance_int[heading_alternative_index]) / np.pi * 180, 0)) % 360)
+        else:
+            if ydistance_int[heading_alternative_index] > 0:
+                direction_abs_alternative_int.append(90.0) 
+            if ydistance_int[heading_alternative_index] == 0:  
+                direction_abs_alternative_int.append("undefined")
+                last_value = "undefined"
+    for heading_alternative_index in range(len(longitudes) - 1):
+        if direction_abs_alternative_int[heading_alternative_index] == "undefined":
+            if last_value != "undefined":
+                direction_abs_alternative_int[heading_alternative_index] = last_value
+            else:
+                for heading_alternative_index2 in range(heading_alternative_index + 1, len(longitudes) - 1): 
+                    if direction_abs_alternative_int[heading_alternative_index2] != "undefined":
+                        direction_abs_alternative_int[heading_alternative_index] = direction_abs_alternative_int[heading_alternative_index2]
+                        break
+    direction_abs_alternative_no_gap = fill_gap(predicted_direction_abs_alternative[lf])
+    print("predicted_direction_abs_alternative", direction_abs_alternative_no_gap[:len_tr], direction_abs_alternative_int[:len_tr])
+ 
+    speeds = list(file_with_ride["fields_speed"]) 
+    speed_int = [np.round(speed, 0) for speed in speeds] 
+    speed_no_gap = fill_gap(predicted_speed[lf])
+    print("predicted_speed", speed_no_gap[:len_tr], speed_int[:len_tr])
+
+    times_delays = [times_processed[time_index + 1] - times_processed[time_index] for time_index in range(len(times_processed) - 1)] 
+    for time_index in range(len(times_delays)):
+            if times_delays[time_index] == 0:
+                times_delays[time_index] = 10 ** -20
+    distance_int = [np.sqrt((longitudes[distance_index + 1] - longitudes[distance_index]) ** 2 + (latitudes[distance_index + 1] - latitudes[distance_index]) ** 2) for distance_index in range(len(longitudes) - 1)]
+    speed_alternative_int = [np.round(distance_int[speed_alternative_index] / times_delays[speed_alternative_index], 5) for speed_alternative_index in range(len(times_delays))]
+    speed_alternative_no_gap = fill_gap(predicted_speed_alternative[lf])
+    print("predicted_speed_alternative", speed_alternative_no_gap[:len_tr], speed_alternative_int[:len_tr])
+    
+    for time_index in range(len(times_delays)):
+            if times_delays[time_index] == 0:
+                times_delays[time_index] = 10 ** -20
+    distance_int = [abs(longitudes[distance_index + 1] - longitudes[distance_index]) for distance_index in range(len(longitudes) - 1)]
+    x_speed_alternative_int = [np.round(distance_int[x_speed_alternative_index] / times_delays[x_speed_alternative_index], 5) for x_speed_alternative_index in range(len(times_delays))]
+    x_speed_alternative_no_gap = fill_gap(predicted_x_speed_alternative[lf]) 
+    print("predicted_x_speed_alternative", x_speed_alternative_no_gap[:len_tr], x_speed_alternative_int[:len_tr])
+    
+    for time_index in range(len(times_delays)):
+            if times_delays[time_index] == 0:
+                times_delays[time_index] = 10 ** -20
+    distance_int = [abs(latitudes[distance_index + 1] - latitudes[distance_index]) for distance_index in range(len(latitudes) - 1)]
+    y_speed_alternative_int = [np.round(distance_int[y_speed_alternative_index] / times_delays[y_speed_alternative_index], 5) for y_speed_alternative_index in range(len(times_delays))]
+    y_speed_alternative_no_gap = fill_gap(predicted_y_speed_alternative[lf])
+    print("predicted_y_speed_alternative", y_speed_alternative_no_gap[:len_tr], y_speed_alternative_int[:len_tr])
+
+    for time_index in range(len(times_delays)):
+            if times_delays[time_index] == 0:
+                times_delays[time_index] = 10 ** -20
+    distance_int = [longitudes[distance_index + 1] - longitudes[distance_index] for distance_index in range(len(longitudes) - 1)]
+    x_speed_no_abs_alternative_int = [np.round(distance_int[x_speed_no_abs_alternative_index] / times_delays[x_speed_no_abs_alternative_index], 5) for x_speed_no_abs_alternative_index in range(len(times_delays))]
+    x_speed_no_abs_alternative_no_gap = fill_gap(predicted_x_speed_no_abs_alternative[lf])
+    print("predicted_x_speed_no_abs_alternative", x_speed_no_abs_alternative_no_gap[:len_tr], x_speed_no_abs_alternative_int[:len_tr])
+    
+    for time_index in range(len(times_delays)):
+            if times_delays[time_index] == 0:
+                times_delays[time_index] = 10 ** -20
+    distance_int = [latitudes[distance_index + 1] - latitudes[distance_index] for distance_index in range(len(latitudes) - 1)]
+    y_speed_no_abs_alternative_int = [np.round(distance_int[y_speed_no_abs_alternative_index] / times_delays[y_speed_no_abs_alternative_index], 5) for y_speed_no_abs_alternative_index in range(len(times_delays))]
+    y_speed_no_abs_alternative_no_gap = fill_gap(predicted_y_speed_no_abs_alternative[lf])
+    print("predicted_y_speed_no_abs_alternative", y_speed_no_abs_alternative_no_gap[:len_tr], y_speed_no_abs_alternative_int[:len_tr])
+      
+    for long in long_dict[lf]:
+        lat = long.replace("long", "lat").replace("x", "y") 
+        #print(long, lat, long_dict[lf][long][:len_tr], lat_dict[lf][lat][:len_tr])
+             
 min_len = 100000
 lf = ""
 
@@ -223,3 +342,4 @@ print(min_len, lf)
 if not os.path.isdir("presentation_plots"):
     os.makedirs("presentation_plots")
 plot_original_file_method(lf, "long no abs")
+get_all_for_name(lf, 5)
