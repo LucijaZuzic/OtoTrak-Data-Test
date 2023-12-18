@@ -137,6 +137,10 @@ def get_euclid(array_np, size_of_sample, torder, random_numbers = []):
     if random_numbers == []:
         random_numbers = random.sample(range(start_range, end_range + 1), size_of_sample)
     #print(random_numbers)
+    # Calculate the Frobenius norm
+    frobenius_norm = np.linalg.norm(array_np, 'fro') 
+    # Normalize the matrix
+    array_np = array_np / frobenius_norm
     array_np2 = array_np[random_numbers, ]
     #print(np.shape(array_np))
     #print(np.shape(array_np2))
