@@ -40,3 +40,22 @@ plt.text(x[ix], df[ix] + 5, '$f-g$', size=15, color='magenta')
 plt.plot(x3, s, c = "k")
 plt.show()
 plt.close()
+
+plt.axis('off')
+x = [v for v in np.arange(0, 2 * np.pi, np.pi / 4)]
+f = [np.cos(v) for v in x]
+g = [np.cos(v + 1) + 10 for v in x] 
+for i in range(len(x)):
+    plt.plot([x[i], x[i]], [f[i], g[i]], c = "k")
+    plt.text(x[i], g[i] + 0.5, '$g_{' + str(i + 1) + '}$', size=15, color='b')
+    plt.text(x[i], f[i] - 1, '$f_{' + str(i + 1) + '}$', size=15, color='r')
+plt.plot(x, f, label = "f", c = "r") 
+plt.plot(x, g, label = "g", c = "b") 
+plt.ylim(min(min(f), min(g)) - 2, max(max(f), max(g)) + 2)
+plt.xlim(min(x) - 0.2, max(x) + 0.5)
+plt.arrow(min(x) - 0.2, min(min(f), min(g)) - 2, 0, max(max(f), max(g)) + 2 - min(min(f), min(g)) + 2)
+plt.arrow(min(x) - 0.2, min(min(f), min(g)) - 2, max(x) + 0.5 - min(x) + 0.2, 0)
+plt.xlabel("x")
+plt.ylabel("y")
+plt.show()
+plt.close()
