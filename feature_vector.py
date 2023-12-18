@@ -13,6 +13,9 @@ def only_shape(subdirname, features = []):
     feats_vect_train = []
     feats_vect_test = [] 
     feature_order = []
+    trajs_order = []
+    trajs_train_order = []
+    trajs_test_order = []
     for window_size in dict_for_clustering: 
         for subdir_name in dict_for_clustering[window_size]: 
             for some_file in dict_for_clustering[window_size][subdir_name]: 
@@ -38,10 +41,13 @@ def only_shape(subdirname, features = []):
                     if len(dict_for_clustering[window_size][subdir_name][some_file][x]) == 0:
                         continue 
                     feats_vect.append([])
+                    trajs_order.append((window_size, subdir_name, some_file, x))
                     if some_file in train_names:
                         feats_vect_train.append([])
+                        trajs_train_order.append((window_size, subdir_name, some_file, x))
                     if some_file in test_names:
                         feats_vect_test.append([])
+                        trajs_test_order.append((window_size, subdir_name, some_file, x))
                     for feat in feature_order: 
                         if subdirname != "" and skip_var(feat, subdirname):
                             continue 
@@ -54,6 +60,9 @@ def only_shape(subdirname, features = []):
     feats_vect = np.array(feats_vect)
     feats_vect_train = np.array(feats_vect_train) 
     feats_vect_test = np.array(feats_vect_test)
+    trajs_order = np.array(trajs_order)
+    trajs_train_order = np.array(trajs_train_order)
+    trajs_test_order = np.array(trajs_test_order)
 
     print(np.shape(feats_vect)) 
     print(np.shape(feats_vect_train))
@@ -99,19 +108,39 @@ def only_shape(subdirname, features = []):
     plt.scatter(sd_x_all[:, 0], sd_x_all[:, 1])   
     plt.show()
     '''
-
-    get_euclid(feats_vect, 100)
+    str_extension = subdirname
+    if subdirname == "":
+        str_extension = "no_skip"
+    for feat in features:
+        str_extension += "_" + str(feat)
+    retarr = []
+    distarr = []
+    for num in range(100):
+        retv, retd = get_euclid(feats_vect, 2, trajs_order, [num])
+        retarr.append(retv)
+        distarr.append(retd)
+        #print(num)
     #analyse_cols(feats_vect, feature_order)
- 
+    retarr = np.array(retarr)
+    distarr = np.array(distarr)
+    print(np.shape(retarr))
+    print(np.shape(distarr))
+    if not os.path.isdir("all_closest"):
+        os.makedirs("all_closest")
+    save_object("all_closest/closest_ids_" + str_extension, retarr)
+    save_object("all_closest/closest_dist_" + str_extension, distarr) 
 
-def get_euclid(array_np, size_of_sample):  
+
+def get_euclid(array_np, size_of_sample, torder, random_numbers = []):  
     start_range = 0
     end_range = len(array_np)  
-    random_numbers = random.sample(range(start_range, end_range + 1), size_of_sample)
-    print(random_numbers)
-    array_np = array_np[random_numbers, ]
-    print(np.shape(array_np))
-    distances_np = np.linalg.norm(array_np[:, None] - array_np, axis=2) 
+    if random_numbers == []:
+        random_numbers = random.sample(range(start_range, end_range + 1), size_of_sample)
+    #print(random_numbers)
+    array_np2 = array_np[random_numbers, ]
+    #print(np.shape(array_np))
+    #print(np.shape(array_np2))
+    distances_np = np.linalg.norm(array_np[:, None] - array_np2, axis=2) 
     '''
     print("Euclidean distances between rows:")
     print(distances_np)
@@ -121,11 +150,33 @@ def get_euclid(array_np, size_of_sample):
         new_index = [random_numbers[list(distances_np[rn, :]).index(x)] for x in new_row]
         print(random_numbers[rn], new_row[1:11], new_index[1:11])
     '''
-    sns.heatmap(distances_np, cmap='YlGnBu', xticklabels=random_numbers, yticklabels=random_numbers)
-    plt.title('Heatmap from NumPy Array')
-    plt.xlabel('X axis') 
-    plt.ylabel('Y axis')
-    plt.show()
+    #sns.heatmap(distances_np, cmap='YlGnBu', xticklabels=random_numbers, yticklabels=random_numbers)
+    #plt.title('Heatmap from NumPy Array')
+    #plt.xlabel('X axis') 
+    #plt.ylabel('Y axis')
+    #plt.show()
+    #print(np.shape(distances_np))
+    for cn in range(np.shape(distances_np)[1]):
+        new_array = distances_np[:, cn]
+        new_array_orig = list(distances_np[:, cn])
+        new_array = sorted(new_array)
+        ixes = [new_array_orig.index(val) for val in new_array]
+        return torder[ixes], new_array
+        '''
+        print(new_array)
+        print(ixes)
+        print(torder[random_numbers[cn]])
+        print(torder[ixes]) 
+        plt.figure(figsize=(30, 40))
+        for ix in range(1200):
+            plt.subplot(30, 40, ix + 1)
+            plt.axis('off')
+            some_ids = torder[ixes][ix]
+            longitudes, latitudes, times = load_traj_window(some_ids[1], some_ids[2].replace("events_", "").replace(".csv", ""), int(some_ids[3]), int(some_ids[0]))
+            longitudes_scaled_to_max, latitudes_scaled_to_max = scale_long_lat(longitudes, latitudes, xmax = 0.005, ymax = 0.005, keep_aspect_ratio = True)
+            plt.plot(longitudes_scaled_to_max, latitudes_scaled_to_max, color = "k")     
+        plt.show()
+        '''
  
 def analyse_cols(array, feature_order):
     import numpy as np 
