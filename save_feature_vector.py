@@ -5,6 +5,32 @@ dict_for_clustering = load_object("dict_for_clustering")
 train_names = load_object("train_names")
 test_names = load_object("test_names") 
 
+def shorten_arr(retarr):
+    if not isinstance(retarr[0][1], str):
+        return retarr
+    retarrn = [[v for v in r] for r in retarr]
+    for rn in range(len(retarrn)):
+        retarrn[rn][0] = int(retarrn[rn][0])
+        retarrn[rn][1] = int(retarrn[rn][1].replace("Vehicle_", ""))
+        retarrn[rn][2] = int(retarrn[rn][2].replace("events_", "").replace(".csv", ""))
+        retarrn[rn][3] = int(retarrn[rn][3])
+        retarr[rn] = np.array(retarr[rn])
+    retarr = np.array(retarr)
+    return retarrn 
+
+def elongate_arr(retarr):
+    if isinstance(retarr[0][1], str):
+        return retarr
+    retarrn = [[v for v in r] for r in retarr]
+    for rn in range(len(retarrn)):
+        retarrn[rn][0] = str(retarrn[rn][0])
+        retarrn[rn][1] = "Vehicle_" + str(retarrn[rn][1])
+        retarrn[rn][2] = "events_" + str(retarrn[rn][2]) + ".csv"
+        retarrn[rn][3] = str(retarrn[rn][3])
+        retarr[rn] = np.array(retarr[rn])
+    retarr = np.array(retarr)
+    return retarrn 
+
 def myfv(subdirname, features = [], maxlen = 1):
     str_extension = subdirname
     if subdirname == "":
@@ -78,11 +104,14 @@ def myfv(subdirname, features = [], maxlen = 1):
  
         if not os.path.isdir("all_closest/closest_ids/" + str_extension + "/" + retv[0][0] + "/" + retv[0][1] + "/" + shortfile + "/" + retv[0][3]):
             os.makedirs("all_closest/closest_ids/" + str_extension + "/" + retv[0][0] + "/" + retv[0][1] + "/" + shortfile + "/" + retv[0][3])
-        save_object("all_closest/closest_ids/" + str_extension + "/" + retv[0][0] + "/" + retv[0][1] + "/" + shortfile + "/" + retv[0][3] + "/closest_ids_" + str_extension + "_" + retv[0][0] + "_" + retv[0][1] + "_" + shortfile + "_" + retv[0][3], retv)
+        
+        retv_short = shorten_arr(retv)
+        save_object("all_closest/closest_ids/" + str_extension + "/" + retv[0][0] + "/" + retv[0][1] + "/" + shortfile + "/" + retv[0][3] + "/closest_ids_" + str_extension + "_" + retv[0][0] + "_" + retv[0][1] + "_" + shortfile + "_" + retv[0][3], retv_short)
  
         if not os.path.isdir("all_closest/closest_dist/" + str_extension + "/" + retv[0][0] + "/" + retv[0][1] + "/" + shortfile + "/" + retv[0][3]):
             os.makedirs("all_closest/closest_dist/" + str_extension + "/" + retv[0][0] + "/" + retv[0][1] + "/" + shortfile + "/" + retv[0][3])
         save_object("all_closest/closest_dist/" + str_extension + "/" + retv[0][0] + "/" + retv[0][1] + "/" + shortfile + "/" + retv[0][3] + "/closest_dist_" + str_extension + "_" + retv[0][0] + "_" + retv[0][1] + "_" + shortfile + "_" + retv[0][3], retd)
+        break
 
 def get_euclid_save(array_np, num_sample, torder):  
     start_range = 0
@@ -107,6 +136,7 @@ def get_euclid_save(array_np, num_sample, torder):
 def getfv(str_extension, ws, vehicle, shortfile, x, r, c, sumto, topv, draw = False):     
     print(ws, vehicle, shortfile, x)
     retarr = load_object("all_closest/closest_ids/" + str_extension+ "/" + ws + "/" + vehicle + "/" + shortfile + "/" + x + "/closest_ids_" + str_extension+ "_" + ws + "_" + vehicle + "_" + shortfile + "_" + x)
+    retarr = elongate_arr(retarr)
     distarr = load_object("all_closest/closest_dist/" + str_extension+ "/" + ws + "/" + vehicle + "/" + shortfile + "/" + x + "/closest_dist_" + str_extension+ "_" + ws + "_" + vehicle + "_" + shortfile + "_" + x)
 
     print(retarr[0][2])
@@ -148,6 +178,7 @@ def compare_methods(str_extensions, wsz, vehicle, shortfile, x):
     for str_extension in str_extensions:
         print(str_extension)  
         retarr = load_object("all_closest/closest_ids/" + str_extension+ "/" + wsz + "/" + vehicle + "/" + shortfile + "/" + x + "/closest_ids_" + str_extension+ "_" + wsz + "_" + vehicle + "_" + shortfile + "_" + x)
+        retarr = elongate_arr(retarr)
         distarr = load_object("all_closest/closest_dist/" + str_extension+ "/" + wsz + "/" + vehicle + "/" + shortfile + "/" + x + "/closest_dist_" + str_extension+ "_" + wsz + "_" + vehicle + "_" + shortfile + "_" + x)
         print(np.shape(retarr))
         print(np.shape(distarr)) 
@@ -208,8 +239,8 @@ def comparetwo(vehstr_dist, wsz, vehicle, shortfile, x, title):
         plt.plot(longitudes_scaled_to_max, latitudes_scaled_to_max, color = "k")      
         plt.show() 
 
-#myfv("no_rays_no_xy_no_same_acceler_heading") 
-#myfv("")
+myfv("no_rays_no_xy_no_same_acceler_heading") 
+myfv("")
 
 r = 4
 c = 5
