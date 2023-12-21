@@ -239,8 +239,8 @@ def comparetwo(vehstr_dist, wsz, vehicle, shortfile, x, title):
         plt.plot(longitudes_scaled_to_max, latitudes_scaled_to_max, color = "k")      
         plt.show() 
 
-myfv("no_rays_no_xy_no_same_acceler_heading") 
-myfv("")
+#myfv("no_rays_no_xy_no_same_acceler_heading") 
+#myfv("")
 
 r = 4
 c = 5
@@ -251,7 +251,13 @@ for method in os.listdir("all_closest/closest_dist"):
         for veh in os.listdir("all_closest/closest_dist/" + method + "/" + ws):
             for ride in os.listdir("all_closest/closest_dist/" + method + "/" + ws + "/" + veh):
                 for x in os.listdir("all_closest/closest_dist/" + method + "/" + ws + "/" + veh + "/" + ride):
-                        getfv(method, ws, veh, ride, x, r, c, sumto, topv)
+                    getfv(method, ws, veh, ride, x, r, c, sumto, topv)
+                    break
+                break
+            break
+        break
+    break
+
 methods = []
 for method in os.listdir("all_closest/closest_dist"):
     methods.append(method) 
@@ -263,4 +269,7 @@ print(wss)
 for veh in os.listdir("all_closest/closest_dist/" + methods[0] + "/" + wss[0]):
     for ride in os.listdir("all_closest/closest_dist/" + methods[0] + "/" + wss[0] + "/" + veh):
         for x in os.listdir("all_closest/closest_dist/" + methods[0] + "/" + wss[0] + "/" + veh + "/" + ride):
-            compare_methods(methods, wss[0], veh, ride, x)
+            compare_methods(methods, wss[0], veh, ride, x) 
+            break
+        break
+    break
