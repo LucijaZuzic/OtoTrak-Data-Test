@@ -13,13 +13,13 @@ x_y_infls = []
 x_y_infl_long_trajs = dict()
 x_y_infl_lat_trajs = dict()
 x_y_infl_id_trajs = dict()
-labeled = []
-classified = []
-identifier = []
-mini = 10000
-maxi = 0
+cross_myself = []
+crossings_dict = dict() 
+identifier = [] 
 offlens = []
 offlens_for_inc = []
+tss = []
+ts_I = []
 maxx = 0
 minx = -10000
 for subdir_name in all_subdirs: 
@@ -64,8 +64,8 @@ for subdir_name in all_subdirs:
             longitudes_tmp_transform, latitudes_tmp_transform = preprocess_long_lat(longitudes_tmp, latitudes_tmp)
             longitudes_scaled_to_max, latitudes_scaled_to_max = scale_long_lat(longitudes_tmp_transform, latitudes_tmp_transform, xmax = maxoffset, ymax = maxoffset, keep_aspect_ratio = True)
             sum_dist, offset_total = traj_len_offset(longitudes_scaled_to_max, latitudes_scaled_to_max)
-            mini = min(mini, sum_dist / offset_total)
-            maxi = max(maxi, sum_dist / offset_total) 
+            ts = total_surf(longitudes_scaled_to_max, latitudes_scaled_to_max)
+            tss.append(ts) 
             offlens.append(sum_dist / offset_total)
             long_sgns = [longitudes_scaled_to_max[long_ind + 1] > longitudes_scaled_to_max[long_ind] for long_ind in range(len(longitudes_tmp_transform) - 1)]
             long_sgns_change = [long_sgns[long_ind + 1] == long_sgns[long_ind] for long_ind in range(len(long_sgns) - 1)]
@@ -73,7 +73,26 @@ for subdir_name in all_subdirs:
             lat_sgns = [latitudes_scaled_to_max[lat_ind + 1] > latitudes_scaled_to_max[lat_ind] for lat_ind in range(len(latitudes_tmp_transform) - 1)]
             lat_sgns_change = [lat_sgns[lat_ind + 1] == lat_sgns[lat_ind] for lat_ind in range(len(lat_sgns) - 1)]
             lat_sgn = set(lat_sgns)
-             
+
+            crossings = 0
+            crossing_positions = []
+
+            for pos1 in range(len(longitudes_scaled_to_max) - 1):
+                for pos2 in range(pos1 + 2, len(longitudes_scaled_to_max) - 1):
+                    xs, ys = get_intersection(longitudes_scaled_to_max[pos1], longitudes_scaled_to_max[pos1 + 1], latitudes_scaled_to_max[pos1], latitudes_scaled_to_max[pos1 + 1], longitudes_scaled_to_max[pos2], longitudes_scaled_to_max[pos2 + 1], latitudes_scaled_to_max[pos2], latitudes_scaled_to_max[pos2 + 1])
+                    if xs != "Nan":
+                        pol1 = point_on_line(xs, ys, longitudes_scaled_to_max[pos1], longitudes_scaled_to_max[pos1 + 1], latitudes_scaled_to_max[pos1], latitudes_scaled_to_max[pos1 + 1]) 
+                        pol2 = point_on_line(xs, ys, longitudes_scaled_to_max[pos2], longitudes_scaled_to_max[pos2 + 1], latitudes_scaled_to_max[pos2], latitudes_scaled_to_max[pos2 + 1])
+
+                        if pol1 and pol2:    
+                            crossings += 1
+                            crossing_positions.append((xs, ys))
+  
+            if crossings not in crossings_dict:
+                crossings_dict[crossings] = 0
+            crossings_dict[crossings] += 1
+            cross_myself.append(crossings)
+
             total_infls = set()
             infls_long = []
             for long_ind in range(len(long_sgns_change)):
@@ -85,11 +104,7 @@ for subdir_name in all_subdirs:
                 if not lat_sgns_change[lat_ind]:
                     infls_lat.append(lat_ind + 1)
                     total_infls.add(lat_ind + 1) 
-
-            if np.round(offlens[-1], 2) < 1.8:
-                infls_long = []
-                infls_lat = []
-
+  
             if len(infls_long) not in num_x_inflections:
                 num_x_inflections[len(infls_long)] = 0
             num_x_inflections[len(infls_long)] += 1
@@ -118,6 +133,8 @@ for subdir_name in all_subdirs:
                 nx = [l - max(nx) for l in nx]
             if not ny[0] < ny[1]:
                 ny = [l - max(ny) for l in nx]
+            
+            labelm += "_" + str(crossings)
 
             if labelm not in num_label_inflections:
                 num_label_inflections[labelm] = 0
@@ -133,7 +150,7 @@ for subdir_name in all_subdirs:
 
             if labelm not in x_y_infl_id_trajs:
                 x_y_infl_id_trajs[labelm] = []
-            x_y_infl_id_trajs[labelm].append([window_size, subdir_name, some_file, x])
+            x_y_infl_id_trajs[labelm].append([window_size, int(subdir_name.replace("Vehicle_", "")), int(only_num_ride), x])
 
             if len(lat_sgn) > 1 and len(long_sgn) > 1:
                 label = "NF"   
@@ -142,17 +159,13 @@ for subdir_name in all_subdirs:
             if len(lat_sgn) == 1 and len(long_sgn) == 1:
                 if (True in lat_sgn and True in long_sgn) or (False in lat_sgn and False in long_sgn):
                     label = "I" 
+                    offlens_for_inc.append(sum_dist / offset_total)
+                    ts_I.append(ts)
                 else:
                     label = "D" 
                     
             label_dict[label] += 1
-            labeled.append(label) 
-            classified.append(-1)
-            if label == "I":
-                classified[-1] = 0 
-                offlens_for_inc.append(offlens[-1])
-            if np.round(offlens[-1], 2) < 1.2 and label != "I":
-                classified[-1] = 0   
+            
             identifier.append([window_size, int(subdir_name.replace("Vehicle_", "")), int(only_num_ride), x])
 
 print(num_inflections)
@@ -176,80 +189,27 @@ def composite_img(long1, lat1, titles, nrow, ncol, filename):
     #plt.savefig(filename, bbox_inches = "tight")  
     plt.show()
     plt.close() 
+
 for k in sorted(list(num_label_inflections.keys())): 
-    print(k)
+    print(k, num_label_inflections[k])
     nrow = 10
     ncol = 10  
     if nrow * ncol > num_label_inflections[k]:
         ncol = int(np.sqrt(num_label_inflections[k]))
         nrow = ncol
-    composite_img(x_y_infl_long_trajs[k][:nrow*ncol], x_y_infl_lat_trajs[k][:nrow*ncol], x_y_infl_id_trajs[k][:nrow*ncol], nrow, ncol, "")
+    #composite_img(x_y_infl_long_trajs[k][:nrow*ncol], x_y_infl_lat_trajs[k][:nrow*ncol], x_y_infl_id_trajs[k][:nrow*ncol], nrow, ncol, "")
 
-print(mini, maxi)
+print(num_label_inflections)
+
+print(crossings_dict)
+print(min(tss), max(tss))
+print(np.quantile(tss, 0.25), np.quantile(tss, 0.5), np.quantile(tss, 0.75), np.quantile(tss, 0.9), np.quantile(tss, 0.95))  
+print(min(ts_I), max(ts_I))
+
+print(np.quantile(ts_I, 0.25), np.quantile(ts_I, 0.5), np.quantile(ts_I, 0.75), np.quantile(ts_I, 0.9), np.quantile(ts_I, 0.95)) 
+ 
 print(label_dict)
 print(min(offlens), max(offlens))
-print(np.quantile(offlens, 0.25), np.quantile(offlens, 0.5), np.quantile(offlens, 0.75), np.quantile(offlens, 0.9), np.quantile(offlens, 0.95)) 
-print(classified.count(0) / len(classified))
-print(len(classified) - classified.count(0))
+print(np.quantile(offlens, 0.25), np.quantile(offlens, 0.5), np.quantile(offlens, 0.75), np.quantile(offlens, 0.9), np.quantile(offlens, 0.95))  
 print(min(offlens_for_inc), max(offlens_for_inc))
 print(np.quantile(offlens_for_inc, 0.25), np.quantile(offlens_for_inc, 0.5), np.quantile(offlens_for_inc, 0.75), np.quantile(offlens_for_inc, 0.9), np.quantile(offlens_for_inc, 0.95)) 
-'''
-class_num = 0
-save_object("labeling_indicators_identifier", identifier)
-save_object("labeling_indicators_classified", classified)
-while -1 in classified:
-    first_unclassified = classified.index(-1)
-    first_id = identifier[first_unclassified]
-    add_to_class = [first_unclassified]
-    print(first_unclassified, first_id)
-    ows = first_id[0]
-    osn = "Vehicle_" + str(first_id[1])
-    of = "events_" + str(first_id[2]) + ".csv"
-    ox = first_id[3]
-    ofile_with_ride = pd.read_csv(osn + "/cleaned_csv/" + of)
-    olong = list(ofile_with_ride["fields_longitude"])[ox:ox + ows]
-    olat = list(ofile_with_ride["fields_latitude"])[ox:ox + ows]  
-    olong, olat = preprocess_long_lat(olong, olat)
-    olong, olat = scale_long_lat(olong, olat, xmax = maxoffset, ymax = maxoffset, keep_aspect_ratio = True)
-    for id in range(first_unclassified + 1, len(classified)):
-        if classified[id] != -1:
-            continue
-        second_id = identifier[id]
-        print(id, second_id) 
-        nws = second_id[0]
-        nsn = "Vehicle_" + str(second_id[1])
-        nf = "events_" + str(second_id[2]) + ".csv"
-        nx = second_id[3]
-        nfile_with_ride = pd.read_csv(nsn + "/cleaned_csv/" + nf)
-        nlong = list(nfile_with_ride["fields_longitude"])[nx:nx + nws]
-        nlat = list(nfile_with_ride["fields_latitude"])[nx:nx + nws]  
-        nlong, nlat = preprocess_long_lat(nlong, nlat)
-        nlong, nlat = scale_long_lat(nlong, nlat, xmax = maxoffset, ymax = maxoffset, keep_aspect_ratio = True)
-        plt.subplot(1, 2, 1)
-        plt.xlim(0, 1)
-        plt.ylim(0, 1)
-        plt.axis('off')
-        plt.plot(olong, olat, color = "k")
-        plt.subplot(1, 2, 2)
-        plt.xlim(0, 1)
-        plt.ylim(0, 1)
-        plt.plot(nlong, nlat, color = "k")
-        plt.show()
-        cl = input('Class (y/n):\n') 
-        while cl != "n" and cl != "y":
-            plt.subplot(1, 2, 1)
-            plt.xlim(0, 1)
-            plt.ylim(0, 1)
-            plt.axis('off')
-            plt.plot(olong, olat, color = "k")
-            plt.subplot(1, 2, 2)
-            plt.xlim(0, 1)
-            plt.ylim(0, 1)
-            plt.plot(nlong, nlat, color = "k")
-            plt.show()
-            cl = input('Class repeat (y/n):\n') 
-        if cl == "y": 
-            classified[id] = class_num 
-            save_object("labeling_indicators_classified", classified)
-    class_num += 1
-'''
