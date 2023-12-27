@@ -1,7 +1,7 @@
 from utilities import *
 
-#from keras.models import Sequential
-#from keras.layers import Dense, SimpleRNN
+from keras.models import Sequential
+from keras.layers import Dense, SimpleRNN
 
 from sklearn.metrics import mean_squared_error
 
@@ -192,10 +192,14 @@ def make_dataset_train():
 
 def get_XY(dat, time_steps, num_props): 
     Y_ind = np.arange(time_steps, len(dat), time_steps)
+    print(time_steps)
+    print(Y_ind)
     Y = dat[Y_ind] 
     rows_x = len(Y)
+    print(rows_x)
     X = dat[range(time_steps*rows_x)]
-    X = np.reshape(X, (rows_x, time_steps, num_props))    
+    X = np.reshape(X, (rows_x, time_steps, num_props))   
+    print(np.shape(X), np.shape(Y)) 
     return X, Y
 
 def print_error(trainY, testY, train_predict, test_predict, title, range_val):  
@@ -286,7 +290,37 @@ def make_nets():
         print_error(ytrain, ytest, predict_train, predict_test, prop_name, range_val)
         plot_result(ytrain, ytest, predict_train, predict_test, prop_name)
 
+def make_net_all():
+    window_size = 20 
+    data_to_cluster_train, data_to_cluster_test = make_dataset_train()
+    key_vals = list(data_to_cluster_train.keys())
+    num_props = len(key_vals)
+    all_data_train = []
+    for i in range(len(data_to_cluster_train[key_vals[0]])):
+        all_data_train.append([])
+        for prop_name in data_to_cluster_train:
+            all_data_train[-1].append(data_to_cluster_train[prop_name][i])
+        all_data_train[-1] = np.array(all_data_train[-1])
+    all_data_train = np.array(all_data_train)
+    print(np.shape(all_data_train))
+    xtrain, ytrain = get_XY(all_data_train, window_size, num_props)
+    print(np.shape(xtrain), np.shape(ytrain))
+    all_data_test = []
+    for i in range(len(data_to_cluster_test[key_vals[0]])):
+        all_data_test.append([])
+        for prop_name in data_to_cluster_test:
+            all_data_test[-1].append(data_to_cluster_test[prop_name][i])
+        all_data_test[-1] = np.array(all_data_test[-1])
+    all_data_test = np.array(all_data_test)
+    xtest, ytest = get_XY(all_data_test, window_size, num_props)
+    demo_model = create_RNN(2, 1, (window_size, num_props), activation=['linear', 'linear'])   
+    history = demo_model.fit(xtrain, ytrain, verbose = 1)  
+    predict_train = demo_model.predict(xtrain)
+    predict_test = demo_model.predict(xtest)
+    print(predict_test[:10], xtest[:10])
+
 #make_nets()
+make_net_all()
         
 def read_nets(): 
     for prop_name in get_keys():    
