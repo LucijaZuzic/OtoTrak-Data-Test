@@ -1,5 +1,6 @@
 from utilities import *
 from sklearn.manifold import TSNE
+from knees import kneefind
 all_feats_fourier_scaled_to_max = pd.read_csv("all_feats_fourier/all_feats_fourier_scaled_to_max.csv")
 header_of_file = ["window_size", "vehicle", "ride", "start"]
 longitude_train_complex = []

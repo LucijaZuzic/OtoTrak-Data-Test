@@ -1,5 +1,6 @@
 from utilities import * 
 from sklearn.manifold import Isomap
+from knees import kneefind
 
 window_size = 20
 deg = 5
