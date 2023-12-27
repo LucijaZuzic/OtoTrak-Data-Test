@@ -11,10 +11,8 @@ from scipy.spatial import ConvexHull, convex_hull_plot_2d
 from sklearn.model_selection import train_test_split
 #from sympy import Matrix 
 from sklearn.cluster import KMeans
-from kneed import KneeLocator
 from sklearn.metrics import silhouette_score
 from sklearn.cluster import DBSCAN
-from sklearn.neighbors import NearestNeighbors
 
 def dtw(longitudes1, latitudes1, longitudes2, latitudes2): 
     if len(longitudes1) == 0 and len(latitudes1) == 0 and len(longitudes2) == 0 and len(latitudes2) == 0:
@@ -1049,16 +1047,6 @@ def predict_prob_with_array(probability, probability_in_next_step, probability_i
     #plt.hist(delta_series)
     #plt.show() 
     return x, n, match_score, no_empty, delta_series
-
-def kneefind(NN, X_embedded):
-	nbrs = NearestNeighbors(n_neighbors = NN).fit(X_embedded)
-	distances, indices = nbrs.kneighbors(X_embedded)
-	distance_desc = sorted(distances[:,NN-1], reverse=True)
-	#plt.plot(list(range(1,len(distance_desc)+1)), distance_desc)
-	#plt.show()
-	#plt.close()
-	kl = KneeLocator(list(range(1,len(distance_desc )+1)), distance_desc, curve = "convex", direction = "decreasing") 
-	return kl.knee_y 
  
 def random_sample_of_cluster(subdirname, files_in_cluster, nrow, ncol, filename):
     print(filename)
