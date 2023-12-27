@@ -356,7 +356,7 @@ for k in dict(sorted(num_label_inflections.items(), key=lambda item: item[1], re
         ncol = int(np.sqrt(num_label_inflections[k]))
         nrow = ncol
     #composite_img(x_y_infl_long_trajs[k][:nrow*ncol], x_y_infl_lat_trajs[k][:nrow*ncol], x_y_infl_id_trajs[k][:nrow*ncol], nrow, ncol, k, x_y_infl_infl_trajs[k][:nrow*ncol], x_y_infl_crossing_trajs[k][:nrow*ncol])
-    composite_img_no_mark(x_y_infl_long_trajs[k][:nrow*ncol], x_y_infl_lat_trajs[k][:nrow*ncol], x_y_infl_id_trajs[k][:nrow*ncol], nrow, ncol, k)
+    #composite_img_no_mark(x_y_infl_long_trajs[k][:nrow*ncol], x_y_infl_lat_trajs[k][:nrow*ncol], x_y_infl_id_trajs[k][:nrow*ncol], nrow, ncol, k)
 
 print(num_label_inflections)
 
