@@ -1,4 +1,3 @@
 rays/*/*/*/*trajs_other
-_pycache_/*
-*.pyc
+__pycache__/*
 infls_crossing/*
