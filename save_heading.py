@@ -134,4 +134,18 @@ if not os.path.isdir("all_feats_heading"):
 process_csv_generic(window_size, all_feats_heading_trajs, "all_feats_heading/all_feats_heading.csv")
 process_csv_generic(window_size, all_feats_heading_scaled_trajs, "all_feats_heading/all_feats_heading_scaled.csv")
 process_csv_generic(window_size, all_feats_heading_scaled_to_max_trajs, "all_feats_heading/all_feats_heading_scaled_to_max.csv")
-            
+
+dict_for_clustering = load_object("dict_for_clustering")     
+for window_size in dict_for_clustering: 
+    for subdir_name in dict_for_clustering[window_size]: 
+        for some_file in dict_for_clustering[window_size][subdir_name]: 
+            short_file = some_file.replace("events_", "").replace(".csv", "")
+            for x in dict_for_clustering[window_size][subdir_name][some_file]:
+                if len(dict_for_clustering[window_size][subdir_name][some_file][x]) == 0:
+                        continue
+                for feat_name in dict_for_clustering[window_size][subdir_name][some_file][x]:
+                    if "mean_heading" in feat_name:
+                        if "all_feats_heading_scaled_to_max_" in feat_name:
+                            short_feat = feat_name.replace("all_feats_heading_scaled_to_max_", "")
+                            dict_for_clustering[window_size][subdir_name][some_file][x][feat_name] = all_feats_heading_scaled_to_max_trajs[window_size][subdir_name][short_file][x][short_feat]
+save_object("dict_for_clustering", dict_for_clustering)
