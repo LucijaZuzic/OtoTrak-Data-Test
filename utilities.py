@@ -441,7 +441,7 @@ def return_angles(long_list, lat_list):
             if lat_list[index_coord + 1] > lat_list[index_coord]:
                 total_angles.append(90)
             else:
-                total_angles.append(-90)
+                total_angles.append(270)
     return total_angles
 
 def return_angles_abs(long_list, lat_list):
