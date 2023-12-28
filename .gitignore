@@ -1,3 +1,4 @@
 rays/*/*/*/*trajs_other
 __pycache__/*
 infl_cross/*
+train_net/*
