@@ -10,13 +10,13 @@ $V_{2}=[180, 360]$ & $3.57\%$ & $96.43\%$\\ \hline
 \multicolumn{3}{|c|}{Predicted direction abs alternative}\\ \hline
 $P(X_{i}|X_{i-1})$ & \multicolumn{2}{|c|}{$X_{i}$}\\ \hline
 $X_{i-1}$ & $V_{1}$ & $V_{2}$\\ \hline
-$V_{1}=[0, 45>$ & $92.43\%$ & $7.3\%$\\ \hline
-$V_{2}=[45, 90]$ & $8.52\%$ & $88.63\%$\\ \hline
+$V_{1}=[0, 45>$ & $92.39\%$ & $7.33\%$\\ \hline
+$V_{2}=[45, 90]$ & $8.61\%$ & $88.55\%$\\ \hline
 \multicolumn{3}{|c|}{Predicted direction alternative}\\ \hline
 $P(X_{i}|X_{i-1})$ & \multicolumn{2}{|c|}{$X_{i}$}\\ \hline
 $X_{i-1}$ & $V_{1}$ & $V_{2}$\\ \hline
-$V_{1}=[0, 180>$ & $92.97\%$ & $6.83\%$\\ \hline
-$V_{2}=[180, 359]$ & $8.67\%$ & $91.12\%$\\ \hline
+$V_{1}=[0, 180>$ & $96.65\%$ & $3.25\%$\\ \hline
+$V_{2}=[180, 359]$ & $3.29\%$ & $96.62\%$\\ \hline
 \multicolumn{3}{|c|}{Predicted distance}\\ \hline
 $P(X_{i}|X_{i-1})$ & \multicolumn{2}{|c|}{$X_{i}$}\\ \hline
 $X_{i-1}$ & $V_{1}$ & $V_{2}$\\ \hline

@@ -4,8 +4,8 @@
 \hline
 $P(X_{i}|X_{i-1})$ & \multicolumn{2}{|c|}{$X_{i}$}\\ \hline
 $X_{i-1}$ & $V_{1}$ & $V_{2}$\\ \hline
-$V_{1}=[0, 180>$ & $92.97\%$ & $6.83\%$\\ \hline
-$V_{2}=[180, 359]$ & $8.67\%$ & $91.12\%$\\ \hline
+$V_{1}=[0, 180>$ & $96.65\%$ & $3.25\%$\\ \hline
+$V_{2}=[180, 359]$ & $3.29\%$ & $96.62\%$\\ \hline
 \end{tabular}
 \caption{Direction alternative 2d}
 \label{tab:direction_alternative_2d}

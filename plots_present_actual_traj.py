@@ -282,25 +282,8 @@ def get_all_for_name(lf, len_tr):
     ydistance_int = [latitudes[distance_index + 1] - latitudes[distance_index] for distance_index in range(len(latitudes) - 1)]
     direction_alternative_int = []
     for heading_alternative_index in range(len(longitudes) - 1):
-        if xdistance_int[heading_alternative_index] != 0:
-            direction_alternative_int.append((360 + np.round(np.arctan(ydistance_int[heading_alternative_index] / xdistance_int[heading_alternative_index]) / np.pi * 180, 0)) % 360)
-        else:
-            if ydistance_int[heading_alternative_index] > 0:
-                direction_alternative_int.append(90.0)
-            if ydistance_int[heading_alternative_index] < 0:
-                direction_alternative_int.append(270.0)
-            if ydistance_int[heading_alternative_index] == 0:  
-                direction_alternative_int.append("undefined")
-                last_value = "undefined"
-    for heading_alternative_index in range(len(longitudes) - 1):
-        if direction_alternative_int[heading_alternative_index] == "undefined":
-            if last_value != "undefined":
-                direction_alternative_int[heading_alternative_index] = last_value
-            else:
-                for heading_alternative_index2 in range(heading_alternative_index + 1, len(longitudes) - 1): 
-                    if direction_alternative_int[heading_alternative_index2] != "undefined":
-                        direction_alternative_int[heading_alternative_index] = direction_alternative_int[heading_alternative_index2]
-                        break
+        direction_alternative_int.append((360 + np.round(np.arctan2(ydistance_int[heading_alternative_index], xdistance_int[heading_alternative_index]) / np.pi * 180, 0)) % 360)
+         
     direction_alternative_no_gap = fill_gap(predicted_direction_alternative[lf]) 
     print_row("predicted_direction_alternative", direction_alternative_no_gap[:len_tr], direction_alternative_int[:len_tr])
 
@@ -308,23 +291,8 @@ def get_all_for_name(lf, len_tr):
     ydistance_int = [abs(latitudes[distance_index + 1] - latitudes[distance_index]) for distance_index in range(len(latitudes) - 1)]
     direction_abs_alternative_int = []
     for heading_alternative_index in range(len(longitudes) - 1):
-        if xdistance_int[heading_alternative_index] != 0:
-            direction_abs_alternative_int.append((360 + np.round(np.arctan(ydistance_int[heading_alternative_index] / xdistance_int[heading_alternative_index]) / np.pi * 180, 0)) % 360)
-        else:
-            if ydistance_int[heading_alternative_index] > 0:
-                direction_abs_alternative_int.append(90.0) 
-            if ydistance_int[heading_alternative_index] == 0:  
-                direction_abs_alternative_int.append("undefined")
-                last_value = "undefined"
-    for heading_alternative_index in range(len(longitudes) - 1):
-        if direction_abs_alternative_int[heading_alternative_index] == "undefined":
-            if last_value != "undefined":
-                direction_abs_alternative_int[heading_alternative_index] = last_value
-            else:
-                for heading_alternative_index2 in range(heading_alternative_index + 1, len(longitudes) - 1): 
-                    if direction_abs_alternative_int[heading_alternative_index2] != "undefined":
-                        direction_abs_alternative_int[heading_alternative_index] = direction_abs_alternative_int[heading_alternative_index2]
-                        break
+        direction_abs_alternative_int.append((360 + np.round(np.arctan2(ydistance_int[heading_alternative_index], xdistance_int[heading_alternative_index]) / np.pi * 180, 0)) % 360)
+ 
     direction_abs_alternative_no_gap = fill_gap(predicted_direction_abs_alternative[lf])
     print_row("predicted_direction_abs_alternative", direction_abs_alternative_no_gap[:len_tr], direction_abs_alternative_int[:len_tr])
  
@@ -374,12 +342,12 @@ def get_all_for_name(lf, len_tr):
     y_speed_no_abs_alternative_no_gap = fill_gap(predicted_y_speed_no_abs_alternative[lf])
     print_row("predicted_y_speed_no_abs_alternative", y_speed_no_abs_alternative_no_gap[:len_tr], y_speed_no_abs_alternative_int[:len_tr])
       
-    #print_method("", "", longitudes[:len_tr])
+    print_method("", "", longitudes[:len_tr])
     for long in long_dict[lf]:
         if "actual" in long:
             continue
         lat = long.replace("long", "lat").replace("x", "y") 
-        #print_method(long, lat, long_dict[lf][long][:len_tr])
+        print_method(long, lat, long_dict[lf][long][:len_tr])
         
     print_method("", "", latitudes[:len_tr])
     for long in long_dict[lf]:

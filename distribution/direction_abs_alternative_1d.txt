@@ -3,7 +3,7 @@
 \begin{tabular}{|c|c|c|}
 \hline
 $X_{i}$ & $[0, 45>$ & $[45, 90]$\\ \hline
-$P(X_{i})$ & $60.59\%$ & $37.76\%$\\ \hline
+$P(X_{i})$ & $60.76\%$ & $37.68\%$\\ \hline
 \end{tabular}
 \caption{Direction abs alternative 1d}
 \label{tab:direction_abs_alternative_1d}

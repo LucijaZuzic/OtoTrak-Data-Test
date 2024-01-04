@@ -3,7 +3,7 @@
 \begin{tabular}{|c|c|c|}
 \hline
 $X_{i}$ & $[0, 180>$ & $[180, 359]$\\ \hline
-$P(X_{i})$ & $53.91\%$ & $45.77\%$\\ \hline
+$P(X_{i})$ & $52.6\%$ & $47.24\%$\\ \hline
 \end{tabular}
 \caption{Direction alternative 1d}
 \label{tab:direction_alternative_1d}

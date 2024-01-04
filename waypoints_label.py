@@ -204,51 +204,13 @@ for subdir_name in all_subdirs:
         y_speed_no_abs_alternative_int = [np.round(distance_int[y_speed_no_abs_alternative_index] / times_delays[y_speed_no_abs_alternative_index], 5) for y_speed_no_abs_alternative_index in range(len(times_delays))]
      
         direction_alternative_int = []
-        for heading_alternative_index in range(len(longitudes) - 1):
-            if distance_x_int[heading_alternative_index] != 0:
-                direction_alternative_int.append((360 + np.round(np.arctan(distance_y_int[heading_alternative_index] / distance_x_int[heading_alternative_index]) / np.pi * 180, 0)) % 360)
-            else:
-                if distance_y_int[heading_alternative_index] > 0:
-                    direction_alternative_int.append(90.0)
-                if distance_y_int[heading_alternative_index] < 0:
-                    direction_alternative_int.append(270.0)
-                if distance_y_int[heading_alternative_index] == 0:
-                    direction_alternative_int.append("undefined")
-
-        last_value = "undefined"
-        for heading_alternative_index in range(len(longitudes) - 1):
-            if direction_alternative_int[heading_alternative_index] == "undefined":
-                if last_value != "undefined":
-                    direction_alternative_int[heading_alternative_index] = last_value
-                else:
-                    for heading_alternative_index2 in range(heading_alternative_index + 1, len(longitudes) - 1): 
-                        if direction_alternative_int[heading_alternative_index2] != "undefined":
-                            direction_alternative_int[heading_alternative_index] = direction_alternative_int[heading_alternative_index2]
-                            break
-            last_value = direction_alternative_int[heading_alternative_index]
-            
+        for heading_alternative_index in range(len(longitudes) - 1): 
+            direction_alternative_int.append((360 + np.round(np.arctan2(distance_y_int[heading_alternative_index], distance_x_int[heading_alternative_index]) / np.pi * 180, 0)) % 360)
+             
         direction_abs_alternative_int = []
-        for heading_abs_alternative_index in range(len(longitudes) - 1):
-            if distance_x_abs_int[heading_abs_alternative_index] != 0:
-                direction_abs_alternative_int.append((360 + np.round(np.arctan(distance_y_abs_int[heading_abs_alternative_index] / distance_x_abs_int[heading_abs_alternative_index]) / np.pi * 180, 0)) % 360)
-            else:
-                if distance_y_abs_int[heading_abs_alternative_index] > 0:
-                    direction_abs_alternative_int.append(90.0) 
-                if distance_y_abs_int[heading_abs_alternative_index] == 0:
-                    direction_abs_alternative_int.append("undefined")
-
-        last_value = "undefined"
-        for heading_abs_alternative_index in range(len(longitudes) - 1):
-            if direction_abs_alternative_int[heading_abs_alternative_index] == "undefined":
-                if last_value != "undefined":
-                    direction_abs_alternative_int[heading_abs_alternative_index] = last_value
-                else:
-                    for heading_abs_alternative_index2 in range(heading_abs_alternative_index + 1, len(longitudes) - 1): 
-                        if direction_abs_alternative_int[heading_abs_alternative_index2] != "undefined":
-                            direction_abs_alternative_int[heading_abs_alternative_index] = direction_abs_alternative_int[heading_abs_alternative_index2]
-                            break
-            last_value = direction_abs_alternative_int[heading_abs_alternative_index]
- 
+        for heading_abs_alternative_index in range(len(longitudes) - 1): 
+            direction_abs_alternative_int.append((360 + np.round(np.arctan2(distance_y_abs_int[heading_abs_alternative_index], distance_x_abs_int[heading_abs_alternative_index]) / np.pi * 180, 0)) % 360)
+             
         short_file = some_file.replace("events_", "").replace(".csv", "")
  
         all_probs_zero_max = pd.read_csv("all_probs_zero_max/" + str(subdir_name) + "/" + str(short_file) + "/all_probs_zero_max_" + str(subdir_name) + "_" + str(short_file) + ".csv", index_col=False)

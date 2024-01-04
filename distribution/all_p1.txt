@@ -7,10 +7,10 @@ $X_{i}$ & $[0, 180>$ & $[180, 360]$\\ \hline
 $P(X_{i})$ & $47.68\%$ & $52.32\%$\\ \hline
 \multicolumn{3}{|c|}{Predicted direction abs alternative}\\ \hline
 $X_{i}$ & $[0, 45>$ & $[45, 90]$\\ \hline
-$P(X_{i})$ & $60.59\%$ & $37.76\%$\\ \hline
+$P(X_{i})$ & $60.76\%$ & $37.68\%$\\ \hline
 \multicolumn{3}{|c|}{Predicted direction alternative}\\ \hline
 $X_{i}$ & $[0, 180>$ & $[180, 359]$\\ \hline
-$P(X_{i})$ & $53.91\%$ & $45.77\%$\\ \hline
+$P(X_{i})$ & $52.6\%$ & $47.24\%$\\ \hline
 \multicolumn{3}{|c|}{Predicted distance}\\ \hline
 $X_{i}$ & $[0, 1.21 \times 10^{-2}>$ & $[1.21 \times 10^{-2}, 2.42 \times 10^{-2}]$\\ \hline
 $P(X_{i})$ & $99.99\%$ & $0.01\%$\\ \hline

@@ -4,14 +4,14 @@
 \begin{tabular}{|c|c|c|}
 \hline
 $X_{i}$ & $[0, 180>$ & $[180, 359]$\\ \hline
-$P(X_{i})$ & $53.91\%$ & $45.77\%$\\ \hline
+$P(X_{i})$ & $52.6\%$ & $47.24\%$\\ \hline
 \end{tabular}
 \begin{tabular}{|c|c|c|}
 \hline
 $P(X_{i}|X_{i-1})$ & \multicolumn{2}{|c|}{$X_{i}$}\\ \hline
 $X_{i-1}$ & $V_{1}$ & $V_{2}$\\ \hline
-$V_{1}=[0, 180>$ & $92.97\%$ & $6.83\%$\\ \hline
-$V_{2}=[180, 359]$ & $8.67\%$ & $91.12\%$\\ \hline
+$V_{1}=[0, 180>$ & $96.65\%$ & $3.25\%$\\ \hline
+$V_{2}=[180, 359]$ & $3.29\%$ & $96.62\%$\\ \hline
 \end{tabular}
 \begin{tabular}{|c|c|c|c|c|}
 \hline
@@ -19,8 +19,8 @@ $V_{2}=[180, 359]$ & $8.67\%$ & $91.12\%$\\ \hline
  & \multicolumn{2}{|c|}{$V_{1}$} & \multicolumn{2}{|c|}{$V_{2}$}\\ \cline{2-5}
  & \multicolumn{2}{|c|}{$X_{i}$} & \multicolumn{2}{|c|}{$X_{i}$}\\ \hline
 $X_{i-1}$ & $V_{1}$ & $V_{2}$ & $V_{1}$ & $V_{2}$\\ \hline
-$V_{1}=[0, 180>$ & $79.06\%$ & $20.94\%$ & $85.9\%$ & $14.1\%$\\ \hline
-$V_{2}=[180, 359]$ & $11.09\%$ & $88.91\%$ & $19.77\%$ & $80.23\%$\\ \hline
+$V_{1}=[0, 180>$ & $94.8\%$ & $5.2\%$ & $86.78\%$ & $13.22\%$\\ \hline
+$V_{2}=[180, 359]$ & $4.05\%$ & $95.95\%$ & $13.21\%$ & $86.79\%$\\ \hline
 \end{tabular}
 \caption{Direction alternative}
 \label{tab:direction_alternative}

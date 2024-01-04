@@ -41,7 +41,7 @@ $V_{2}=[180, 360]$ & $0.01\%$ & $99.99\%$ & $7.25\%$ & $92.75\%$\\ \hline
 \begin{tabular}{|c|c|c|}
 \hline
 $X_{i}$ & $[0, 45>$ & $[45, 90]$\\ \hline
-$P(X_{i})$ & $60.59\%$ & $37.76\%$\\ \hline
+$P(X_{i})$ & $60.76\%$ & $37.68\%$\\ \hline
 \end{tabular}
 \caption{Direction abs alternative 1d}
 \label{tab:direction_abs_alternative_1d}
@@ -52,8 +52,8 @@ $P(X_{i})$ & $60.59\%$ & $37.76\%$\\ \hline
 \hline
 $P(X_{i}|X_{i-1})$ & \multicolumn{2}{|c|}{$X_{i}$}\\ \hline
 $X_{i-1}$ & $V_{1}$ & $V_{2}$\\ \hline
-$V_{1}=[0, 45>$ & $92.43\%$ & $7.3\%$\\ \hline
-$V_{2}=[45, 90]$ & $8.52\%$ & $88.63\%$\\ \hline
+$V_{1}=[0, 45>$ & $92.39\%$ & $7.33\%$\\ \hline
+$V_{2}=[45, 90]$ & $8.61\%$ & $88.55\%$\\ \hline
 \end{tabular}
 \caption{Direction abs alternative 2d}
 \label{tab:direction_abs_alternative_2d}
@@ -66,8 +66,8 @@ $V_{2}=[45, 90]$ & $8.52\%$ & $88.63\%$\\ \hline
  & \multicolumn{2}{|c|}{$V_{1}$} & \multicolumn{2}{|c|}{$V_{2}$}\\ \cline{2-5}
  & \multicolumn{2}{|c|}{$X_{i}$} & \multicolumn{2}{|c|}{$X_{i}$}\\ \hline
 $X_{i-1}$ & $V_{1}$ & $V_{2}$ & $V_{1}$ & $V_{2}$\\ \hline
-$V_{1}=[0, 45>$ & $87.41\%$ & $12.12\%$ & $75.18\%$ & $22.97\%$\\ \hline
-$V_{2}=[45, 90]$ & $18.2\%$ & $78.47\%$ & $25.98\%$ & $71.82\%$\\ \hline
+$V_{1}=[0, 45>$ & $74.36\%$ & $21.94\%$ & $83.38\%$ & $15.65\%$\\ \hline
+$V_{2}=[45, 90]$ & $38.5\%$ & $51.91\%$ & $12.43\%$ & $78.99\%$\\ \hline
 \end{tabular}
 \caption{Direction abs alternative 3d}
 \label{tab:direction_abs_alternative_3d}
@@ -78,7 +78,7 @@ $V_{2}=[45, 90]$ & $18.2\%$ & $78.47\%$ & $25.98\%$ & $71.82\%$\\ \hline
 \begin{tabular}{|c|c|c|}
 \hline
 $X_{i}$ & $[0, 180>$ & $[180, 359]$\\ \hline
-$P(X_{i})$ & $53.91\%$ & $45.77\%$\\ \hline
+$P(X_{i})$ & $52.6\%$ & $47.24\%$\\ \hline
 \end{tabular}
 \caption{Direction alternative 1d}
 \label{tab:direction_alternative_1d}
@@ -89,8 +89,8 @@ $P(X_{i})$ & $53.91\%$ & $45.77\%$\\ \hline
 \hline
 $P(X_{i}|X_{i-1})$ & \multicolumn{2}{|c|}{$X_{i}$}\\ \hline
 $X_{i-1}$ & $V_{1}$ & $V_{2}$\\ \hline
-$V_{1}=[0, 180>$ & $92.97\%$ & $6.83\%$\\ \hline
-$V_{2}=[180, 359]$ & $8.67\%$ & $91.12\%$\\ \hline
+$V_{1}=[0, 180>$ & $96.65\%$ & $3.25\%$\\ \hline
+$V_{2}=[180, 359]$ & $3.29\%$ & $96.62\%$\\ \hline
 \end{tabular}
 \caption{Direction alternative 2d}
 \label{tab:direction_alternative_2d}
@@ -103,8 +103,8 @@ $V_{2}=[180, 359]$ & $8.67\%$ & $91.12\%$\\ \hline
  & \multicolumn{2}{|c|}{$V_{1}$} & \multicolumn{2}{|c|}{$V_{2}$}\\ \cline{2-5}
  & \multicolumn{2}{|c|}{$X_{i}$} & \multicolumn{2}{|c|}{$X_{i}$}\\ \hline
 $X_{i-1}$ & $V_{1}$ & $V_{2}$ & $V_{1}$ & $V_{2}$\\ \hline
-$V_{1}=[0, 180>$ & $79.06\%$ & $20.94\%$ & $85.9\%$ & $14.1\%$\\ \hline
-$V_{2}=[180, 359]$ & $11.09\%$ & $88.91\%$ & $19.77\%$ & $80.23\%$\\ \hline
+$V_{1}=[0, 180>$ & $94.8\%$ & $5.2\%$ & $86.78\%$ & $13.22\%$\\ \hline
+$V_{2}=[180, 359]$ & $4.05\%$ & $95.95\%$ & $13.21\%$ & $86.79\%$\\ \hline
 \end{tabular}
 \caption{Direction alternative 3d}
 \label{tab:direction_alternative_3d}

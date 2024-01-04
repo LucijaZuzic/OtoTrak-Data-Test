@@ -43,27 +43,9 @@ if flag_replace or not os.path.isfile("num_occurences/num_occurences_of_directio
             xdistance_int = [abs(longitudes[distance_index + 1] - longitudes[distance_index]) for distance_index in range(len(longitudes) - 1)]
             ydistance_int = [abs(latitudes[distance_index + 1] - latitudes[distance_index]) for distance_index in range(len(latitudes) - 1)]
             direction_alternative_int = []
-            for heading_alternative_index in range(len(longitudes) - 1):
-                if xdistance_int[heading_alternative_index] != 0:
-                    direction_alternative_int.append((360 + np.round(np.arctan(ydistance_int[heading_alternative_index] / xdistance_int[heading_alternative_index]) / np.pi * 180, 0)) % 360)
-                else:
-                    if ydistance_int[heading_alternative_index] > 0:
-                        direction_alternative_int.append(90.0) 
-                    if ydistance_int[heading_alternative_index] == 0:
-                        direction_alternative_int.append("undefined")
-
-            last_value = "undefined"
-            for heading_alternative_index in range(len(longitudes) - 1):
-                if direction_alternative_int[heading_alternative_index] == "undefined":
-                    if last_value != "undefined":
-                        direction_alternative_int[heading_alternative_index] = last_value
-                    else:
-                        for heading_alternative_index2 in range(heading_alternative_index + 1, len(longitudes) - 1): 
-                            if direction_alternative_int[heading_alternative_index2] != "undefined":
-                                direction_alternative_int[heading_alternative_index] = direction_alternative_int[heading_alternative_index2]
-                                break
-                last_value = direction_alternative_int[heading_alternative_index]
- 
+            for heading_alternative_index in range(len(longitudes) - 1): 
+                direction_alternative_int.append((360 + np.round(np.arctan2(ydistance_int[heading_alternative_index], xdistance_int[heading_alternative_index]) / np.pi * 180, 0)) % 360)
+                   
             for direction_alternative in direction_alternative_int:
                 if direction_alternative not in num_occurences_of_direction_abs_alternative:
                     num_occurences_of_direction_abs_alternative[direction_alternative] = 0
@@ -157,27 +139,9 @@ for subdir_name in all_subdirs:
         xdistance_int = [abs(longitudes[distance_index + 1] - longitudes[distance_index]) for distance_index in range(len(longitudes) - 1)]
         ydistance_int = [abs(latitudes[distance_index + 1] - latitudes[distance_index]) for distance_index in range(len(latitudes) - 1)]
         direction_alternative_int = []
-        for heading_alternative_index in range(len(longitudes) - 1):
-            if xdistance_int[heading_alternative_index] != 0:
-                direction_alternative_int.append((360 + np.round(np.arctan(ydistance_int[heading_alternative_index] / xdistance_int[heading_alternative_index]) / np.pi * 180, 0)) % 360)
-            else:
-                if ydistance_int[heading_alternative_index] > 0:
-                    direction_alternative_int.append(90.0) 
-                if ydistance_int[heading_alternative_index] == 0:  
-                    direction_alternative_int.append("undefined")
-
-        last_value = "undefined"
-        for heading_alternative_index in range(len(longitudes) - 1):
-            if direction_alternative_int[heading_alternative_index] == "undefined":
-                if last_value != "undefined":
-                    direction_alternative_int[heading_alternative_index] = last_value
-                else:
-                    for heading_alternative_index2 in range(heading_alternative_index + 1, len(longitudes) - 1): 
-                        if direction_alternative_int[heading_alternative_index2] != "undefined":
-                            direction_alternative_int[heading_alternative_index] = direction_alternative_int[heading_alternative_index2]
-                            break
-            last_value = direction_alternative_int[heading_alternative_index]
-
+        for heading_alternative_index in range(len(longitudes) - 1): 
+            direction_alternative_int.append((360 + np.round(np.arctan2(ydistance_int[heading_alternative_index], xdistance_int[heading_alternative_index]) / np.pi * 180, 0)) % 360)
+           
         x, n, match_score, no_empty, delta_series = predict_prob_with_array(probability_of_direction_abs_alternative, probability_of_direction_abs_alternative_in_next_step, probability_of_direction_abs_alternative_in_next_next_step, direction_alternative_int, 0, 90, 1, isangle = True)
         total_guesses += n
         total_guesses_no_empty += no_empty

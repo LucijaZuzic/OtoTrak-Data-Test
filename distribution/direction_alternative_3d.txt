@@ -6,8 +6,8 @@
  & \multicolumn{2}{|c|}{$V_{1}$} & \multicolumn{2}{|c|}{$V_{2}$}\\ \cline{2-5}
  & \multicolumn{2}{|c|}{$X_{i}$} & \multicolumn{2}{|c|}{$X_{i}$}\\ \hline
 $X_{i-1}$ & $V_{1}$ & $V_{2}$ & $V_{1}$ & $V_{2}$\\ \hline
-$V_{1}=[0, 180>$ & $79.06\%$ & $20.94\%$ & $85.9\%$ & $14.1\%$\\ \hline
-$V_{2}=[180, 359]$ & $11.09\%$ & $88.91\%$ & $19.77\%$ & $80.23\%$\\ \hline
+$V_{1}=[0, 180>$ & $94.8\%$ & $5.2\%$ & $86.78\%$ & $13.22\%$\\ \hline
+$V_{2}=[180, 359]$ & $4.05\%$ & $95.95\%$ & $13.21\%$ & $86.79\%$\\ \hline
 \end{tabular}
 \caption{Direction alternative 3d}
 \label{tab:direction_alternative_3d}

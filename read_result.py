@@ -63,23 +63,8 @@ def read_heading_abs_alternative(title):
             ydistance_int = [abs(latitudes[distance_index + 1] - latitudes[distance_index]) for distance_index in range(len(latitudes) - 1)]
             direction_abs_alternative_int = []
             for heading_alternative_index in range(len(longitudes) - 1):
-                if xdistance_int[heading_alternative_index] != 0:
-                    direction_abs_alternative_int.append((360 + np.round(np.arctan(ydistance_int[heading_alternative_index] / xdistance_int[heading_alternative_index]) / np.pi * 180, 0)) % 360)
-                else:
-                    if ydistance_int[heading_alternative_index] > 0:
-                        direction_abs_alternative_int.append(90.0) 
-                    if ydistance_int[heading_alternative_index] == 0:  
-                        direction_abs_alternative_int.append("undefined")
-                        last_value = "undefined"
-            for heading_alternative_index in range(len(longitudes) - 1):
-                if direction_abs_alternative_int[heading_alternative_index] == "undefined":
-                    if last_value != "undefined":
-                        direction_abs_alternative_int[heading_alternative_index] = last_value
-                    else:
-                        for heading_alternative_index2 in range(heading_alternative_index + 1, len(longitudes) - 1): 
-                            if direction_abs_alternative_int[heading_alternative_index2] != "undefined":
-                                direction_abs_alternative_int[heading_alternative_index] = direction_abs_alternative_int[heading_alternative_index2]
-                                break
+                direction_abs_alternative_int.append((360 + np.round(np.arctan2(ydistance_int[heading_alternative_index], xdistance_int[heading_alternative_index]) / np.pi * 180, 0)) % 360)
+                 
             all_mine[subdir_name + "/cleaned_csv/" + some_file] = direction_abs_alternative_int
     return end_read(title, all_x, all_mine, True)
 
@@ -114,25 +99,8 @@ def read_heading_alternative(title):
             ydistance_int = [latitudes[distance_index + 1] - latitudes[distance_index] for distance_index in range(len(latitudes) - 1)]
             direction_alternative_int = []
             for heading_alternative_index in range(len(longitudes) - 1):
-                if xdistance_int[heading_alternative_index] != 0:
-                    direction_alternative_int.append((360 + np.round(np.arctan(ydistance_int[heading_alternative_index] / xdistance_int[heading_alternative_index]) / np.pi * 180, 0)) % 360)
-                else:
-                    if ydistance_int[heading_alternative_index] > 0:
-                        direction_alternative_int.append(90.0)
-                    if ydistance_int[heading_alternative_index] < 0:
-                        direction_alternative_int.append(270.0)
-                    if ydistance_int[heading_alternative_index] == 0:  
-                        direction_alternative_int.append("undefined")
-                        last_value = "undefined"
-            for heading_alternative_index in range(len(longitudes) - 1):
-                if direction_alternative_int[heading_alternative_index] == "undefined":
-                    if last_value != "undefined":
-                        direction_alternative_int[heading_alternative_index] = last_value
-                    else:
-                        for heading_alternative_index2 in range(heading_alternative_index + 1, len(longitudes) - 1): 
-                            if direction_alternative_int[heading_alternative_index2] != "undefined":
-                                direction_alternative_int[heading_alternative_index] = direction_alternative_int[heading_alternative_index2]
-                                break
+                direction_alternative_int.append((360 + np.round(np.arctan2(ydistance_int[heading_alternative_index], xdistance_int[heading_alternative_index]) / np.pi * 180, 0)) % 360)
+                 
             all_mine[subdir_name + "/cleaned_csv/" + some_file] = direction_alternative_int
     return end_read(title, all_x, all_mine, True)
 
@@ -648,9 +616,10 @@ def end_read(title, all_x, all_mine, isangle = False):
                     delta_series_total.append(delta_x)
                     data_series_total.append(x[i]) 
 
-    total_guesses += n
-    total_guesses_no_empty += no_empty
-    total_match_score += match_score  
+            total_guesses += n
+            total_guesses_no_empty += no_empty
+            total_match_score += match_score  
+
     no_extension = title.replace(".png", "").replace("markov_hist/", "").capitalize()
     plt.rcParams.update({'font.size': 22})
     #print(no_extension)

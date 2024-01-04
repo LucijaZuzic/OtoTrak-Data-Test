@@ -227,51 +227,13 @@ for subdir_name in all_subdirs:
         y_speed_no_abs_alternative_probs_max, y_speed_no_abs_alternative_thr_max, y_speed_no_abs_alternative_labels_max = prob_with_array(probability_of_y_speed_no_abs_alternative, probability_of_y_speed_no_abs_alternative_in_next_step, probability_of_y_speed_no_abs_alternative_in_next_next_step, y_speed_no_abs_alternative_int, MAX_VAL)
 
         direction_alternative_int = []
-        for heading_alternative_index in range(len(longitudes) - 1):
-            if distance_x_int[heading_alternative_index] != 0:
-                direction_alternative_int.append((360 + np.round(np.arctan(distance_y_int[heading_alternative_index] / distance_x_int[heading_alternative_index]) / np.pi * 180, 0)) % 360)
-            else:
-                if distance_y_int[heading_alternative_index] > 0:
-                    direction_alternative_int.append(90.0)
-                if distance_y_int[heading_alternative_index] < 0:
-                    direction_alternative_int.append(270.0)
-                if distance_y_int[heading_alternative_index] == 0:
-                    direction_alternative_int.append("undefined")
-
-        last_value = "undefined"
-        for heading_alternative_index in range(len(longitudes) - 1):
-            if direction_alternative_int[heading_alternative_index] == "undefined":
-                if last_value != "undefined":
-                    direction_alternative_int[heading_alternative_index] = last_value
-                else:
-                    for heading_alternative_index2 in range(heading_alternative_index + 1, len(longitudes) - 1): 
-                        if direction_alternative_int[heading_alternative_index2] != "undefined":
-                            direction_alternative_int[heading_alternative_index] = direction_alternative_int[heading_alternative_index2]
-                            break
-            last_value = direction_alternative_int[heading_alternative_index]
+        for heading_alternative_index in range(len(longitudes) - 1): 
+            direction_alternative_int.append((360 + np.round(np.arctan(distance_y_int[heading_alternative_index], distance_x_int[heading_alternative_index]) / np.pi * 180, 0)) % 360)
             
         direction_abs_alternative_int = []
         for heading_abs_alternative_index in range(len(longitudes) - 1):
-            if distance_x_abs_int[heading_abs_alternative_index] != 0:
-                direction_abs_alternative_int.append((360 + np.round(np.arctan(distance_y_abs_int[heading_abs_alternative_index] / distance_x_abs_int[heading_abs_alternative_index]) / np.pi * 180, 0)) % 360)
-            else:
-                if distance_y_abs_int[heading_abs_alternative_index] > 0:
-                    direction_abs_alternative_int.append(90.0) 
-                if distance_y_abs_int[heading_abs_alternative_index] == 0:
-                    direction_abs_alternative_int.append("undefined")
-
-        last_value = "undefined"
-        for heading_abs_alternative_index in range(len(longitudes) - 1):
-            if direction_abs_alternative_int[heading_abs_alternative_index] == "undefined":
-                if last_value != "undefined":
-                    direction_abs_alternative_int[heading_abs_alternative_index] = last_value
-                else:
-                    for heading_abs_alternative_index2 in range(heading_abs_alternative_index + 1, len(longitudes) - 1): 
-                        if direction_abs_alternative_int[heading_abs_alternative_index2] != "undefined":
-                            direction_abs_alternative_int[heading_abs_alternative_index] = direction_abs_alternative_int[heading_abs_alternative_index2]
-                            break
-            last_value = direction_abs_alternative_int[heading_abs_alternative_index]
-
+            direction_abs_alternative_int.append((360 + np.round(np.arctan(distance_y_abs_int[heading_abs_alternative_index], distance_x_abs_int[heading_abs_alternative_index]) / np.pi * 180, 0)) % 360)
+            
         direction_alternative_probs_zero, direction_alternative_thr_zero, direction_alternative_labels_zero = prob_with_array(probability_of_direction_alternative, probability_of_direction_alternative_in_next_step, probability_of_direction_alternative_in_next_next_step, direction_alternative_int, 0)
         direction_alternative_probs_max, direction_alternative_thr_max, direction_alternative_labels_max = prob_with_array(probability_of_direction_alternative, probability_of_direction_alternative_in_next_step, probability_of_direction_alternative_in_next_next_step, direction_alternative_int, MAX_VAL)
         direction_abs_alternative_probs_zero, direction_abs_alternative_thr_zero, direction_abs_alternative_labels_zero = prob_with_array(probability_of_direction_abs_alternative, probability_of_direction_abs_alternative_in_next_step, probability_of_direction_abs_alternative_in_next_next_step, direction_abs_alternative_int, 0)
